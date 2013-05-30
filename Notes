@@ -1,0 +1,36 @@
+Notes for the project
+
+Start Up:
+How to start this. First problem is to actually have the game,
+Lets start by making the game on one pc. When the game is up and
+running then i can move on to having two screens for the game
+one for each python window where they are connected and only 
+displaying what i`m telling it too. So in other words a third python
+program for communicating the commands 
+
+
+link to a complete pacman game : http://www.stealthcopter.com/blog/2010/02/advancing-pyman-using-pythons-pygame-to-recreate-pacman/
+
+how it should look: http://www.youtube.com/watch?v=uswzriFIf_k
+TODO (Adding more as i move along): 
+	- Make a simple Pac-Man game, where the layout it decides by the level design file (Gonna take a while)
+		- Remember the support for multiplayer as well (No Idea how at this moment)
+	- Split the game up, and display the game pr pygame window running at a time
+		- Still run the game only by having a centrilized controler for the total game
+		- Game control then need to be modular and use nettwork communication, Can use whatever you want as long as you follow the api 
+	- From here performence stuff is tried out (Think about this when we are there)
+
+
+
+[] Make a simple Pac-Man game, where the layout it decides by the level design file (Gonna take a while)
+	- Make the pices bigger depending on the size of the screen
+		- Only if the game lvl, is not big enough for the whole screen
+			-> What if the level is to big ?
+			-> What to do if the packman is so large that he is displayed over multiple windows
+	- Make the graphics separete from the game objects, so that I can change them if I feel like it
+
+	- game Layout is a two dimensional array?
+	- think the graphics for the figures should be the same
+
+Funny Features tought of:
+	- Add sound (Is it possible to do this on the display wall?)
