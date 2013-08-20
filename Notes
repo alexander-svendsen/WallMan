@@ -23,6 +23,7 @@ TODO (Adding more as i move along):
 
 
 [] Make a simple Pac-Man game, where the layout it decides by the level design file (Gonna take a while)
+    OPTIONAL make a menu
 	- Make the pices bigger depending on the size of the screen
 		- Only if the game lvl, is not big enough for the whole screen
 			-> What if the level is to big ?
@@ -34,3 +35,11 @@ TODO (Adding more as i move along):
 
 Funny Features tought of:
 	- Add sound (Is it possible to do this on the display wall?)
+	- Dominence fight ^^
+
+
+Side IDEAS to improve code for future generations:
+    - What about simply making a distributed pygame surface (Jhon Markus Master?)
+        - Can't lock part of the screens
+        - what if some windows aren't connected
+        - Can't have some windows with somethign to display and some not

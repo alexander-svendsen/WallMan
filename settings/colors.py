@@ -1,0 +1,1 @@
+BLOCKCOLORS =  (0, 255, 255)  # CYAN
