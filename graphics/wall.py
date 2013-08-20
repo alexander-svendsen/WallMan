@@ -1,7 +1,7 @@
 import pygame
 
 
-class Block(pygame.sprite.Sprite):
+class Wall(pygame.sprite.Sprite):
     def __init__(self, centerPoint, color, width, height, border):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface([width, height])

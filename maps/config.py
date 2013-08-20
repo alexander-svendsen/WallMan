@@ -1,7 +1,7 @@
 # encoding: utf-8
 """ What the different values on the .map files represents """
 
-PELLET = 0
+FLOOR = 0
 BLOCK = 1
 PLAYER = 2
 GWALL = 3
