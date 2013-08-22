@@ -36,7 +36,8 @@ TODO (Adding more as i move along):
 Funny Features tought of:
 	- Add sound (Is it possible to do this on the display wall?)
 	- Dominence fight ^^
-
+    - controll players by a javascript page
+    - Make a game path generator, to support all screens
 
 Side IDEAS to improve code for future generations:
     - What about simply making a distributed pygame surface (Jhon Markus Master?)
