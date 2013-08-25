@@ -8,9 +8,6 @@ one for each python window where they are connected and only
 displaying what i`m telling it too. So in other words a third python
 program for communicating the commands 
 
-
-link to a complete pacman game : http://www.stealthcopter.com/blog/2010/02/advancing-pyman-using-pythons-pygame-to-recreate-pacman/
-
 how it should look: http://www.youtube.com/watch?v=uswzriFIf_k
 TODO (Adding more as i move along): 
 	- Make a simple Pac-Man game, where the layout it decides by the level design file (Gonna take a while)

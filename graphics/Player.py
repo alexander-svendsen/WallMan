@@ -21,6 +21,7 @@ class Player(pygame.sprite.Sprite):
 
         """Move the rect into the correct position"""
         self.rect.center = centerPoint
+        self.color = color
 
     def idGenerator(self, size=6, chars=string.ascii_uppercase + string.digits):
         return ''.join(random.choice(chars) for x in range(size))

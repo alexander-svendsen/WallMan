@@ -3,13 +3,15 @@ import pygame
 
 
 class Player():
-    def __init__(self, spriteRect):
+    def __init__(self, spriteRect, playerName):
         self.speed = 3
         self.xMove = 0
         self.yMove = 0
 
+        self.playerName = playerName
+
+        self.oldDirection = 0
         self.direction = 0
-        self.nextDirection = 0
         self.spriteRect = spriteRect
         #self.spriteRect = spriteRect
 
@@ -17,48 +19,49 @@ class Player():
         self.xDirection = [0, -self.speed, self.speed, 0, 0]
         self.yDirection = [0, 0, 0, -self.speed, self.speed]
         self.score = 0  # Unsure if the players themselves should keep score... don't think so
+        self.color = spriteRect.color
 
     def updateMovement(self, key):
-        self.direction = self.nextDirection  # THINK THIS CREATES ERRORS
-        if key == K_LEFT:
-            self.nextDirection = 1
-        elif key == K_RIGHT:
-            self.nextDirection = 2
-        elif key == K_UP:
-            self.nextDirection = 3
-        elif key == K_DOWN:
-            self.nextDirection = 4
+        if self.oldDirection == 0:  # Only update old direction if the direction has been used
+            self.oldDirection = self.direction
+        if key == K_LEFT or key == K_a:
+            self.direction = 1
+        elif key == K_RIGHT or key == K_d:
+            self.direction = 2
+        elif key == K_UP or key == K_w:
+            self.direction = 3
+        elif key == K_DOWN or key == K_s:
+            self.direction = 4
 
-    def update(self, spriteBlocks, spriteFloor):  # TODO REMOVE STOP BUG
-        self.xMove = self.xDirection[self.nextDirection]
-        self.yMove = self.yDirection[self.nextDirection]
+    def update(self, spriteBlocks, spriteFloor):
+        self.xMove = self.xDirection[self.direction]
+        self.yMove = self.yDirection[self.direction]
 
         self.spriteRect.rect.move_ip(self.xMove, self.yMove)
 
         if pygame.sprite.spritecollide(self.spriteRect, spriteBlocks, False):
             self.spriteRect.rect.move_ip(-self.xMove, -self.yMove)
 
-            #IF we can't move in the new direction... continue in old direction
-            self.xMove = self.xDirection[self.direction]
-            self.yMove = self.yDirection[self.direction]
+            #If we can't move in the new direction... continue in old direction
+            self.xMove = self.xDirection[self.oldDirection]
+            self.yMove = self.yDirection[self.oldDirection]
             self.spriteRect.rect.move_ip(self.xMove, self.yMove)
 
+            #If we can't move that direction either, we simply stop
             if pygame.sprite.spritecollide(self.spriteRect, spriteBlocks, False):
                 self.spriteRect.rect.move_ip(-self.xMove, -self.yMove)
                 self.yMove = 0
                 self.xMove = 0
+                self.oldDirection = 0
                 self.direction = 0
-                self.nextDirection = 0
-        else:
-            self.direction = 0
+        else:  # If we can continue in the new direction, remove the old direction
+            self.oldDirection = 0
 
-        floorColide = pygame.sprite.spritecollide(self.spriteRect, spriteFloor, False)
-        if floorColide:
-            for floor in floorColide:
-                floor.mark()
-
-
-
+        #Check if we mark a new floor
+        floorCollide = pygame.sprite.spritecollide(self.spriteRect, spriteFloor, False)
+        if floorCollide:
+            for floor in floorCollide:
+                floor.mark(self.color, self.playerName)
 
     def getSprite(self):
         return self.spriteRect
