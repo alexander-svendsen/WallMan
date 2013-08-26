@@ -24,13 +24,13 @@ class Player():
     def updateMovement(self, key):
         if self.oldDirection == 0:  # Only update old direction if the direction has been used
             self.oldDirection = self.direction
-        if key == K_LEFT or key == K_a:
+        if key == "left":
             self.direction = 1
-        elif key == K_RIGHT or key == K_d:
+        elif key == "right":
             self.direction = 2
-        elif key == K_UP or key == K_w:
+        elif key == "up":
             self.direction = 3
-        elif key == K_DOWN or key == K_s:
+        elif key == "down":
             self.direction = 4
 
     def update(self, spriteBlocks, spriteFloor):
