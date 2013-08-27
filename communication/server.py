@@ -21,7 +21,6 @@ class Server:  # Single server controlling all states and players
     def GET(self, path=""):
         if path == "start":
             web.game.start()
-        return "Hello, world!"
 
     def POST(self, path=""):
         if path == "join":  # Don't really like this approch but seems like this is the only way webpy wants it

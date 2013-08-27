@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>ToDo API Client Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+</head>
+<body>
+<div class="navbar">
+    <div class="navbar-inner">
+        <a class="brand" href="#">WallMan</a>
+    </div>
+</div>
+<div id="main" class="container">
+    <form>
+    <div class="control-group" id="errorContainer">
+        <div class="input-append">
+            <input class="span2" id="appendedInputButton" type="text" placeholder="Username">
+            <button class="btn btn-primary" id="joinButton" data-bind="click: joinGame" data-loading-text="joining..." type="submit">Join Game!</button>
+        </div>
+    </div>
+    </form>
+        <p>
+            <button class="btn btn-large btn-primary hide" type="button" data-bind="click: up"><i class="icon-white icon-arrow-up"></i>Up</button>
+            <button class="btn btn-large btn-primary hide" type="button" data-bind="click: down"><i class="icon-white icon-arrow-down"></i>Down</button>
+        </p>
+        <p>
+            <button class="btn btn-large btn-primary hide" type="button" data-bind="click: left"><i class="icon-white icon-arrow-left"></i>Left</button>
+            <button class="btn btn-large btn-primary hide" type="button" data-bind="click: right" >Right<i class="icon-white icon-arrow-right"></i></button>
+        </p>
+
+
+</div>
+<script type="text/javascript">
+
+
+    function WallManViewModel() {
+        var self = this;
+        self.tasksURI = 'http://129.242.22.192:8080/';
+
+        self.ajax = function(uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                contentType: "application/json",
+                accepts: "application/json",
+                cache: false,
+                dataType: 'json',
+                data: JSON.stringify(data)
+            };
+            return $.ajax(request);
+        };
+
+        self.right = function(){
+            self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "right"});
+        };
+        self.left = function(){
+            self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "left"});
+        };
+        self.up = function(){
+            self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "up"});
+        };
+        self.down = function(){
+            self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "down"});
+        };
+
+        self.joinGame = function(){
+            var button = $('#joinButton');
+
+            var inputField = $('#appendedInputButton')
+            self.username = inputField.val()
+            if (self.username.length == 0){
+                button.toggleClass('btn-primary', false);
+                button.toggleClass('btn-danger', true);
+                $('#errorContainer').toggleClass('error', true);
+                $('#appendedInputButton').attr("placeholder", "Must have one");
+                return;
+            }
+
+            button.prop('disabled', true);
+            inputField.prop('disabled', true);
+
+            button.toggleClass('btn-primary', true);
+            button.toggleClass('btn-danger', false);
+            $('#errorContainer').toggleClass('error', false);
+
+            self.ajax(self.tasksURI + 'join', 'POST', {"name" : self.username}).success(self.showButtons());
+        }
+        self.showButtons = function(){
+            $('.btn-large').removeClass('hide')
+        }
+    }
+    ko.applyBindings(new WallManViewModel(), $('#main')[0]);
+
+</script>
+</body>
+</html>
