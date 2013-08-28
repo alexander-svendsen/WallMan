@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+<title></title>
+<style type="text/css">
+
+    body {
+        background-color: #000000;
+        margin: 0px;
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+    canvas {
+        background-color:#111133;
+        display:block;
+        position:absolute;
+    }
+    .container {
+        text-align:center;
+        background-color:#000000;
+    }
+    .drawcanvas {
+        text-align:center;
+        background-color:#000000;
+    }
+</style>
+
+
+</head>
+<body onload = "init()">
+
+<div class="container">
+    <h1 style="color: white">WallMan</h1>
+    <p style="color: white">A Distributed Client </p>
+    <p>
+        <form>
+            <div class="control-group" id="errorContainer">
+                <div class="input-append">
+                    <input class="span2" id="appendedInputButton" type="text" placeholder="Username">
+                    <button class="btn btn-primary" id="joinButton" data-bind="click: joinGame" data-loading-text="joining..." type="submit">Join Game!</button>
+                </div>
+            </div>
+        </form>
+    </p>
+</div>
+
+<script src="js/Vector2.js"></script>
+<script>
+
+var WallManViewModel = function(){
+    var self = this;
+    self.tasksURI = 'http://129.242.22.192:8080/';
+
+    self.ajax = function(uri, method, data) {
+        var request = {
+            url: uri,
+            type: method,
+            contentType: "application/json",
+            accepts: "application/json",
+            cache: false,
+            dataType: 'json',
+            data: JSON.stringify(data)
+        };
+        return $.ajax(request);
+    };
+
+    self.right = function(){
+        self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "right"});
+    };
+    self.left = function(){
+        self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "left"});
+    };
+    self.up = function(){
+        self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "up"});
+    };
+    self.down = function(){
+        self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "down"});
+    };
+
+    self.joinGame = function(){
+        var button = $('#joinButton');
+
+        var inputField = $('#appendedInputButton')
+        self.username = inputField.val()
+        if (self.username.length == 0){
+            button.toggleClass('btn-primary', false);
+            button.toggleClass('btn-danger', true);
+            $('#errorContainer').toggleClass('error', true);
+            $('#appendedInputButton').attr("placeholder", "Must have one");
+            return;
+        }
+
+        button.prop('disabled', true);
+        inputField.prop('disabled', true);
+
+        button.toggleClass('btn-primary', true);
+        button.toggleClass('btn-danger', false);
+        $('#errorContainer').toggleClass('error', false);
+        self.ajax(self.tasksURI + 'join', 'POST', {"name" : self.username}).done(self.showCanvas());
+    }
+    self.showCanvas = function(){
+        $('.container').remove()
+        setup()
+    }
+}
+var wallMainViewModel = new WallManViewModel()
+ko.applyBindings(wallMainViewModel, $('#main')[0]);
+
+var canvas,
+ 	c, // c is the canvas' context 2D
+	container,
+    touchID = -1,
+    radius = 40,
+    touchPos = new Vector2(0,0),
+    touchStartPos = new Vector2(0,0),
+    vector = new Vector2(0,0);
+
+var mouseX, mouseY,
+    // is this running in a touch capable environment?
+    touchable = 'createTouch' in document,
+    touches = []; // array of touch vectors
+
+
+
+function resetCanvas (e) {  
+ 	// resize the canvas - but remember - this clears the canvas too. 
+  	canvas.width = window.innerWidth; 
+	canvas.height = window.innerHeight;
+	
+	//make sure we scroll to the top left. 
+	window.scrollTo(0,0); 
+}
+
+function init(){
+	
+}
+
+function setup(){
+    setInterval(draw, 1000/35);
+    setupCanvas();
+
+
+    if(touchable) {
+        canvas.addEventListener( 'touchstart', onTouchStart, false );
+        canvas.addEventListener( 'touchmove', onTouchMove, false );
+        canvas.addEventListener( 'touchend', onTouchEnd, false );
+        window.onorientationchange = resetCanvas;
+        window.onresize = resetCanvas;
+    } else {
+
+        canvas.addEventListener( 'mousemove', onMouseMove, false );
+        canvas.addEventListener( 'mousedown', onMouseStart, false );
+        canvas.addEventListener( 'mouseup', onMouseEnd, false );
+    }
+}
+function draw() {
+	c.clearRect(0,0,canvas.width, canvas.height); 
+	if(touchable) {
+		for(var i=0; i<touches.length; i++)
+		{
+			var touch = touches[i];
+            if (touch.identifier == touchID){
+                //TESTING PURPOSES
+                c.beginPath();
+                c.fillStyle = "white";
+                c.fillText("touch id : "+touch.identifier+" x:"+touch.clientX+" y:"+touch.clientY, touch.clientX+30, touch.clientY-30);
+                //--------------
+
+                c.beginPath();
+                c.strokeStyle = "cyan";
+                c.lineWidth = 6;
+                c.arc(touchStartPos.x, touchStartPos.y, radius,0,Math.PI*2,true);
+                c.stroke();
+                c.beginPath();
+                c.strokeStyle = "cyan";
+                c.lineWidth = 2;
+                c.arc(touchStartPos.x, touchStartPos.y, 60,0,Math.PI*2,true);
+                c.stroke();
+                c.beginPath();
+                c.strokeStyle = "cyan";
+                c.arc(touchPos.x, touchPos.y, radius, 0,Math.PI*2, true);
+                c.stroke();
+            }
+	    }
+    }
+    else {
+
+        //TESTING PURPOSES
+		c.fillStyle	 = "white";
+		c.fillText("mouse : "+mouseX+", "+mouseY, mouseX, mouseY);
+        //----------------
+
+        if (touchID > 0){
+            c.beginPath();
+            c.strokeStyle = "cyan";
+            c.lineWidth = 6;
+            c.arc(touchStartPos.x, touchStartPos.y, 40,0,Math.PI*2,true);
+            c.stroke();
+            c.beginPath();
+            c.strokeStyle = "cyan";
+            c.lineWidth = 2;
+            c.arc(touchStartPos.x, touchStartPos.y, 60,0,Math.PI*2,true);
+            c.stroke();
+            c.beginPath();
+            c.strokeStyle = "cyan";
+            c.arc(touchPos.x, touchPos.y, 40, 0,Math.PI*2, true);
+            c.stroke();
+        }
+		
+	}
+	//c.fillText("hello", 0,0);
+	
+}
+
+
+
+function onTouchStart(e) {
+
+    for(var i = 0; i<e.changedTouches.length; i++){
+        var touch =e.changedTouches[i];
+        //console.log(leftTouchID + " "
+        if(touchID<0)
+        {
+            touchID = touch.identifier;
+            touchStartPos.reset(touch.clientX, touch.clientY);
+            touchPos.copyFrom(touchStartPos);
+            vector.reset(0,0);
+            continue;
+        }
+    }
+    touches = e.touches;
+
+}
+ 
+function onTouchMove(e) {
+    // Prevent the browser from doing its default thing (scroll, zoom)
+    e.preventDefault();
+
+    for(var i = 0; i<e.changedTouches.length; i++){
+        var touch =e.changedTouches[i];
+        if(touchID == touch.identifier)
+        {
+            touchPos.reset(touch.clientX, touch.clientY);
+            vector.copyFrom(touchPos);
+            vector.minusEq(touchStartPos);
+            break;
+        }
+    }
+
+    touches = e.touches;
+} 
+ 
+function onTouchEnd(e) {
+
+
+    touches = e.touches;
+
+    for(var i = 0; i<e.changedTouches.length; i++){
+        var touch =e.changedTouches[i];
+        if(touchID == touch.identifier)
+        {
+            touchID = -1;
+            vector.reset(0,0);
+            break;
+        }
+    }
+   
+}
+
+function onMouseMove(e) {
+
+	mouseX = event.offsetX;
+	mouseY = event.offsetY;
+    getDirection()
+    // Prevent the browser from doing its default thing (scroll, zoom)
+    e.preventDefault();
+    if(touchID == 1)
+    {
+        touchPos.reset(event.offsetX, event.offsetY);
+        vector.copyFrom(touchPos);
+        vector.minusEq(touchStartPos);
+    }
+
+}
+function onMouseStart(e){
+    if(touchID<0)
+    {
+        touchID = 1;
+        touchStartPos.reset(event.offsetX, event.offsetY);
+        touchPos.copyFrom(touchStartPos);
+        vector.reset(0,0);
+    }
+}
+
+function onMouseEnd(e){
+    if(touchID == 1)
+    {
+        touchID = -1;
+        vector.reset(0,0);
+    }
+}
+
+function getDirection(){ //TODO: NOT SPAM
+    wallMainViewModel.right()
+    if (vector.magnitude() > radius){
+        x =  (vector.x*vector.x);
+        y =  (vector.y*vector.y);
+
+        if (x > y){
+            if (vector.x < 0){
+                console.log("left");
+                wallMainViewModel.left();
+            }
+            else{
+                console.log("right");
+                wallMainViewModel.right();
+            }
+        }
+        else{
+            if (vector.y < 0){
+                console.log("up");
+                wallMainViewModel.up();
+            }
+            else{
+                console.log("down");
+                wallMainViewModel.down();
+            }
+        }
+    }
+
+}
+function setupCanvas() {
+	
+	canvas = document.createElement( 'canvas' );
+	c = canvas.getContext( '2d' );
+	container = document.createElement( 'div' );
+	container.className = "drawcanvas";
+
+	canvas.width = window.innerWidth;
+	canvas.height = window.innerHeight;
+	document.body.appendChild( container );
+	container.appendChild(canvas);	
+	
+	c.strokeStyle = "#ffffff";
+	c.lineWidth =2;	
+}
+
+
+</script>
+</body>
+</html>
