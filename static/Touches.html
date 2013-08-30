@@ -187,7 +187,6 @@ function draw() {
         }
 		
 	}
-	//c.fillText("hello", 0,0);
 	
 }
 
@@ -197,14 +196,11 @@ function onTouchStart(e) {
 
     for(var i = 0; i<e.changedTouches.length; i++){
         var touch =e.changedTouches[i];
-        //console.log(leftTouchID + " "
-        if(touchID<0)
-        {
+        if(touchID<0){
             touchID = touch.identifier;
             touchStartPos.reset(touch.clientX, touch.clientY);
             touchPos.copyFrom(touchStartPos);
             vector.reset(0,0);
-            continue;
         }
     }
     touches = e.touches;
@@ -212,59 +208,47 @@ function onTouchStart(e) {
 }
  
 function onTouchMove(e) {
-    // Prevent the browser from doing its default thing (scroll, zoom)
-    e.preventDefault();
+    e.preventDefault(); // Prevent the browser from doing its default thing (scroll, zoom)
 
     for(var i = 0; i<e.changedTouches.length; i++){
         var touch =e.changedTouches[i];
-        if(touchID == touch.identifier)
-        {
+        if(touchID == touch.identifier){
             touchPos.reset(touch.clientX, touch.clientY);
             vector.copyFrom(touchPos);
             vector.minusEq(touchStartPos);
             break;
         }
     }
-
     touches = e.touches;
     getDirection()
 } 
  
 function onTouchEnd(e) {
-
-
     touches = e.touches;
-
     for(var i = 0; i<e.changedTouches.length; i++){
         var touch =e.changedTouches[i];
-        if(touchID == touch.identifier)
-        {
+        if(touchID == touch.identifier){
             touchID = -1;
             vector.reset(0,0);
             break;
         }
     }
-   
 }
 
 function onMouseMove(e) {
-
 	mouseX = event.offsetX;
 	mouseY = event.offsetY;
-    // Prevent the browser from doing its default thing (scroll, zoom)
-    e.preventDefault();
-    if(touchID == 1)
-    {
+    e.preventDefault(); // Prevent the browser from doing its default thing (scroll, zoom)
+    if(touchID == 1){
         touchPos.reset(event.offsetX, event.offsetY);
         vector.copyFrom(touchPos);
         vector.minusEq(touchStartPos);
     }
     getDirection()
-
 }
+
 function onMouseStart(e){
-    if(touchID<0)
-    {
+    if(touchID<0){
         touchID = 1;
         touchStartPos.reset(event.offsetX, event.offsetY);
         touchPos.copyFrom(touchStartPos);
@@ -273,8 +257,7 @@ function onMouseStart(e){
 }
 
 function onMouseEnd(e){
-    if(touchID == 1)
-    {
+    if(touchID == 1){
         touchID = -1;
         vector.reset(0,0);
     }
@@ -284,7 +267,6 @@ function getDirection(){ //TODO: NOT SPAM
     if (vector.magnitude() > radius){
         x =  (vector.x*vector.x);
         y =  (vector.y*vector.y);
-
         if (x > y){
             if (vector.x < 0){
                 if (prevDirection != "left"){
