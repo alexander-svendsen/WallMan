@@ -6,32 +6,8 @@
 <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
 <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
 <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
-<title></title>
-<style type="text/css">
-
-    body {
-        background-color: #000000;
-        margin: 0px;
-        padding-left: 0px;
-        padding-right: 0px;
-    }
-    canvas {
-        background-color:#111133;
-        display:block;
-        position:absolute;
-    }
-    .container {
-        text-align:center;
-        background-color:#000000;
-    }
-    .drawcanvas {
-        text-align:center;
-        background-color:#000000;
-    }
-</style>
-
-
+<link rel="stylesheet" type="text/css" href="style/main.css">
+<title>WallMan</title>
 </head>
 <body onload = "init()">
 
@@ -43,7 +19,7 @@
             <div class="control-group" id="errorContainer">
                 <div class="input-append">
                     <input class="span2" id="appendedInputButton" type="text" placeholder="Username">
-                    <button class="btn btn-primary" id="joinButton" data-bind="click: joinGame" data-loading-text="joining..." type="submit">Join Game!</button>
+                    <button class="btn btn-primary" id="joinButton" onclick="joinGame()" data-loading-text="joining..." type="submit">Join Game!</button>
                 </div>
             </div>
         </form>
@@ -53,64 +29,61 @@
 <script src="js/Vector2.js"></script>
 <script>
 
-var WallManViewModel = function(){
-    var self = this;
-    self.tasksURI = 'http://129.242.22.192:8080/';
-
-    self.ajax = function(uri, method, data) {
-        var request = {
-            url: uri,
-            type: method,
-            contentType: "application/json",
-            accepts: "application/json",
-            cache: false,
-            dataType: 'json',
-            data: JSON.stringify(data)
-        };
-        return $.ajax(request);
+var tasksURI = 'http://129.242.22.192:8080/';
+var username = ""
+var prevDirection = ""
+var ajax = function(uri, method, data) {
+    var request = {
+        url: uri,
+        type: method,
+        contentType: "application/json",
+        accepts: "application/json",
+        cache: false,
+        dataType: 'json',
+        data: JSON.stringify(data)
     };
+    return $.ajax(request);
+};
 
-    self.right = function(){
-        self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "right"});
-    };
-    self.left = function(){
-        self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "left"});
-    };
-    self.up = function(){
-        self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "up"});
-    };
-    self.down = function(){
-        self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "down"});
-    };
+var right = function(){
+    self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "right"});
+};
+var left = function(){
+    self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "left"});
+};
+var up = function(){
+    self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "up"});
+};
+var down = function(){
+    self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "down"});
+};
 
-    self.joinGame = function(){
-        var button = $('#joinButton');
+var joinGame = function(){
+    var button = $('#joinButton');
 
-        var inputField = $('#appendedInputButton')
-        self.username = inputField.val()
-        if (self.username.length == 0){
-            button.toggleClass('btn-primary', false);
-            button.toggleClass('btn-danger', true);
-            $('#errorContainer').toggleClass('error', true);
-            $('#appendedInputButton').attr("placeholder", "Must have one");
-            return;
-        }
-
-        button.prop('disabled', true);
-        inputField.prop('disabled', true);
-
-        button.toggleClass('btn-primary', true);
-        button.toggleClass('btn-danger', false);
-        $('#errorContainer').toggleClass('error', false);
-        self.ajax(self.tasksURI + 'join', 'POST', {"name" : self.username}).done(self.showCanvas());
+    var inputField = $('#appendedInputButton')
+    username = inputField.val()
+    if (username.length == 0){
+        button.toggleClass('btn-primary', false);
+        button.toggleClass('btn-danger', true);
+        $('#errorContainer').toggleClass('error', true);
+        $('#appendedInputButton').attr("placeholder", "Must have one");
+        return;
     }
-    self.showCanvas = function(){
-        $('.container').remove()
-        setup()
-    }
+
+    button.prop('disabled', true);
+    inputField.prop('disabled', true);
+
+    button.toggleClass('btn-primary', true);
+    button.toggleClass('btn-danger', false);
+    $('#errorContainer').toggleClass('error', false);
+    ajax(self.tasksURI + 'join', 'POST', {"name" : self.username}).done(self.showCanvas());
 }
-var wallMainViewModel = new WallManViewModel()
-ko.applyBindings(wallMainViewModel, $('#main')[0]);
+var showCanvas = function(){
+    $('.container').remove();
+    setup()
+};
+
 
 var canvas,
  	c, // c is the canvas' context 2D
@@ -254,6 +227,7 @@ function onTouchMove(e) {
     }
 
     touches = e.touches;
+    getDirection()
 } 
  
 function onTouchEnd(e) {
@@ -277,7 +251,6 @@ function onMouseMove(e) {
 
 	mouseX = event.offsetX;
 	mouseY = event.offsetY;
-    getDirection()
     // Prevent the browser from doing its default thing (scroll, zoom)
     e.preventDefault();
     if(touchID == 1)
@@ -286,6 +259,7 @@ function onMouseMove(e) {
         vector.copyFrom(touchPos);
         vector.minusEq(touchStartPos);
     }
+    getDirection()
 
 }
 function onMouseStart(e){
@@ -307,29 +281,40 @@ function onMouseEnd(e){
 }
 
 function getDirection(){ //TODO: NOT SPAM
-    wallMainViewModel.right()
     if (vector.magnitude() > radius){
         x =  (vector.x*vector.x);
         y =  (vector.y*vector.y);
 
         if (x > y){
             if (vector.x < 0){
-                console.log("left");
-                wallMainViewModel.left();
+                if (prevDirection != "left"){
+                    console.log("left");
+                    left();
+                    prevDirection = "left"
+                }
             }
             else{
-                console.log("right");
-                wallMainViewModel.right();
+                if (prevDirection != "right"){
+                    console.log("right");
+                    right();
+                    prevDirection = "right"
+                }
             }
         }
         else{
             if (vector.y < 0){
-                console.log("up");
-                wallMainViewModel.up();
+                if (prevDirection != "up"){
+                    console.log("up");
+                    up();
+                    prevDirection = "up"
+                }
             }
             else{
-                console.log("down");
-                wallMainViewModel.down();
+                if (prevDirection != "down"){
+                    console.log("down");
+                    down();
+                    prevDirection = "down"
+                }
             }
         }
     }
