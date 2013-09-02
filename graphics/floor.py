@@ -5,7 +5,6 @@ class Floor(pygame.sprite.Sprite):
     def __init__(self, centerPoint, width, height):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface([width, height])
-        self.image.set_alpha(128)
         self.rect = self.image.get_rect()
 
         # Move the rect into the correct position

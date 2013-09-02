@@ -19,9 +19,6 @@ from graphics.player import Player as playerGraphics
 
 from communication.server import *
 
-BLOCK_SIZE = 24  # TODO MORE DYNAMIC
-playnameList = ["player1", "player2"]
-
 RUNNING = 1
 PAUSE = 2
 END = 3
@@ -41,36 +38,42 @@ class WallManMain:
             res = (pygame.display.list_modes()[0])
             fullScreen = pygame.FULLSCREEN
 
-        self.width, self.height = res
         self.screen = pygame.display.set_mode(res, fullScreen)
         self.players = dict()
+        self.res = res
         pygame.display.set_caption("WallMan - Alexander Svendsen")
 
     def drawGameLayout(self):
 
-        x_offset = (BLOCK_SIZE / 2)
-        y_offset = (BLOCK_SIZE / 2)
 
         self.playerSprites = pygame.sprite.Group()
         self.blockSprites = pygame.sprite.Group()
         self.floorSprites = pygame.sprite.Group()
 
         layout = self.gamelayout.readLayoutAsDict()
+
+        print self.res
+        print len(layout)  # Height of the course
+        print len(layout[0])  # WITDH of the course
+        self.blockHeight = int(self.res[1] / len(layout))
+        self.blockWidth = int(self.res[0] / len(layout[0]))
+        print self.blockHeight
+        print self.blockWidth
+
+
+        x_offset = (self.blockWidth / 2)
+        y_offset = (self.blockHeight / 2)
+
         for y in xrange(len(layout)):
             for x in xrange(len(layout[y])):
-                centerPoint = [(x * BLOCK_SIZE) + x_offset, (y * BLOCK_SIZE + y_offset)]
+                centerPoint = [(x * self.blockWidth) + x_offset, (y * self.blockHeight + y_offset)]
                 blockData = layout[y][x]
                 if blockData == gameLayoutConfig.FLOOR:
-                    self.floorSprites.add(Floor(centerPoint, BLOCK_SIZE, BLOCK_SIZE))
-                if blockData == gameLayoutConfig.BLOCK:
+                    self.floorSprites.add(Floor(centerPoint, self.blockWidth, self.blockHeight))
+                elif blockData == gameLayoutConfig.BLOCK:
                     self.blockSprites.add(
-                        Wall(centerPoint, settings.BLOCKCOLORS, BLOCK_SIZE, BLOCK_SIZE, settings.BLOCKWITH))
-                if blockData == gameLayoutConfig.PLAYER:
-                    # TODO AUTO ADD PLAYERS INSTEAD OF THIS
-                    #player = Player(playerGraphics(centerPoint, BLOCK_SIZE, BLOCK_SIZE), playnameList.pop())
-                    #self.players.append(player)
-                    #self.playerSprites.add(player.getSprite())
-                    self.floorSprites.add(Floor(centerPoint, BLOCK_SIZE, BLOCK_SIZE))
+                        Wall(centerPoint, settings.BLOCKCOLORS, self.blockWidth, self.blockHeight, settings.BLOCKWIDTH))
+
         self.blockSprites.draw(self.screen)
 
     def start(self):
@@ -85,7 +88,9 @@ class WallManMain:
         while randomFloor.getMarker() != "None":  # TODO change to be better
             randomFloor = random.choice(self.floorSprites.sprites())
 
-        player = Player(playerGraphics(randomFloor.rect.center, BLOCK_SIZE, BLOCK_SIZE), name)
+        print randomFloor.rect.center, self.blockWidth, self.blockHeight
+        player = Player(playerGraphics(randomFloor.rect.center,  self.blockWidth, self.blockHeight), name, self.res)
+        print player.getSprite().rect
         randomFloor.mark(player.color, name)
 
         self.players[name] = player
@@ -99,6 +104,8 @@ class WallManMain:
         # Used to manage how fast the screen updates
         """Main game loop, runs all the code"""
         clock = pygame.time.Clock()
+
+        # PAUSE
         self.running = PAUSE
         while self.running == PAUSE:
             for event in pygame.event.get():
@@ -107,14 +114,14 @@ class WallManMain:
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         self.running = END
-            clock.tick(30)
-            pygame.display.flip()
+            clock.tick(10)
 
             # Enables to draw the players as they join
             self.playerSprites.draw(self.screen)
+            pygame.display.flip()
 
+        # THE GAME HAS STARTED
         time.clock()
-
         while self.running == RUNNING:
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -126,12 +133,12 @@ class WallManMain:
             clock.tick(30)
 
             for player in self.players.values():
-                print player
                 player.update(self.blockSprites, self.floorSprites)
             self.floorSprites.draw(self.screen)
 
             self.playerSprites.draw(self.screen)
             pygame.display.flip()
+
             timer = time.clock()
             if timer > 60:  # TODO make more dynamic
                 print "Game Over ..."
@@ -154,7 +161,7 @@ class WallManMain:
 if __name__ == "__main__":
     if not pygame.font: print 'Warning, fonts disabled'
     if not pygame.mixer: print 'Warning, sound disabled'
-    wallman = WallManMain((500, 570))
+    wallman = WallManMain((528, 528))
     wallman.drawGameLayout()  # Draw the game layout once, since it should not be updated
     #To start web server
     app = web.application(urls, globals())
