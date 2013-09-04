@@ -53,12 +53,12 @@ class WallManMain:
         layout = self.gamelayout.readLayoutAsDict()
 
         print self.res
-        print len(layout)  # Height of the course
-        print len(layout[0])  # WITDH of the course
+        print "Height of the course:", len(layout)
+        print "Width of the course:", len(layout[0])
         self.blockHeight = int(self.res[1] / len(layout))
         self.blockWidth = int(self.res[0] / len(layout[0]))
-        print self.blockHeight
-        print self.blockWidth
+        print "Block height:", self.blockHeight
+        print "Block width:", self.blockWidth
 
 
         x_offset = (self.blockWidth / 2)
@@ -75,6 +75,7 @@ class WallManMain:
                         Wall(centerPoint, settings.BLOCKCOLORS, self.blockWidth, self.blockHeight, settings.BLOCKWIDTH))
 
         self.blockSprites.draw(self.screen)
+        self.layout = layout
 
     def start(self):
         self.running = RUNNING
@@ -89,7 +90,7 @@ class WallManMain:
             randomFloor = random.choice(self.floorSprites.sprites())
 
         print randomFloor.rect.center, self.blockWidth, self.blockHeight
-        player = Player(playerGraphics(randomFloor.rect.center,  self.blockWidth, self.blockHeight), name, self.res)
+        player = Player(playerGraphics(randomFloor.rect.center,  self.blockWidth, self.blockHeight), name, self.layout, self.res)
         print player.getSprite().rect
         randomFloor.mark(player.color, name)
 
@@ -114,7 +115,7 @@ class WallManMain:
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         self.running = END
-            clock.tick(10)
+            clock.tick(10)  # Don't need many frames as the games is basically paused
 
             # Enables to draw the players as they join
             self.playerSprites.draw(self.screen)
@@ -151,7 +152,8 @@ class WallManMain:
                 print score
                 self.running = END
             else:
-                print timer
+                pass
+                #print timer
 
         pygame.quit()
         sys.exit()
