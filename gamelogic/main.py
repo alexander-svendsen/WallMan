@@ -44,22 +44,14 @@ class WallManMain:
         pygame.display.set_caption("WallMan - Alexander Svendsen")
 
     def drawGameLayout(self):
-
-
         self.playerSprites = pygame.sprite.Group()
         self.blockSprites = pygame.sprite.Group()
         self.floorSprites = pygame.sprite.Group()
 
         layout = self.gamelayout.readLayoutAsDict()
 
-        print self.res
-        print "Height of the course:", len(layout)
-        print "Width of the course:", len(layout[0])
         self.blockHeight = int(self.res[1] / len(layout))
         self.blockWidth = int(self.res[0] / len(layout[0]))
-        print "Block height:", self.blockHeight
-        print "Block width:", self.blockWidth
-
 
         x_offset = (self.blockWidth / 2)
         y_offset = (self.blockHeight / 2)
@@ -89,9 +81,7 @@ class WallManMain:
         while randomFloor.getMarker() != "None":  # TODO change to be better
             randomFloor = random.choice(self.floorSprites.sprites())
 
-        print randomFloor.rect.center, self.blockWidth, self.blockHeight
         player = Player(playerGraphics(randomFloor.rect.center,  self.blockWidth, self.blockHeight), name, self.layout, self.res)
-        print player.getSprite().rect
         randomFloor.mark(player.color, name)
 
         self.players[name] = player
@@ -134,7 +124,7 @@ class WallManMain:
             clock.tick(30)
 
             for player in self.players.values():
-                player.update(self.blockSprites, self.floorSprites)
+                player.update(self.floorSprites)
             self.floorSprites.draw(self.screen)
 
             self.playerSprites.draw(self.screen)

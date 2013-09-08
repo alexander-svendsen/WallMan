@@ -11,7 +11,10 @@ DOWN = 4
 
 class Player():
     def __init__(self, spriteRect, playerName, layout, res):
-        self.speed = 3  # TODO more dynamic
+        self.speed = 7  # TODO more dynamic
+        assert self.speed <= spriteRect.rect.w, "Speed can never be greater then the width of the player"
+        assert self.speed <= spriteRect.rect.h, "Speed can never be greater then the height of the player"
+
         self.xMove = 0
         self.yMove = 0
         self.res = res
@@ -21,20 +24,19 @@ class Player():
         self.currentDirection = 0
         self.newDirection = 0
         self.spriteRect = spriteRect
-
-        # To helper directions to decide which path to take
-        self.xDirection = [0, -self.speed, self.speed, 0, 0]  # TODO: REFACTOR THIS
-        self.yDirection = [0, 0, 0, -self.speed, self.speed]
         self.color = spriteRect.color
 
-        # TODO: DO I NEED THEM ?
+        #The position in the layout. Set in the update method
+        self.x = 0
+        self.y = 0
+
+        # To helper directions to decide which path to take
+        self.xDirection = [0, -self.speed, self.speed, 0, 0]
+        self.yDirection = [0, 0, 0, -self.speed, self.speed]
+
         self.layout = layout
-        self.layoutWidth = len(layout)
-        self.layoutHeight = len(layout[0])
 
     def updateMovement(self, direction):
-        #if self.oldDirection == 0:  # Only update old direction if the direction has been used
-        #    self.oldDirection = self.direction
         if direction == "left":
             self.newDirection = LEFT
         elif direction == "right":
@@ -58,103 +60,88 @@ class Player():
         return [0, (y, x - 1), (y, x + 1), (y - 1, x), (y + 1, x)][direction]
 
     def calculateLengthToNextBlockBasedOnDirection(self, direction):
-        x = self.spriteRect.rect.center[0] / self.spriteRect.rect.w
-        y = self.spriteRect.rect.center[1] / self.spriteRect.rect.h
         if direction == LEFT:
-            length = self.lengthToNextBlock(x, self.spriteRect.rect.w, self.spriteRect.rect.x)
+            length = self.lengthToNextBlock(self.x, self.spriteRect.rect.w, self.spriteRect.rect.x)
             if length <= 0:
                 return length
         elif direction == RIGHT:
-            length = self.lengthToNextBlock(x, self.spriteRect.rect.w, self.spriteRect.rect.x)
+            length = self.lengthToNextBlock(self.x, self.spriteRect.rect.w, self.spriteRect.rect.x)
             if length >= 0:
                 return length
         elif direction == UP:
-            length = self.lengthToNextBlock(y, self.spriteRect.rect.h, self.spriteRect.rect.y)
+            length = self.lengthToNextBlock(self.y, self.spriteRect.rect.h, self.spriteRect.rect.y)
             if length <= 0:
                 return length
         elif direction == DOWN:
-            length = self.lengthToNextBlock(y, self.spriteRect.rect.h, self.spriteRect.rect.y)
+            length = self.lengthToNextBlock(self.y, self.spriteRect.rect.h, self.spriteRect.rect.y)
             if length >= 0:
                 return length
-        return self.speed  #TODO: REFACTOR
+        return self.speed
 
     def move(self, direction, speed):
-        x = self.spriteRect.rect.center[0] / self.spriteRect.rect.w
-        y = self.spriteRect.rect.center[1] / self.spriteRect.rect.h
         self.yMove = self.yDirection[direction]
         self.xMove = self.xDirection[direction]
-
         if direction == LEFT:
-            if self.isWall(y, x - 1):
-                length = self.lengthToNextBlock(x, self.spriteRect.rect.w, self.spriteRect.rect.x)
+            if self.isWall(self.y, self.x - 1):
+                length = self.lengthToNextBlock(self.x, self.spriteRect.rect.w, self.spriteRect.rect.x)
                 if abs(length) >= speed:
                     self.xMove = self.xDirection[LEFT]
                 else:
                     self.xMove = length
 
         elif direction == RIGHT:
-            if self.isWall(y, x + 1):
-                length = self.lengthToNextBlock(x, self.spriteRect.rect.w, self.spriteRect.rect.x)
+            if self.isWall(self.y, self.x + 1):
+                length = self.lengthToNextBlock(self.x, self.spriteRect.rect.w, self.spriteRect.rect.x)
                 if abs(length) >= speed:
                     self.xMove = self.xDirection[RIGHT]
                 else:
                     self.xMove = length
 
         elif direction == UP:
-            if self.isWall(y - 1, x):
-                length = self.lengthToNextBlock(y, self.spriteRect.rect.h, self.spriteRect.rect.y)
+            if self.isWall(self.y - 1, self.x):
+                length = self.lengthToNextBlock(self.y, self.spriteRect.rect.h, self.spriteRect.rect.y)
                 if abs(length) >= speed:
                     self.yMove = self.yDirection[UP]
                 else:
                     self.yMove = length
 
         elif direction == DOWN:
-            if self.isWall(y + 1, x):
-                length = self.lengthToNextBlock(y, self.spriteRect.rect.h, self.spriteRect.rect.y)
+            if self.isWall(self.y + 1, self.x):
+                length = self.lengthToNextBlock(self.y, self.spriteRect.rect.h, self.spriteRect.rect.y)
                 if abs(length) >= speed:
                     self.yMove = self.yDirection[DOWN]
                 else:
                     self.yMove = length
 
-    def directionHasAwall(self, direction):
-        x = self.spriteRect.rect.center[0] / self.spriteRect.rect.w
-        y = self.spriteRect.rect.center[1] / self.spriteRect.rect.h
+    def isThereAWallInDirection(self, direction):
         if direction == LEFT:
-            return self.isWall(y, x - 1)
+            return self.isWall(self.y, self.x - 1)
         elif direction == RIGHT:
-            return self.isWall(y, x + 1)
+            return self.isWall(self.y, self.x + 1)
         elif direction == UP:
-            return self.isWall(y - 1, x)
+            return self.isWall(self.y - 1, self.x)
         elif direction == DOWN:
-            return self.isWall(y + 1, x)
+            return self.isWall(self.y + 1, self.x)
 
     def getSpeed(self, speed, direction):
-        return [0, -speed, speed,0,0][direction],[0,0,0,-speed,speed][direction]
+        return [0, -speed, speed, 0, 0][direction], [0, 0, 0, -speed, speed][direction]
 
-    def update(self, spriteBlocks, spriteFloor):
+    def calculateCurrentPositionInLayout(self):
+        self.x = self.spriteRect.rect.center[0] / self.spriteRect.rect.w
+        self.y = self.spriteRect.rect.center[1] / self.spriteRect.rect.h
+
+    def update(self, spriteFloor):
         #self.checkIfOfScreen()
 
-        # Algorithm
-        # If new direction
-            # delta = length to next block, next block is decided from current direction
-            # if delta < speed & block in new direction is not a wall
-                # move player delta - speed
-                # move player new direction
-                # current direction = new direction
-                #new direction = 0
-            # else:
-                # move speed... don't think i need this
-        # else
-            # move current direction
-
+        self.calculateCurrentPositionInLayout()
         if self.newDirection != NONE:
             delta = self.calculateLengthToNextBlockBasedOnDirection(self.currentDirection)
             if abs(delta) < self.speed:
-                self.xMove, self.yMove = self.getSpeed(abs(delta), self.currentDirection)
-                if self.directionHasAwall(self.newDirection):
-                    restspeed = self.getSpeed(self.speed - abs(delta), self.currentDirection)
-                    self.move(self.currentDirection, restspeed)
+                if self.isThereAWallInDirection(self.newDirection):
+                    restSpeed = self.getSpeed(self.speed - abs(delta), self.currentDirection)
+                    self.move(self.currentDirection, restSpeed)
                 else:
+                    self.xMove, self.yMove = self.getSpeed(abs(delta), self.currentDirection)
                     self.currentDirection = self.newDirection
                     self.newDirection = NONE
         else:
@@ -162,7 +149,7 @@ class Player():
 
         self.spriteRect.rect.move_ip(self.xMove, self.yMove)
 
-        # Check if we mark a new floor
+        # TODO refactor out collision
         floorCollide = pygame.sprite.spritecollide(self.spriteRect, spriteFloor, False)
         if floorCollide:
             for floor in floorCollide:
