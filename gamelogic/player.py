@@ -79,39 +79,13 @@ class Player():
         return self.speed
 
     def move(self, direction, speed):
-        self.yMove = self.yDirection[direction]
-        self.xMove = self.xDirection[direction]
-        if direction == LEFT:
-            if self.isWall(self.y, self.x - 1):
-                length = self.lengthToNextBlock(self.x, self.spriteRect.rect.w, self.spriteRect.rect.x)
-                if abs(length) >= speed:
-                    self.xMove = self.xDirection[LEFT]
-                else:
-                    self.xMove = length
-
-        elif direction == RIGHT:
-            if self.isWall(self.y, self.x + 1):
-                length = self.lengthToNextBlock(self.x, self.spriteRect.rect.w, self.spriteRect.rect.x)
-                if abs(length) >= speed:
-                    self.xMove = self.xDirection[RIGHT]
-                else:
-                    self.xMove = length
-
-        elif direction == UP:
-            if self.isWall(self.y - 1, self.x):
-                length = self.lengthToNextBlock(self.y, self.spriteRect.rect.h, self.spriteRect.rect.y)
-                if abs(length) >= speed:
-                    self.yMove = self.yDirection[UP]
-                else:
-                    self.yMove = length
-
-        elif direction == DOWN:
-            if self.isWall(self.y + 1, self.x):
-                length = self.lengthToNextBlock(self.y, self.spriteRect.rect.h, self.spriteRect.rect.y)
-                if abs(length) >= speed:
-                    self.yMove = self.yDirection[DOWN]
-                else:
-                    self.yMove = length
+        self.xMove, self.yMove = self.getSpeed(self.speed, direction)
+        if self.isThereAWallInDirection(direction):
+            length = self.calculateLengthToNextBlockBasedOnDirection(direction)
+            if abs(length) >= speed:
+                self.xMove, self.yMove = self.getSpeed(speed, direction)
+            else:
+                self.xMove, self.yMove = self.getSpeed(abs(length), direction)
 
     def isThereAWallInDirection(self, direction):
         if direction == LEFT:
