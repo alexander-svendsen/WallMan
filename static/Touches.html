@@ -15,13 +15,11 @@
     <h1 style="color: white">WallMan</h1>
     <p style="color: white">A Distributed Client </p>
     <p>
-        <form>
-            <div class="control-group" id="errorContainer">
-                <div class="input-append">
-                    <input class="span2" id="appendedInputButton" type="text" placeholder="Username">
-                    <button class="btn btn-primary" id="joinButton" onclick="joinGame()" data-loading-text="joining..." type="submit">Join Game!</button>
-                </div>
-            </div>
+        <form id="playerProp">
+        <div class="input-append">
+            <input class="span2" id="appendedInputButton" type="text" placeholder="Username">
+            <input type="submit" class="btn btn-primary" id="joinButton" data-loading-text="joining..." value="Join Game!">
+        </div>
         </form>
     </p>
 </div>
@@ -59,15 +57,24 @@ var down = function(){
 };
 
 var joinGame = function(){
+
+};
+
+$("#playerProp").on("submit", function(e) {
+    e.preventDefault();
     var button = $('#joinButton');
 
-    var inputField = $('#appendedInputButton')
-    username = inputField.val()
+    var inputField = $('#appendedInputButton');
+    username = inputField.val();
+
     if (username.length == 0){
+        console.log("WTF");
         button.toggleClass('btn-primary', false);
         button.toggleClass('btn-danger', true);
         $('#errorContainer').toggleClass('error', true);
-        $('#appendedInputButton').attr("placeholder", "Must have one");
+        var input = $('#appendedInputButton');
+        input.attr("placeholder", "Must have one");
+        input.css('border-color', '#b94a48');
         return;
     }
 
@@ -78,7 +85,8 @@ var joinGame = function(){
     button.toggleClass('btn-danger', false);
     $('#errorContainer').toggleClass('error', false);
     ajax(self.tasksURI + 'join', 'POST', {"name" : self.username}).done(self.showCanvas());
-}
+});
+
 var showCanvas = function(){
     $('.container').remove();
     setup()
