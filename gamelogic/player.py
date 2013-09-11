@@ -9,6 +9,13 @@ UP = 3
 DOWN = 4
 
 
+STATE_MOVEFREELY = 1
+STATE_MOVERIGHTOUTOFSCREEN = 2
+STATE_MOVELEFTOUTOFSCREEN = 3
+STATE_MOVEUPOUTOFSCREEN = 4
+STATE_MOVEDOWNOUTOFSCREEN = 5
+
+
 class Player():
     def __init__(self, spriteRect, playerName, layout, res):
         self.speed = 7  # TODO more dynamic
@@ -35,6 +42,9 @@ class Player():
         self.yDirection = [0, 0, 0, -self.speed, self.speed]
 
         self.layout = layout
+        self.layoutHeight = len(layout)
+        self.layoutWidth = len(layout[0])
+        self.state = STATE_MOVEFREELY
 
     def updateMovement(self, direction):
         if direction == "left":
@@ -51,6 +61,11 @@ class Player():
             self.newDirection = NONE
 
     def isWall(self, y, x):
+        if x >= self.layoutWidth or x < 0:
+            return False
+        if 0 > y or y >= self.layoutHeight:
+            return False
+
         return self.layout[y][x] == gameLayoutConfig.BLOCK
 
     def lengthToNextBlock(self, blockPos, playerSize, playerCoordinate):
@@ -105,36 +120,76 @@ class Player():
         self.y = self.spriteRect.rect.center[1] / self.spriteRect.rect.h
 
     def update(self, spriteFloor):
-        #self.checkIfOfScreen()
-
         self.calculateCurrentPositionInLayout()
-        if self.newDirection != NONE:
-            delta = self.calculateLengthToNextBlockBasedOnDirection(self.currentDirection)
-            if abs(delta) < self.speed:
-                if self.isThereAWallInDirection(self.newDirection):
-                    restSpeed = self.getSpeed(self.speed - abs(delta), self.currentDirection)
-                    self.move(self.currentDirection, restSpeed)
-                else:
-                    self.xMove, self.yMove = self.getSpeed(abs(delta), self.currentDirection)
-                    self.currentDirection = self.newDirection
-                    self.newDirection = NONE
+        self.updateStateOfPlayer()
+
+        if self.state == STATE_MOVEFREELY:
+            if self.newDirection != NONE:
+                delta = self.calculateLengthToNextBlockBasedOnDirection(self.currentDirection)
+                if abs(delta) < self.speed:
+                    if self.isThereAWallInDirection(self.newDirection):
+                        restSpeed = self.getSpeed(self.speed - abs(delta), self.currentDirection)
+                        self.move(self.currentDirection, restSpeed)
+                    else:
+                        self.xMove, self.yMove = self.getSpeed(abs(delta), self.currentDirection)
+                        self.currentDirection = self.newDirection
+                        self.newDirection = NONE
+            else:
+                self.move(self.currentDirection, self.speed)
+            self.checkFloorCollision(spriteFloor)
+        elif self.state == STATE_MOVERIGHTOUTOFSCREEN:
+            self.moveRightOfScreen()
+        elif self.state == STATE_MOVELEFTOUTOFSCREEN:
+            self.moveLeftOfScreen()
+        elif self.state == STATE_MOVEDOWNOUTOFSCREEN:
+            self.moveDownOfScreen()
+        elif self.state == STATE_MOVEUPOUTOFSCREEN:
+            self.moveUpOfScreen()
         else:
-            self.move(self.currentDirection, self.speed)
+            raise "Invalid state of player, Should never happen"
 
         self.spriteRect.rect.move_ip(self.xMove, self.yMove)
 
+    def checkFloorCollision(self, spriteFloor):
         # TODO refactor out collision
         floorCollide = pygame.sprite.spritecollide(self.spriteRect, spriteFloor, False)
         if floorCollide:
             for floor in floorCollide:
                 floor.mark(self.color, self.playerName)
 
-    def checkIfOfScreen(self):
-        # TODO TELEPORT IN Y AXIS AS WELL
+    def updateStateOfPlayer(self):
+        if self.x + 1 >= self.layoutWidth and self.currentDirection == RIGHT:
+            self.state = STATE_MOVERIGHTOUTOFSCREEN
+        elif self.x - 1 < 0 and self.currentDirection == LEFT:
+            self.state = STATE_MOVELEFTOUTOFSCREEN
+        elif self.y + 1 >= self.layoutHeight and self.currentDirection == DOWN:
+            self.state = STATE_MOVEDOWNOUTOFSCREEN
+        elif self.y - 1 < 0 and self.currentDirection == UP:
+            self.state = STATE_MOVEUPOUTOFSCREEN
+
+    def moveLeftOfScreen(self):
+        self.xMove, self.yMove = self.getSpeed(self.speed, LEFT)
+        if self.spriteRect.rect.x + self.spriteRect.rect.w <= 0:
+            self.spriteRect.rect.x = self.res[0] - self.speed
+            self.state = STATE_MOVEFREELY
+
+    def moveRightOfScreen(self):
+        self.xMove, self.yMove = self.getSpeed(self.speed, RIGHT)
         if self.spriteRect.rect.x >= self.res[0]:
             self.spriteRect.rect.x = - self.spriteRect.rect.w + self.speed
-        elif self.spriteRect.rect.x + self.spriteRect.rect.w <= 0:
-            self.spriteRect.rect.x = self.res[0] - self.speed
+            self.state = STATE_MOVEFREELY
+
+    def moveDownOfScreen(self):
+        self.xMove, self.yMove = self.getSpeed(self.speed, DOWN)
+        if self.spriteRect.rect.y >= self.res[1]:
+            self.spriteRect.rect.y = - self.spriteRect.rect.h + self.speed
+            self.state = STATE_MOVEFREELY
+
+    def moveUpOfScreen(self):
+        self.xMove, self.yMove = self.getSpeed(self.speed, UP)
+        if self.spriteRect.rect.y + self.spriteRect.rect.h <= 0:
+            self.spriteRect.rect.y = self.res[1] - self.speed
+            self.state = STATE_MOVEFREELY
 
     def getSprite(self):
         return self.spriteRect
