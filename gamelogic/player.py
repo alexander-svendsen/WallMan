@@ -18,7 +18,7 @@ STATE_MOVEDOWNOUTOFSCREEN = 5
 
 class Player():
     def __init__(self, spriteRect, playerName, layout, res):
-        self.speed = 7  # TODO more dynamic
+        self.speed = 4  # TODO more dynamic
         assert self.speed <= spriteRect.rect.w, "Speed can never be greater then the width of the player"
         assert self.speed <= spriteRect.rect.h, "Speed can never be greater then the height of the player"
 

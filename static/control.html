@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Controls</title>
+    <link rel="stylesheet" type="text/css" href="style/main.css">
+</head>
+<body onload="init()">
+<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+<script src="libs/jquery.cookie.js"></script>
+<script src="libs/Vector2.js"></script>
+<script src="js/CustomAjaxCalls.js"></script>
+<script src="js/VirtualJoystick.js"></script>
+<script>
+
+var username = $.cookie("username");
+var prevDirection = ""
+
+
+function init(){
+    //In those cases where there is no username
+    if (username.length == 0){
+        window.location.replace("/static/start.html");
+    }
+
+    setupController();
+
+    // To discover if the page is refreshed or not
+    if($.cookie("refresh") == undefined){
+        $.cookie("refresh", true);
+        ajax(tasksURI + 'join', 'POST', {"name" : username}).done();
+    }
+}
+
+var removeCookies = function(){
+    $.removeCookie("refresh");
+};
+window.onbeforeunload = removeCookies;
+
+</script>
+</body>
+</html>

@@ -1,4 +1,3 @@
-
 var Vector2 = function (x,y) {
 	
 	this.x= x || 0; 

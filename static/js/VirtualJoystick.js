@@ -1,101 +1,7 @@
-<!doctype html>
-<html lang=en>
-<head>
-<meta charset=utf-8>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
-<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
-<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-<link rel="stylesheet" type="text/css" href="style/main.css">
-<title>WallMan</title>
-</head>
-<body onload = "init()">
-
-<div class="container">
-    <h1 style="color: white">WallMan</h1>
-    <p style="color: white">A Distributed Client </p>
-    <p>
-        <form id="playerProp">
-        <div class="input-append">
-            <input class="span2" id="appendedInputButton" type="text" placeholder="Username">
-            <input type="submit" class="btn btn-primary" id="joinButton" data-loading-text="joining..." value="Join Game!">
-        </div>
-        </form>
-    </p>
-</div>
-
-<script src="js/Vector2.js"></script>
-<script>
-
-var tasksURI = 'http://129.242.22.192:8080/';
-var username = ""
-var prevDirection = ""
-var ajax = function(uri, method, data) {
-    var request = {
-        url: uri,
-        type: method,
-        contentType: "application/json",
-        accepts: "application/json",
-        cache: false,
-        dataType: 'json',
-        data: JSON.stringify(data)
-    };
-    return $.ajax(request);
-};
-
-var right = function(){
-    self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "right"});
-};
-var left = function(){
-    self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "left"});
-};
-var up = function(){
-    self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "up"});
-};
-var down = function(){
-    self.ajax(self.tasksURI + 'move', 'POST', {"name" : self.username, "direction" : "down"});
-};
-
-var joinGame = function(){
-
-};
-
-$("#playerProp").on("submit", function(e) {
-    e.preventDefault();
-    var button = $('#joinButton');
-
-    var inputField = $('#appendedInputButton');
-    username = inputField.val();
-
-    if (username.length == 0){
-        console.log("WTF");
-        button.toggleClass('btn-primary', false);
-        button.toggleClass('btn-danger', true);
-        $('#errorContainer').toggleClass('error', true);
-        var input = $('#appendedInputButton');
-        input.attr("placeholder", "Must have one");
-        input.css('border-color', '#b94a48');
-        return;
-    }
-
-    button.prop('disabled', true);
-    inputField.prop('disabled', true);
-
-    button.toggleClass('btn-primary', true);
-    button.toggleClass('btn-danger', false);
-    $('#errorContainer').toggleClass('error', false);
-    ajax(self.tasksURI + 'join', 'POST', {"name" : self.username}).done(self.showCanvas());
-});
-
-var showCanvas = function(){
-    $('.container').remove();
-    setup()
-};
-
 
 var canvas,
- 	c, // c is the canvas' context 2D
-	container,
+    c, // c is the canvas' context 2D
+    container,
     touchID = -1,
     radius = 40,
     touchPos = new Vector2(0,0),
@@ -103,26 +9,23 @@ var canvas,
     vector = new Vector2(0,0);
 
 var mouseX, mouseY,
-    // is this running in a touch capable environment?
+// is this running in a touch capable environment?
     touchable = 'createTouch' in document,
     touches = []; // array of touch vectors
 
 
 
-function resetCanvas (e) {  
- 	// resize the canvas - but remember - this clears the canvas too. 
-  	canvas.width = window.innerWidth; 
-	canvas.height = window.innerHeight;
-	
-	//make sure we scroll to the top left. 
-	window.scrollTo(0,0); 
+function resetCanvas (e) {
+    // resize the canvas - but remember - this clears the canvas too.
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    //make sure we scroll to the top left.
+    window.scrollTo(0,0);
 }
 
-function init(){
-	
-}
 
-function setup(){
+function setupController(){
     setInterval(draw, 1000/35);
     setupCanvas();
 
@@ -141,11 +44,11 @@ function setup(){
     }
 }
 function draw() {
-	c.clearRect(0,0,canvas.width, canvas.height); 
-	if(touchable) {
-		for(var i=0; i<touches.length; i++)
-		{
-			var touch = touches[i];
+    c.clearRect(0,0,canvas.width, canvas.height);
+    if(touchable) {
+        for(var i=0; i<touches.length; i++)
+        {
+            var touch = touches[i];
             if (touch.identifier == touchID){
                 //TESTING PURPOSES
                 c.beginPath();
@@ -168,13 +71,13 @@ function draw() {
                 c.arc(touchPos.x, touchPos.y, radius, 0,Math.PI*2, true);
                 c.stroke();
             }
-	    }
+        }
     }
     else {
 
         //TESTING PURPOSES
-		c.fillStyle	 = "white";
-		c.fillText("mouse : "+mouseX+", "+mouseY, mouseX, mouseY);
+        c.fillStyle	 = "white";
+        c.fillText("mouse : "+mouseX+", "+mouseY, mouseX, mouseY);
         //----------------
 
         if (touchID > 0){
@@ -193,12 +96,10 @@ function draw() {
             c.arc(touchPos.x, touchPos.y, 40, 0,Math.PI*2, true);
             c.stroke();
         }
-		
-	}
-	
+
+    }
+
 }
-
-
 
 function onTouchStart(e) {
 
@@ -214,7 +115,7 @@ function onTouchStart(e) {
     touches = e.touches;
 
 }
- 
+
 function onTouchMove(e) {
     e.preventDefault(); // Prevent the browser from doing its default thing (scroll, zoom)
 
@@ -229,8 +130,8 @@ function onTouchMove(e) {
     }
     touches = e.touches;
     getDirection()
-} 
- 
+}
+
 function onTouchEnd(e) {
     touches = e.touches;
     for(var i = 0; i<e.changedTouches.length; i++){
@@ -244,8 +145,8 @@ function onTouchEnd(e) {
 }
 
 function onMouseMove(e) {
-	mouseX = event.offsetX;
-	mouseY = event.offsetY;
+    mouseX = event.offsetX;
+    mouseY = event.offsetY;
     e.preventDefault(); // Prevent the browser from doing its default thing (scroll, zoom)
     if(touchID == 1){
         touchPos.reset(event.offsetX, event.offsetY);
@@ -271,22 +172,20 @@ function onMouseEnd(e){
     }
 }
 
-function getDirection(){ //TODO: NOT SPAM
+function getDirection(){
     if (vector.magnitude() > radius){
         x =  (vector.x*vector.x);
         y =  (vector.y*vector.y);
         if (x > y){
             if (vector.x < 0){
                 if (prevDirection != "left"){
-                    console.log("left");
-                    left();
+                    left(username);
                     prevDirection = "left"
                 }
             }
             else{
                 if (prevDirection != "right"){
-                    console.log("right");
-                    right();
+                    right(username);
                     prevDirection = "right"
                 }
             }
@@ -294,15 +193,13 @@ function getDirection(){ //TODO: NOT SPAM
         else{
             if (vector.y < 0){
                 if (prevDirection != "up"){
-                    console.log("up");
-                    up();
+                    up(username);
                     prevDirection = "up"
                 }
             }
             else{
                 if (prevDirection != "down"){
-                    console.log("down");
-                    down();
+                    down(username);
                     prevDirection = "down"
                 }
             }
@@ -311,22 +208,17 @@ function getDirection(){ //TODO: NOT SPAM
 
 }
 function setupCanvas() {
-	
-	canvas = document.createElement( 'canvas' );
-	c = canvas.getContext( '2d' );
-	container = document.createElement( 'div' );
-	container.className = "drawcanvas";
 
-	canvas.width = window.innerWidth;
-	canvas.height = window.innerHeight;
-	document.body.appendChild( container );
-	container.appendChild(canvas);	
-	
-	c.strokeStyle = "#ffffff";
-	c.lineWidth =2;	
+    canvas = document.createElement( 'canvas' );
+    c = canvas.getContext( '2d' );
+    container = document.createElement( 'div' );
+    container.className = "drawcanvas";
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    document.body.appendChild( container );
+    container.appendChild(canvas);
+
+    c.strokeStyle = "#ffffff";
+    c.lineWidth =2;
 }
-
-
-</script>
-</body>
-</html>
