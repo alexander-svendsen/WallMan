@@ -1,4 +1,5 @@
 import os
+import socket
 import time
 import sys
 import random
@@ -16,8 +17,9 @@ from graphics.floor import Floor
 import settings
 from player import Player
 from graphics.player import Player as playerGraphics
+from GameConnection import GameConnection
 
-from communication.server import *
+import argparse
 
 RUNNING = 1
 PAUSE = 2
@@ -150,15 +152,30 @@ class WallManMain:
 
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # TODO REFACTOR THE CODE
     if not pygame.font: print 'Warning, fonts disabled'
     if not pygame.mixer: print 'Warning, sound disabled'
+
+    # Set up arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-a", "--address", help="Master address", type=str, default='localhost')
+    parser.add_argument("-p", "--port", help="Master port", type=int, default=9500)
+    args = parser.parse_args()
+
     wallman = WallManMain((528, 528))
+
+    #Connect to master and start reciving commands
+    conn = GameConnection()
+    try:
+        conn.connectToMaster(args.address, args.port)
+    except Exception as e:
+        print "Can't connect to master"
+        print "\t-> Double check the connection point", args.address, args.port
+        sys.exit()
+    thread.start_new(conn.start, (wallman,))
+
+    #Setup the main game
     wallman.drawGameLayout()  # Draw the game layout once, since it should not be updated
-    #To start web server
-    app = web.application(urls, globals())
-    web.game = wallman
-    thread.start_new_thread(app.run, ())
     wallman.main()
 
 
