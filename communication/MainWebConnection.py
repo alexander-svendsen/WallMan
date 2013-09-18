@@ -3,7 +3,8 @@ import web
 import json
 import argparse
 import thread
-from SocketCommunication import Server as SlaveServer
+from SocketCommunication import Master as SlaveServer
+import random
 
 urls = (
     '/(.*)', 'Server'
@@ -14,19 +15,28 @@ class Server:  # Single server controlling all states and players
     def GET(self, path=""):
         if path == "start":
             data = {'cmd': 'start'}
-            web.slavesConnectionPoint.send(json.dumps(data))
+            web.slavesConnectionPoint.sendToAll(json.dumps(data))
 
     def POST(self, path=""):
-        if path == "join":  # Don't really like this approch but seems like this is the only way webpy wants it
-            print web.data()
+        if path == "join":
             data = json.loads(web.data())
-            data["cmd"] = "join"
-            web.slavesConnectionPoint.send(json.dumps(data))
+
+            if len(web.slavesConnectionPoint) > 0:
+                connectionPoint = web.slavesConnectionPoint.getRandomSocket()
+                web.players[data["name"]] = connectionPoint
+                data["cmd"] = "join"
+                connectionPoint.send(json.dumps(data))
+            else:
+                return "Error No game screens available"
+
         if path == "move":
             data = json.loads(web.data())
-            data["cmd"] = "move"
-            web.slavesConnectionPoint.send(json.dumps(data))
 
+            if data["name"] in web.players:
+                data["cmd"] = "move"
+                web.players[data["name"]].send(json.dumps(data))
+            else:
+                return "Not a valid player"
 
 
 if __name__ == "__main__":
@@ -38,9 +48,12 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--port", help="Master port", type=int, default=9500)
     args = parser.parse_args()
 
-    #Set up a slave pool
+    #Set up the Master connection
     slavesConnectionPoint = SlaveServer(args.address, args.port)
     web.slavesConnectionPoint = slavesConnectionPoint
     thread.start_new(slavesConnectionPoint.connect, ())  # TODO: Stop the thread when the game has started
+
+    #Adding a player dict as a shared variable
+    web.players = dict()
 
     app.run()

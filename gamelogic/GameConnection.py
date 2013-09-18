@@ -8,7 +8,7 @@ class GameConnection():
         pass
 
     def connectToMaster(self, addr, port):
-        self.master = Client()
+        self.master = Slave()
         self.master.connect(addr, port)
 
     def start(self, theGame):

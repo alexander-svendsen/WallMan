@@ -162,7 +162,6 @@ if __name__ == "__main__":  # TODO REFACTOR THE CODE
     parser.add_argument("-p", "--port", help="Master port", type=int, default=9500)
     args = parser.parse_args()
 
-    wallman = WallManMain((528, 528))
 
     #Connect to master and start reciving commands
     conn = GameConnection()
@@ -172,6 +171,8 @@ if __name__ == "__main__":  # TODO REFACTOR THE CODE
         print "Can't connect to master"
         print "\t-> Double check the connection point", args.address, args.port
         sys.exit()
+
+    wallman = WallManMain((528, 528))
     thread.start_new(conn.start, (wallman,))
 
     #Setup the main game
