@@ -6,7 +6,7 @@ import random
 class Master():
     def __init__(self, addr, port):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         print "Master waiting for slaves on addr, port:", addr, port
         self.sock.bind((addr, port))
         self.sock.listen(4)
@@ -45,19 +45,3 @@ class Master():
         return self.connections[key]
 
 
-class Slave():
-    def connect(self, addr, port):
-        print "Client connecting to: ", addr, port
-        self.cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.cs.connect((addr, port))
-        print "Connection complete"
-
-    def close(self):
-        self.cs.close()
-
-    def send(self, data):
-        self.cs.send(data)
-
-    def receive(self, length, timeout=None):
-        self.cs.settimeout(timeout)
-        return self.cs.recv(length)

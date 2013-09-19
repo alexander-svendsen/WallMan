@@ -3,7 +3,7 @@ import web
 import json
 import argparse
 import thread
-from SocketCommunication import Master as SlaveServer
+from Master import Master as SlaveServer
 import random
 
 urls = (
@@ -46,6 +46,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-a", "--address", help="Master address", type=str, default='localhost')
     parser.add_argument("-p", "--port", help="Master port", type=int, default=9500)
+    parser.add_argument("-o", "--orientation",
+                        help="Pick a orientation of the available files inside the orientation folder",
+                        type=str, default="default")
     args = parser.parse_args()
 
     #Set up the Master connection

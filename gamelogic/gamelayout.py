@@ -16,4 +16,7 @@ class GameLayout():
         f = open(name, 'w')
         f.write(levelData)
 
+    def getRandomLayout(self):  # TODO
+        raise "NOT IMPLEMENTED YET"
+
 

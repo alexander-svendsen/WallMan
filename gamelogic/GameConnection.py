@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
-from communication.SocketCommunication import *
+from gamelogic.Slave import Slave
 
 
 class GameConnection():
@@ -8,13 +8,13 @@ class GameConnection():
         pass
 
     def connectToMaster(self, addr, port):
-        self.master = Slave()
-        self.master.connect(addr, port)
+        self.connection = Slave()
+        self.connection.connect(addr, port)
 
     def start(self, theGame):
         while True:
             try:
-                msg = self.master.receive(1024)
+                msg = self.connection.receive(1024)
                 data = json.loads(msg)
                 print data
                 if data['cmd'] == "join":
