@@ -32,17 +32,19 @@ class WallManMain:
     def __init__(self, res=None):
         """Initialize"""
         self.gamelayout = gamelayout.GameLayout()
-
-        pygame.init()
-        fullScreen = 0
-        if res is None:
-            os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 0)
-            res = (pygame.display.list_modes()[0])
-            fullScreen = pygame.FULLSCREEN
-
-        self.screen = pygame.display.set_mode(res, fullScreen)
+        self.running = PAUSE
         self.players = dict()
         self.res = res
+        pygame.init()
+
+    def setup(self):
+        fullScreen = 0
+        if self.res is None:
+            os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 0)
+            self.res = (pygame.display.list_modes()[0])
+            fullScreen = pygame.FULLSCREEN
+
+        self.screen = pygame.display.set_mode(self.res, fullScreen)
         pygame.display.set_caption("WallMan - Alexander Svendsen")
 
     def drawGameLayout(self):
@@ -94,12 +96,9 @@ class WallManMain:
         self.players[name].updateMovement(direction)
 
     def main(self):
-        # Used to manage how fast the screen updates
         """Main game loop, runs all the code"""
         clock = pygame.time.Clock()
 
-        # PAUSE
-        self.running = PAUSE
         while self.running == PAUSE:
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -147,10 +146,14 @@ class WallManMain:
                 pass
                 #print timer
 
+        self.hardQuit()
+
+    def softQuit(self):
+        self.running = END
+
+    def hardQuit(self):
         pygame.quit()
         sys.exit()
-
-
 
 if __name__ == "__main__":  # TODO REFACTOR THE CODE
     if not pygame.font: print 'Warning, fonts disabled'
@@ -162,20 +165,22 @@ if __name__ == "__main__":  # TODO REFACTOR THE CODE
     parser.add_argument("-p", "--port", help="Master port", type=int, default=9500)
     args = parser.parse_args()
 
-
+    wallman = WallManMain((528, 528))
     #Connect to master and start reciving commands
-    conn = GameConnection()
+    conn = GameConnection(wallman)
     try:
         conn.connectToMaster(args.address, args.port)
+        conn.sendSetup()
     except Exception as e:
         print "Can't connect to master"
         print "\t-> Double check the connection point", args.address, args.port
         sys.exit()
 
-    wallman = WallManMain((528, 528))
-    thread.start_new(conn.start, (wallman,))
+    conn.receiveSetup()
+    thread.start_new(conn.start, ())
 
     #Setup the main game
+    wallman.setup()
     wallman.drawGameLayout()  # Draw the game layout once, since it should not be updated
     wallman.main()
 

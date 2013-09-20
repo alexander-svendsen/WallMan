@@ -18,3 +18,6 @@ class Slave():
     def receive(self, length, timeout=None):
         self.cs.settimeout(timeout)
         return self.cs.recv(length)
+
+    def getHostName(self):
+        return socket.gethostname()

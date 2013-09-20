@@ -52,11 +52,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     #Set up the Master connection
-    slavesConnectionPoint = SlaveServer(args.address, args.port)
+    slavesConnectionPoint = SlaveServer(args.address, args.port, args.orientation)
     web.slavesConnectionPoint = slavesConnectionPoint
     thread.start_new(slavesConnectionPoint.connect, ())  # TODO: Stop the thread when the game has started
 
     #Adding a player dict as a shared variable
     web.players = dict()
 
+    import sys  # Yuck
+    if len(sys.argv) > 1:  # Yuck
+        sys.argv[1] = '8080'  # Yuck
     app.run()

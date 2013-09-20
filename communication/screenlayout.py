@@ -27,14 +27,18 @@ class ScreenLayout():
     def getIdOfHost(self, hostname):
         """
         Sets up an unique ID for the hostname, to decide how the screens are supposed to be orienteted
-        If the default orientation is chosed, an default orientation will be build based on how the screens are added
+        If the default orientation is choosed, an default orientation will be build based on how the screens are added
 
         :rtype : str basicly hostname_counter
         :param hostname: The hostname to the screen connecting
         """
 
+        if self.__idDict[hostname] == 0:
+            uniqueID = hostname
+        else:
+            uniqueID = hostname + "_{0}".format(str(self.__idDict[hostname]))
+
         self.__idDict[hostname] += 1
-        uniqueID = hostname + "_{0}".format(str(self.__idDict[hostname]))
 
         if self.default:
             if len(self.__joinList) > 0:
@@ -48,21 +52,21 @@ class ScreenLayout():
 
         return uniqueID
 
-    def getSetupForHost(self, uniqueID):
-        print self.__orientation
+    def isNameValid(self, name):
+        return name in self.__orientation
+
+    def getConnectionSetupForId(self, uniqueID):
         return self.__orientation[uniqueID]
 
 
 
-
 if __name__ == "__main__":
-    # test1 = ScreenLayout("SingleScreenTest.json")
-    #
-    # host = test1.getIdOfHost("Alexander-PC")
-    # print test1.getSetupForHost(host)
+    test1 = ScreenLayout("FailTest.json")
+    host = test1.getIdOfHost("Alexander-PC")
+    print test1.getConnectionSetupForId(host)
 
     test2 = ScreenLayout("default")
     host = test2.getIdOfHost("Alexander-PC")
     host = test2.getIdOfHost("Alexander-PC")
     host = test2.getIdOfHost("Alexander-PC")
-    print test2.getSetupForHost(host)
+    print test2.getConnectionSetupForId(host)

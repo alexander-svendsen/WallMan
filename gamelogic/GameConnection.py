@@ -1,17 +1,28 @@
 # -*- coding: utf-8 -*-
 import json
+import sys
+import time
 from gamelogic.Slave import Slave
 
 
 class GameConnection():
-    def __init__(self):
-        pass
+    def __init__(self, theGame):
+        self.theGame = theGame
 
     def connectToMaster(self, addr, port):
         self.connection = Slave()
         self.connection.connect(addr, port)
 
-    def start(self, theGame):
+    def sendSetup(self):  # Todo more setup do here
+        self.connection.send(json.dumps({"cmd": "setup", "hostname": self.connection.getHostName()}))
+
+    def receiveSetup(self):  #TODO fix execptions
+        rawData = self.connection.receive(1024)
+        data = json.loads(rawData)
+        if data["cmd"] == "close":
+            self.theGame.hardQuit()
+
+    def start(self):
         while True:
             try:
                 msg = self.connection.receive(1024)
@@ -19,41 +30,18 @@ class GameConnection():
                 print data
                 if data['cmd'] == "join":
                     print "new player joining"
-                    theGame.newPlayerJoined(data["name"])
+                    self.theGame.newPlayerJoined(data["name"])
                 elif data['cmd'] == "move":
-                    theGame.movePlayer(data["name"], data["direction"])
+                    self.theGame.movePlayer(data["name"], data["direction"])
                 elif data['cmd'] == "start":
-                    theGame.start()
+                    self.theGame.start()
+                elif data['cmd'] == "close":
+                    self.close()
 
             except Exception as e:
                 print "Closing connection to Master"
                 print e
+                self.close()
 
-
-
-
-if __name__ == "__main__":
-    # if len(sys.argv) == 2:
-    #     print "Start server test"
-    #     server = Server('0.0.0.0', 30689)
-    #     thread.start_new_thread(server.connect, (None, ))
-    #     time.sleep(5)
-    #     print "start reciving"
-    #     try:
-    #         print server.recive(1000)
-    #     except Exception as e:
-    #         print e
-    #         print server.recive(1000)
-    #     print "closing the shit"
-    #     server.recive(1000)
-    #
-    # else:
-    #     client = Client()
-    #     client.connect('localhost',30689)
-    #     time.sleep(10)
-    #     client.connect('localhost',30689)
-    #     client.send("mordi")
-    #
-    #     client.close()
-
-    pass
+    def close(self):
+        self.theGame.softQuit()

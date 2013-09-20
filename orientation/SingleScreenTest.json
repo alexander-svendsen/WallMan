@@ -17,7 +17,7 @@
         "up" : "Alexander-PC_1",
         "down" : "Alexander-PC_1"
     },
-    "Alexander-PC_4": {
+    "Alexander-PC": {
         "left" : "Alexander-PC_3",
         "right" : "Alexander-PC_3",
         "up" : "Alexander-PC_2",
