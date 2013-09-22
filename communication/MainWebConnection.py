@@ -4,7 +4,6 @@ import json
 import argparse
 import thread
 from Master import Master as SlaveServer
-import random
 
 urls = (
     '/(.*)', 'Server'
@@ -18,6 +17,10 @@ class Server:  # Single server controlling all states and players
             web.slavesConnectionPoint.sendToAll(json.dumps(data))
 
     def POST(self, path=""):
+        if path == "setup":
+            # data = json.dumps({"cmd": "setup"})
+            web.slavesConnectionPoint.sendOutSetup()
+
         if path == "join":
             data = json.loads(web.data())
 
@@ -54,7 +57,7 @@ if __name__ == "__main__":
     #Set up the Master connection
     slavesConnectionPoint = SlaveServer(args.address, args.port, args.orientation)
     web.slavesConnectionPoint = slavesConnectionPoint
-    thread.start_new(slavesConnectionPoint.connect, ())  # TODO: Stop the thread when the game has started
+    thread.start_new(slavesConnectionPoint.listen, ())  # TODO: Stop the thread when the game has started
 
     #Adding a player dict as a shared variable
     web.players = dict()
@@ -62,4 +65,6 @@ if __name__ == "__main__":
     import sys  # Yuck
     if len(sys.argv) > 1:  # Yuck
         sys.argv[1] = '8080'  # Yuck
+
+    #Start running web.py
     app.run()

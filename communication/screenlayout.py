@@ -46,7 +46,7 @@ class ScreenLayout():
                 self.__orientation[left]["right"] = uniqueID
                 self.__orientation[right]["left"] = uniqueID
             else:
-                left, right = ('', '')
+                left, right = ('', '')  #TODO Remove the sign
             self.__orientation[uniqueID] = {"left": left, "right": right}
             self.__joinList.append(uniqueID)
 

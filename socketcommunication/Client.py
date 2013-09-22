@@ -2,7 +2,7 @@
 import socket
 
 
-class Slave():
+class Client():
     def connect(self, addr, port):
         print "Client connecting to: ", addr, port
         self.cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

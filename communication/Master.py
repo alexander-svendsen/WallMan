@@ -3,41 +3,32 @@ import socket
 import random
 import json
 import screenlayout
+from socketcommunication.server import Server
 
-
-class Master():
+#TODO THINK ABOUT IF I WANT INHERENTENCE AT ALL
+class Master(Server):
     def __init__(self, addr, port, orientation):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        print "Master waiting for slaves on addr, port:", addr, port
-        self.sock.bind((addr, port))
-        self.sock.listen(4)
-
+        Server.__init__(self, addr, port)
         self.orientation = screenlayout.ScreenLayout(orientation)
         self.connections = dict()
 
-    def connect(self):
+    def listen(self):
         print "Start accepting connections"
         while True:
-            try:
-                (connection, addr) = self.sock.accept()
-                print "Client connected", connection, addr  # addr should be a addr, port pair
-                self.getSetup(connection)
-            except Exception as e:
-                print "Connection error", e.args
+            connection, addr = self.connect()
+            self.getSetup(connection, addr)
 
-    def getSetup(self, connect, timeout=3):
+    def getSetup(self, connect, addr, timeout=3):
         connect.settimeout(timeout)
         try:
             rawData = connect.recv(1024)
             data = json.loads(rawData)
             hostname = self.orientation.getIdOfHost(data["hostname"])
             if self.orientation.isNameValid(hostname):
-                self.connections[hostname] = {"conn": connect, "addr": "TODO"}
+                self.connections[hostname] = {"conn": connect, "addr": addr[0], "port": data['port']}
                 connect.send(json.dumps({"cmd": "ok"}))
-            else:  # Invalid slave connected, so send a close signal since it will not be used
+            else:  # Invalid game connected, so send a close signal since it will not be used
                 connect.send(json.dumps({"cmd": "close"}))
-
             print self.connections
             return True
         except socket.timeout:
@@ -47,6 +38,20 @@ class Master():
         except KeyError:
             print "Invalid setup recived", data
         return False
+
+    def sendOutSetup(self):
+        for key, dictValue in self.connections.iteritems():
+            print key
+            print '\t Dict:', dictValue
+            print '\t Ori :', self.orientation.getConnectionSetupForId(key)
+
+            # TODO They need the ip and port, not the hostname, maybe fix in setup ?
+            orientation = dict()
+            for direction, hostname in self.orientation.getConnectionSetupForId(key).iteritems():
+                orientation[direction] = (self.connections[hostname]["addr"], self.connections[hostname]["port"])
+            print "final mix", orientation
+            data = {"cmd": "setup", "orientation": orientation}
+            dictValue["conn"].send(json.dumps(data))
 
     def sendToAll(self, data):
         for key, dictValue in self.connections.iteritems():

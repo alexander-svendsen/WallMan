@@ -160,12 +160,13 @@ if __name__ == "__main__":  # TODO REFACTOR THE CODE
     if not pygame.mixer: print 'Warning, sound disabled'
 
     # Set up arguments
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Plays a game of Wallman. Note the external server must be active")
     parser.add_argument("-a", "--address", help="Master address", type=str, default='localhost')
     parser.add_argument("-p", "--port", help="Master port", type=int, default=9500)
     args = parser.parse_args()
 
     wallman = WallManMain((528, 528))
+
     #Connect to master and start reciving commands
     conn = GameConnection(wallman)
     try:
@@ -174,6 +175,7 @@ if __name__ == "__main__":  # TODO REFACTOR THE CODE
     except Exception as e:
         print "Can't connect to master"
         print "\t-> Double check the connection point", args.address, args.port
+        print e
         sys.exit()
 
     conn.receiveSetup()
