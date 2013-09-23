@@ -1,4 +1,4 @@
-var tasksURI = 'http://129.242.22.192:8080/';
+var tasksURI = 'http://localhost:8080/';
 var ajax = function(uri, method, data) {
     var request = {
         url: uri,
