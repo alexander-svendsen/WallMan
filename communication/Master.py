@@ -45,7 +45,6 @@ class Master(Server):
             print '\t Dict:', dictValue
             print '\t Ori :', self.orientation.getConnectionSetupForId(key)
 
-            # TODO They need the ip and port, not the hostname, maybe fix in setup ?
             orientation = dict()
             for direction, hostname in self.orientation.getConnectionSetupForId(key).iteritems():
                 orientation[direction] = (self.connections[hostname]["addr"], self.connections[hostname]["port"])

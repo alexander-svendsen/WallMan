@@ -18,7 +18,6 @@ class Server:  # Single server controlling all states and players
 
     def POST(self, path=""):
         if path == "setup":
-            # data = json.dumps({"cmd": "setup"})
             web.slavesConnectionPoint.sendOutSetup()
 
         if path == "join":

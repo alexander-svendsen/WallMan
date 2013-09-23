@@ -8,7 +8,7 @@ class Server():
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind((addr, port))
         self.sock.listen(20)
-        print "Master waiting for slaves on addr, port:", self.getPortAndAddress()
+        print "Server listening on addr, port:", self.getPortAndAddress()
 
     def connect(self):
         try:

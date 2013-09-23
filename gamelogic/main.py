@@ -170,16 +170,12 @@ if __name__ == "__main__":  # TODO REFACTOR THE CODE
     #Connect to master and start reciving commands
     conn = GameConnection(wallman)
     try:
-        conn.connectToMaster(args.address, args.port)
-        conn.sendSetup()
+        conn.setup(args.address, args.port)
     except Exception as e:
         print "Can't connect to master"
         print "\t-> Double check the connection point", args.address, args.port
         print e
         sys.exit()
-
-    conn.receiveSetup()
-    thread.start_new(conn.start, ())
 
     #Setup the main game
     wallman.setup()
