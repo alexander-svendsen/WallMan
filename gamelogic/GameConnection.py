@@ -45,10 +45,10 @@ class GameConnection():
 
     def reciveForEver(self, conn, length):
         while self.running:
-            data = self.server.receive(conn, length)
+            data = self.server.receive(conn, length)  # FIXME uses master connection to recive ?
             self.parseData(data)
 
-    def receiveSetup(self):  #TODO fix execptions
+    def receiveSetup(self):  # TODO fix execptions
         rawData = self.connection.receive(1024)
         data = json.loads(rawData)
         if data["cmd"] == "close":
@@ -63,6 +63,9 @@ class GameConnection():
             self.directionConnections[direction] = client
             self.directionConnections[direction].connect(addr[0], addr[1])
             self.clientDict[addressTuple] = client
+
+    def sendPlayerInDirection(self, direction, name):
+        self.directionConnections[direction].send(json.dumps({'cmd': 'migrate', 'direction': direction, 'name': name}))
 
     def parseData(self, msg):
         data = json.loads(msg)
@@ -88,14 +91,21 @@ class GameConnection():
         elif data['cmd'] == "close":
             self.close()
 
+        elif data['cmd'] == "migrate":
+            self.theGame.migratePlayer(data["name"], data["direction"])
+            self.connection.send(json.dumps({'cmd': 'migrate', 'name': data["name"]}))
+
+        else:
+            print "Strange cmd recived", data
+
     def reciveCommandsFromMaster(self):
         while self.running:
             try:
                 msg = self.connection.receive(1024)
                 self.parseData(msg)
             except Exception as e:
-                print "Closing connection to Master, because of an error"
-                print e
+                print "Closing connection to Master"
+                print "Error:", type(e), e
                 self.close()
 
     def close(self):

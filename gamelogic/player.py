@@ -17,10 +17,12 @@ STATE_MOVEDOWNOUTOFSCREEN = 5
 
 
 class Player():
-    def __init__(self, spriteRect, playerName, layout, res):
+    def __init__(self, spriteRect, playerName, layout, res, connection):
         self.speed = 4  # TODO more dynamic
         assert self.speed <= spriteRect.rect.w, "Speed can never be greater then the width of the player"
         assert self.speed <= spriteRect.rect.h, "Speed can never be greater then the height of the player"
+
+        self.connection = connection
 
         self.xMove = 0
         self.yMove = 0
@@ -45,6 +47,7 @@ class Player():
         self.layoutHeight = len(layout)
         self.layoutWidth = len(layout[0])
         self.state = STATE_MOVEFREELY
+        self.migrateMe = False
 
     def updateMovement(self, direction):
         if direction == "left":
@@ -146,7 +149,7 @@ class Player():
         elif self.state == STATE_MOVEUPOUTOFSCREEN:
             self.moveUpOfScreen()
         else:
-            raise "Invalid state of player, Should never happen"
+            raise "Invalid state of player, Should never happen" # FIXME
 
         self.spriteRect.rect.move_ip(self.xMove, self.yMove)
 
@@ -170,26 +173,37 @@ class Player():
     def moveLeftOfScreen(self):
         self.xMove, self.yMove = self.getSpeed(self.speed, LEFT)
         if self.spriteRect.rect.x + self.spriteRect.rect.w <= 0:
-            self.spriteRect.rect.x = self.res[0] - self.speed
-            self.state = STATE_MOVEFREELY
+            self.connection.sendPlayerInDirection('left', self.playerName)
+            #self.spriteRect.rect.x = self.res[0] - self.speed
+            #self.state = STATE_MOVEFREELY
+            self.migrateMe = True
 
     def moveRightOfScreen(self):
         self.xMove, self.yMove = self.getSpeed(self.speed, RIGHT)
         if self.spriteRect.rect.x >= self.res[0]:
-            self.spriteRect.rect.x = - self.spriteRect.rect.w + self.speed
-            self.state = STATE_MOVEFREELY
+            self.connection.sendPlayerInDirection('right', self.playerName)
+            #self.spriteRect.rect.x = - self.spriteRect.rect.w + self.speed
+            #self.state = STATE_MOVEFREELY
+            self.migrateMe = True
+
 
     def moveDownOfScreen(self):
         self.xMove, self.yMove = self.getSpeed(self.speed, DOWN)
         if self.spriteRect.rect.y >= self.res[1]:
-            self.spriteRect.rect.y = - self.spriteRect.rect.h + self.speed
-            self.state = STATE_MOVEFREELY
+            self.connection.sendPlayerInDirection('down', self.playerName)
+            #self.spriteRect.rect.y = - self.spriteRect.rect.h + self.speed
+            #self.state = STATE_MOVEFREELY
+            self.migrateMe = True
+
 
     def moveUpOfScreen(self):
         self.xMove, self.yMove = self.getSpeed(self.speed, UP)
         if self.spriteRect.rect.y + self.spriteRect.rect.h <= 0:
-            self.spriteRect.rect.y = self.res[1] - self.speed
-            self.state = STATE_MOVEFREELY
+            self.connection.sendPlayerInDirection('up', self.playerName)
+            #self.spriteRect.rect.y = self.res[1] - self.speed
+            #self.state = STATE_MOVEFREELY
+            self.migrateMe = True
+
 
     def getSprite(self):
         return self.spriteRect

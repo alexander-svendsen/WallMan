@@ -37,13 +37,14 @@ class WallManMain:
         self.res = res
         pygame.init()
 
-    def setup(self):
+    def setup(self, connection):
         fullScreen = 0
         if self.res is None:
             os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 0)
             self.res = (pygame.display.list_modes()[0])
             fullScreen = pygame.FULLSCREEN
 
+        self.connection = connection
         self.screen = pygame.display.set_mode(self.res, fullScreen)
         pygame.display.set_caption("WallMan - Alexander Svendsen")
 
@@ -85,9 +86,32 @@ class WallManMain:
         while randomFloor.getMarker() != "None":  # TODO change to be better
             randomFloor = random.choice(self.floorSprites.sprites())
 
-        player = Player(playerGraphics(randomFloor.rect.center,  self.blockWidth, self.blockHeight), name, self.layout, self.res)
+        player = Player(playerGraphics(randomFloor.rect.center,  self.blockWidth, self.blockHeight),
+                        name,
+                        self.layout,
+                        self.res,
+                        self.connection)
         randomFloor.mark(player.color, name)
 
+        self.players[name] = player
+        self.playerSprites.add(player.getSprite())
+        return "OK"
+
+    def migratePlayer(self, name, direction):  # FIXME: Should not join to a random place
+        if name in self.players:
+            return "Name taken"
+
+        randomFloor = random.choice(self.floorSprites.sprites())
+        while randomFloor.getMarker() != "None":
+            randomFloor = random.choice(self.floorSprites.sprites())
+
+        player = Player(playerGraphics(randomFloor.rect.center,  self.blockWidth, self.blockHeight),
+                        name,
+                        self.layout,
+                        self.res,
+                        self.connection)
+
+        player.updateMovement(direction)  # FIXME what about old direction
         self.players[name] = player
         self.playerSprites.add(player.getSprite())
         return "OK"
@@ -124,8 +148,12 @@ class WallManMain:
 
             clock.tick(30)
 
-            for player in self.players.values():
+            for name in self.players.keys():
+                player = self.players[name]
                 player.update(self.floorSprites)
+                if player.migrateMe:
+                    print "Migrating this player"
+                    del self.players[name]
             self.floorSprites.draw(self.screen)
 
             self.playerSprites.draw(self.screen)
@@ -178,7 +206,7 @@ if __name__ == "__main__":  # TODO REFACTOR THE CODE
         sys.exit()
 
     #Setup the main game
-    wallman.setup()
+    wallman.setup(conn)
     wallman.drawGameLayout()  # Draw the game layout once, since it should not be updated
     wallman.main()
 

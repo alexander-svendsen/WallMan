@@ -4,19 +4,45 @@ import random
 import json
 import screenlayout
 from socketcommunication.server import Server
+import thread
 
 #TODO THINK ABOUT IF I WANT INHERENTENCE AT ALL
 class Master(Server):
-    def __init__(self, addr, port, orientation):
+    def __init__(self, addr, port, orientation, players):
         Server.__init__(self, addr, port)
         self.orientation = screenlayout.ScreenLayout(orientation)
         self.connections = dict()
+
+        #FIXME... refactor
+        self.players = players
 
     def listen(self):
         print "Start accepting connections"
         while True:
             connection, addr = self.connect()
-            self.getSetup(connection, addr)
+            self.getSetup(connection, addr) #FIXME ?
+            thread.start_new(self.reciveDataForEver, (connection, ))
+
+    # FIXME use the revice error to remove disconnected clients
+    def reciveDataForEver(self, connection):
+        connection.settimeout(None)
+        try:
+            rawData = connection.recv(1024)
+            data = json.loads(rawData)
+            if data['cmd'] == 'migrate':
+                print "migrate signal recevied", data
+                self.players[data["name"]] = connection
+            else:
+                print "Recived somethign strange from the client", data
+        except ValueError:
+            print "Invalid json recived:", rawData
+        except KeyError:
+            print "Invalid setup recived", data
+        except socket.error:
+            print "Connection went down"
+        except Exception as e:
+            print "Strange exception, time to remove the client from my connections"
+            print e
 
     def getSetup(self, connect, addr, timeout=3):
         connect.settimeout(timeout)
@@ -29,7 +55,7 @@ class Master(Server):
                 connect.send(json.dumps({"cmd": "ok"}))
             else:  # Invalid game connected, so send a close signal since it will not be used
                 connect.send(json.dumps({"cmd": "close"}))
-            print self.connections
+            print "Connected clients:", self.connections
             return True
         except socket.timeout:
             print "Timeout: Didn't receive setup from the connection"

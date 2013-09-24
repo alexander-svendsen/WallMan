@@ -53,13 +53,13 @@ if __name__ == "__main__":
                         type=str, default="default")
     args = parser.parse_args()
 
-    #Set up the Master connection
-    slavesConnectionPoint = SlaveServer(args.address, args.port, args.orientation)
-    web.slavesConnectionPoint = slavesConnectionPoint
-    thread.start_new(slavesConnectionPoint.listen, ())  # TODO: Stop the thread when the game has started
-
     #Adding a player dict as a shared variable
     web.players = dict()
+
+    #Set up the Master connection
+    slavesConnectionPoint = SlaveServer(args.address, args.port, args.orientation, web.players)
+    web.slavesConnectionPoint = slavesConnectionPoint
+    thread.start_new(slavesConnectionPoint.listen, ())  # TODO: Stop the thread when the game has started
 
     import sys  # Yuck
     if len(sys.argv) > 1:  # Yuck
