@@ -27,7 +27,7 @@ function init(){
     // To discover if the page is refreshed or not
     if($.cookie("refresh") == undefined){
         $.cookie("refresh", true);
-        ajax(tasksURI + 'join', 'POST', {"name" : username}).done();
+        ajax(tasksURI + '/join', 'POST', {"name" : username}).done();
     }
 }
 

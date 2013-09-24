@@ -1,4 +1,5 @@
-var tasksURI = 'http://localhost:8080/';
+var tasksURI =  "http://" + $(location).attr('host');
+console.log(tasksURI);
 var ajax = function(uri, method, data) {
     var request = {
         url: uri,
@@ -13,14 +14,14 @@ var ajax = function(uri, method, data) {
 };
 
 var right = function(username){
-    ajax(tasksURI + 'move', 'POST', {"name" : username, "direction" : "right"});
+    ajax(tasksURI + '/move', 'POST', {"name" : username, "direction" : "right"});
 };
 var left = function(username){
-    ajax(tasksURI + 'move', 'POST', {"name" : username, "direction" : "left"});
+    ajax(tasksURI + '/move', 'POST', {"name" : username, "direction" : "left"});
 };
 var up = function(username){
-    ajax(tasksURI + 'move', 'POST', {"name" : username, "direction" : "up"});
+    ajax(tasksURI + '/move', 'POST', {"name" : username, "direction" : "up"});
 };
 var down = function(username){
-    ajax(tasksURI + 'move', 'POST', {"name" : username, "direction" : "down"});
+    ajax(tasksURI + '/move', 'POST', {"name" : username, "direction" : "down"});
 };

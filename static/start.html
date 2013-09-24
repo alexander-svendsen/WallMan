@@ -49,7 +49,7 @@ $("#playerProp").on("submit", function(e) {
     button.toggleClass('btn-primary', true);
     button.toggleClass('btn-danger', false);
     $('#errorContainer').toggleClass('error', false);
-    ajax(tasksURI + 'join', 'POST', {"name" : username}).done(redirect(username));
+    ajax(tasksURI + '/join', 'POST', {"name" : username}).done(redirect(username));
 });
 
 var redirect = function(username){
