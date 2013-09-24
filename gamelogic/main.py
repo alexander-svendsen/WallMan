@@ -117,7 +117,10 @@ class WallManMain:
         return "OK"
 
     def movePlayer(self, name, direction):  # TODO: Better error support
-        self.players[name].updateMovement(direction)
+        if name in self.players:
+            self.players[name].updateMovement(direction)
+        else:
+            print "Error: Non-existing player moved", name  # FIXME means the master is inconsistent
 
     def main(self):
         """Main game loop, runs all the code"""

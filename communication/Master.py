@@ -27,13 +27,14 @@ class Master(Server):
     def reciveDataForEver(self, connection):
         connection.settimeout(None)
         try:
-            rawData = connection.recv(1024)
-            data = json.loads(rawData)
-            if data['cmd'] == 'migrate':
-                print "migrate signal recevied", data
-                self.players[data["name"]] = connection
-            else:
-                print "Recived somethign strange from the client", data
+            while True:
+                rawData = connection.recv(1024)
+                data = json.loads(rawData)
+                if data['cmd'] == 'migrate':
+                    print "migrate signal recevied", data
+                    self.players[data["name"]] = connection
+                else:
+                    print "Recived somethign strange from the client", data
         except ValueError:
             print "Invalid json recived:", rawData
         except KeyError:

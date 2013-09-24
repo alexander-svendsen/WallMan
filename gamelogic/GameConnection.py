@@ -46,6 +46,7 @@ class GameConnection():
     def reciveForEver(self, conn, length):
         while self.running:
             data = self.server.receive(conn, length)  # FIXME uses master connection to recive ?
+            print "Client data"
             self.parseData(data)
 
     def receiveSetup(self):  # TODO fix execptions
@@ -69,7 +70,7 @@ class GameConnection():
 
     def parseData(self, msg):
         data = json.loads(msg)
-        print data
+        print "\tRecived data:", data
         if data['cmd'] == "join":
             self.theGame.newPlayerJoined(data["name"])
 
@@ -102,6 +103,7 @@ class GameConnection():
         while self.running:
             try:
                 msg = self.connection.receive(1024)
+                print "Data from master"
                 self.parseData(msg)
             except Exception as e:
                 print "Closing connection to Master"
