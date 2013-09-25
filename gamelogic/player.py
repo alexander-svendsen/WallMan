@@ -47,6 +47,7 @@ class Player():
         self.layoutHeight = len(layout)
         self.layoutWidth = len(layout[0])
         self.state = STATE_MOVEFREELY
+
         self.migrateMe = False
 
     def updateMovement(self, direction):
@@ -58,6 +59,8 @@ class Player():
             self.newDirection = UP
         elif direction == "down":
             self.newDirection = DOWN
+        else:
+            print "Error: invalid update movement", direction
 
         if self.currentDirection == NONE:
             self.currentDirection = self.newDirection
@@ -137,6 +140,8 @@ class Player():
                         self.xMove, self.yMove = self.getSpeed(abs(delta), self.currentDirection)
                         self.currentDirection = self.newDirection
                         self.newDirection = NONE
+                else:
+                    self.move(self.currentDirection, self.speed)  # Review: really does thi work
             else:
                 self.move(self.currentDirection, self.speed)
             self.checkFloorCollision(spriteFloor)
@@ -173,7 +178,7 @@ class Player():
     def moveLeftOfScreen(self):
         self.xMove, self.yMove = self.getSpeed(self.speed, LEFT)
         if self.spriteRect.rect.x + self.spriteRect.rect.w <= 0:
-            self.connection.sendPlayerInDirection('left', self.playerName)
+            self.connection.sendPlayerInDirection('left', self.newDirection, self.playerName, self.x, self.y, self.color, self.spriteRect.id, self.spriteRect.inverseColor)
             #self.spriteRect.rect.x = self.res[0] - self.speed
             #self.state = STATE_MOVEFREELY
             self.migrateMe = True
@@ -181,29 +186,26 @@ class Player():
     def moveRightOfScreen(self):
         self.xMove, self.yMove = self.getSpeed(self.speed, RIGHT)
         if self.spriteRect.rect.x >= self.res[0]:
-            self.connection.sendPlayerInDirection('right', self.playerName)
+            self.connection.sendPlayerInDirection('right', self.newDirection, self.playerName, self.x, self.y, self.color, self.spriteRect.id, self.spriteRect.inverseColor)
             #self.spriteRect.rect.x = - self.spriteRect.rect.w + self.speed
             #self.state = STATE_MOVEFREELY
             self.migrateMe = True
 
-
     def moveDownOfScreen(self):
         self.xMove, self.yMove = self.getSpeed(self.speed, DOWN)
         if self.spriteRect.rect.y >= self.res[1]:
-            self.connection.sendPlayerInDirection('down', self.playerName)
+            self.connection.sendPlayerInDirection('down', self.newDirection, self.playerName, self.x, self.y, self.color, self.spriteRect.id, self.spriteRect.inverseColor)
             #self.spriteRect.rect.y = - self.spriteRect.rect.h + self.speed
             #self.state = STATE_MOVEFREELY
             self.migrateMe = True
 
-
     def moveUpOfScreen(self):
         self.xMove, self.yMove = self.getSpeed(self.speed, UP)
         if self.spriteRect.rect.y + self.spriteRect.rect.h <= 0:
-            self.connection.sendPlayerInDirection('up', self.playerName)
+            self.connection.sendPlayerInDirection('up', self.newDirection, self.playerName, self.x, self.y, self.color, self.spriteRect.id, self.spriteRect.inverseColor)
             #self.spriteRect.rect.y = self.res[1] - self.speed
             #self.state = STATE_MOVEFREELY
             self.migrateMe = True
-
 
     def getSprite(self):
         return self.spriteRect

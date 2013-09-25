@@ -97,23 +97,42 @@ class WallManMain:
         self.playerSprites.add(player.getSprite())
         return "OK"
 
-    def migratePlayer(self, name, direction):  # FIXME: Should not join to a random place
-        if name in self.players:
+    #REVIEW: SO MANY HACKS
+    def migratePlayer(self, name, direction, newDirection, x, y, color, askii, askiiColor):  # FIXME: Should not join to a random place
+        print color, askii, askiiColor
+
+        if name in self.players:  # FIXME Should never happen ... but can it ?
             return "Name taken"
 
-        randomFloor = random.choice(self.floorSprites.sprites())
-        while randomFloor.getMarker() != "None":
-            randomFloor = random.choice(self.floorSprites.sprites())
+        x_offset = (self.blockWidth / 2)
+        y_offset = (self.blockHeight / 2)
+        centerPoint = [(x * self.blockWidth) + x_offset, (y * self.blockHeight + y_offset)]
 
-        player = Player(playerGraphics(randomFloor.rect.center,  self.blockWidth, self.blockHeight),
+        player = Player(playerGraphics(centerPoint,
+                                       self.blockWidth,
+                                       self.blockHeight,
+                                       color,
+                                       askii,
+                                       askiiColor),
                         name,
                         self.layout,
                         self.res,
                         self.connection)
 
-        player.updateMovement(direction)  # FIXME what about old direction
+        if direction == "left":
+            player.spriteRect.rect.x = self.res[0] - player.speed
+        elif direction == "right":
+            player.spriteRect.rect.x = - player.spriteRect.rect.w + player.speed
+        elif direction == "up":
+            player.spriteRect.rect.y = self.res[1] - player.speed
+        elif direction == "down":
+            player.spriteRect.rect.y = - player.spriteRect.rect.h + player.speed
+
+        player.updateMovement(direction)
+        player.updateMovement([None, "left", "right", "up", "down"][newDirection])  # FIXME UGLY AS HELL
+
         self.players[name] = player
-        self.playerSprites.add(player.getSprite())
+        self.playerSprites.add(player.getSprite())  # fixme: need the old color and askii sprite
         return "OK"
 
     def movePlayer(self, name, direction):  # TODO: Better error support

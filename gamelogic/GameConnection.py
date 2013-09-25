@@ -65,9 +65,23 @@ class GameConnection():
             self.directionConnections[direction].connect(addr[0], addr[1])
             self.clientDict[addressTuple] = client
 
-    def sendPlayerInDirection(self, direction, name):
-        self.directionConnections[direction].send(json.dumps({'cmd': 'migrate', 'direction': direction, 'name': name}))
+    #REVIEW: OBVIOUSLY
+    def sendPlayerInDirection(self, currentDirection, newDirection, name, x, y, color, askii, askiiColor):
 
+        # need old direction.. not a priority
+        # will need the current block position x,y, so the game can decide where to in... In thouse special cases where there is multiple teleport
+        self.directionConnections[currentDirection].send(
+            json.dumps({'cmd': 'migrate',
+                        'direction': currentDirection,
+                        'name': name,
+                        'x': x,
+                        'y': y,
+                        'newDirection': newDirection,
+                        'color': color,
+                        'askii': askii,
+                        'askii-color': askiiColor}))
+
+    #REVIEW
     def parseData(self, msg):
         data = json.loads(msg)
         print "\tRecived data:", data
@@ -93,7 +107,7 @@ class GameConnection():
             self.close()
 
         elif data['cmd'] == "migrate":
-            self.theGame.migratePlayer(data["name"], data["direction"])
+            self.theGame.migratePlayer(data["name"], data["direction"], data["newDirection"], data["x"], data["y"], data["color"], data["askii"], data["askii-color"])
             self.connection.send(json.dumps({'cmd': 'migrate', 'name': data["name"]}))
 
         else:
