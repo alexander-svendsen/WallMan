@@ -15,8 +15,8 @@ from graphics.wall import Wall
 from graphics.floor import Floor
 
 import settings
-from rtrplayer import Player
-from graphics.player import Player as playerGraphics
+from player import Player
+from graphics.teplayer import Player as playerGraphics
 from GameConnection import GameConnection
 
 import argparse
