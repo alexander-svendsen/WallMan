@@ -15,7 +15,7 @@ from graphics.wall import Wall
 from graphics.floor import Floor
 
 import settings
-from playertmp import Player
+from player import Player
 from graphics.player import Player as playerGraphics
 from GameConnection import GameConnection
 
