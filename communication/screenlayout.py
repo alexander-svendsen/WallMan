@@ -61,12 +61,16 @@ class ScreenLayout():
 
 
 if __name__ == "__main__":
-    test1 = ScreenLayout("FailTest.json")
-    host = test1.getIdOfHost("Alexander-PC")
-    print test1.getConnectionSetupForId(host)
+    # test1 = ScreenLayout("FailTest.json")
+    # host = test1.getIdOfHost("Alexander-PC")
+    #print test1.getConnectionSetupForId(host)
 
-    test2 = ScreenLayout("default")
-    host = test2.getIdOfHost("Alexander-PC")
-    host = test2.getIdOfHost("Alexander-PC")
-    host = test2.getIdOfHost("Alexander-PC")
-    print test2.getConnectionSetupForId(host)
+    def printTest(host, screenLayout):
+        print host + ":"
+        print "\t" + str(screenLayout.getConnectionSetupForId(host))
+
+    test2 = ScreenLayout("SingleScreenTest.json")
+    printTest(test2.getIdOfHost("Alexander-PC"), test2)
+    printTest(test2.getIdOfHost("Alexander-PC"), test2)
+    printTest(test2.getIdOfHost("Alexander-PC"), test2)
+    printTest(test2.getIdOfHost("Alexander-PC"), test2)

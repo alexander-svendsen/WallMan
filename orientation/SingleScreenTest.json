@@ -1,25 +1,25 @@
 {
     "Alexander-PC_1": {
-        "left" : "Alexander-PC_2",
-        "right" : "Alexander-PC_2",
+        "left" : "Alexander-PC",
+        "right" : "Alexander-PC",
         "up" : "Alexander-PC_3",
         "down" : "Alexander-PC_3"
     },
     "Alexander-PC_2": {
-        "left" : "Alexander-PC_1",
-        "right" : "Alexander-PC_1",
-        "up" : "Alexander-PC_4",
-        "down" : "Alexander-PC_4"
+        "left" : "Alexander-PC_3",
+        "right" : "Alexander-PC_3",
+        "up" : "Alexander-PC",
+        "down" : "Alexander-PC"
     },
     "Alexander-PC_3": {
-        "left" : "Alexander-PC_4",
-        "right" : "Alexander-PC_4",
+        "left" : "Alexander-PC_2",
+        "right" : "Alexander-PC_2",
         "up" : "Alexander-PC_1",
         "down" : "Alexander-PC_1"
     },
     "Alexander-PC": {
-        "left" : "Alexander-PC_3",
-        "right" : "Alexander-PC_3",
+        "left" : "Alexander-PC_1",
+        "right" : "Alexander-PC_1",
         "up" : "Alexander-PC_2",
         "down" : "Alexander-PC_2"
     }
