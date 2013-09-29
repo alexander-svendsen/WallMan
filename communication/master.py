@@ -2,25 +2,23 @@
 import socket
 import random
 import json
-import screenlayout
-from socketcommunication.server import Server
 import thread
+from screenlayout import ScreenLayout
+from socketcommunication.server import Server
 
-#TODO THINK ABOUT IF I WANT INHERENTENCE AT ALL
+
 class Master(Server):
-    def __init__(self, addr, port, orientation, players):
+    def __init__(self, addr, port, screen_config, players):
         Server.__init__(self, addr, port)
-        self.orientation = screenlayout.ScreenLayout(orientation)
-        self.connections = dict()
+        self._screen_layout = ScreenLayout(screen_config)
+        self._connected_slaves = dict()
+        self._players = players
 
-        #FIXME... refactor
-        self.players = players
-
-    def listen(self):
+    def listen_for_slaves(self):
         print "Start accepting connections"
         while True:
-            connection, addr = self.connect()
-            self.getSetup(connection, addr) #FIXME ?
+            connection, address = self.accept_connections()
+            self.getSetup(connection, address) #FIXME ?
             thread.start_new(self.reciveDataForEver, (connection, ))
 
     # FIXME use the revice error to remove disconnected clients
@@ -32,7 +30,7 @@ class Master(Server):
                 data = json.loads(rawData)
                 if data['cmd'] == 'migrate':
                     print "migrate signal recevied", data
-                    self.players[data["name"]] = connection
+                    self._players[data["name"]] = connection
                 else:
                     print "Recived somethign strange from the client", data
         except ValueError:
@@ -50,13 +48,13 @@ class Master(Server):
         try:
             rawData = connect.recv(1024)
             data = json.loads(rawData)
-            hostname = self.orientation.getIdOfHost(data["hostname"])
-            if self.orientation.isNameValid(hostname):
-                self.connections[hostname] = {"conn": connect, "addr": addr[0], "port": data['port']}
+            hostname = self._screen_layout.get_id_of_host(data["hostname"])
+            if self._screen_layout.is_hostname_valid(hostname):
+                self._connected_slaves[hostname] = {"conn": connect, "addr": addr[0], "port": data['port']}
                 connect.send(json.dumps({"cmd": "ok"}))
             else:  # Invalid game connected, so send a close signal since it will not be used
                 connect.send(json.dumps({"cmd": "close"}))
-            print "Connected clients:", self.connections
+            print "Connected clients:", self._connected_slaves
             return True
         except socket.timeout:
             print "Timeout: Didn't receive setup from the connection"
@@ -67,34 +65,34 @@ class Master(Server):
         return False
 
     def sendOutSetup(self):
-        for key, dictValue in self.connections.iteritems():
+        for key, dictValue in self._connected_slaves.iteritems():
             print key
             print '\t Dict:', dictValue
-            print '\t Ori :', self.orientation.getConnectionSetupForId(key)
+            print '\t Ori :', self._screen_layout.get_connection_setup_for_hostname(key)
 
             orientation = dict()
-            for direction, hostname in self.orientation.getConnectionSetupForId(key).iteritems():
-                orientation[direction] = (self.connections[hostname]["addr"], self.connections[hostname]["port"])
+            for direction, hostname in self._screen_layout.get_connection_setup_for_hostname(key).iteritems():
+                orientation[direction] = (self._connected_slaves[hostname]["addr"], self._connected_slaves[hostname]["port"])
             print "final mix", orientation
             data = {"cmd": "setup", "orientation": orientation}
             dictValue["conn"].send(json.dumps(data))
 
     def sendToAll(self, data):
-        for key, dictValue in self.connections.iteritems():
+        for key, dictValue in self._connected_slaves.iteritems():
             dictValue["conn"].send(data)
 
     def closeAll(self):
-        for key, dictValue in self.connections.iteritems():
+        for key, dictValue in self._connected_slaves.iteritems():
             dictValue["conn"].close()
 
     def getRandomSocket(self):
-        randomKey = random.choice(self.connections.keys())
-        return self.connections[randomKey]['conn']
+        randomKey = random.choice(self._connected_slaves.keys())
+        return self._connected_slaves[randomKey]['conn']
 
     def __len__(self):
-        return len(self.connections)
+        return len(self._connected_slaves)
 
     def __getitem__(self, key):
-        return self.connections[key]
+        return self._connected_slaves[key]
 
 

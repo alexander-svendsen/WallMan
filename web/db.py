@@ -544,7 +544,7 @@ class DB:
             
     def _connect(self, keywords):
         return self.db_module.listen(**keywords)
-        
+
     def _connect_with_pooling(self, keywords):
         def get_pooled_db():
             from DBUtils import PooledDB
