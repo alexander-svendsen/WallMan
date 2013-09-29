@@ -12,3 +12,5 @@
 =======================================================================
 A distributed Wall-Man game made for distributed walls.
 Heavenly inspired by pac-man. More rules will follow.
+
+Require python 2.7.3
