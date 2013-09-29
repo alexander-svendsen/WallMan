@@ -23,7 +23,7 @@ class GameConnection():
     def sendSetup(self):
         self.connection.send(json.dumps({"cmd": "setup",
                                          "hostname": self.connection.getHostName(),
-                                         'port': self.server.getPortAndAddress()[1]}))
+                                         'port': self.server.get_port_and_address()[1]}))
 
     def setup(self, masterAddr, masterPort):
         self.connectToMaster(masterAddr, masterPort)
@@ -35,7 +35,7 @@ class GameConnection():
 
     def listenForOtherGames(self):
         while self.acceptConnections:
-            connection, addr = self.server.connect()
+            connection, addr = self.server.accept_connection()
             self.connectedClients.append(connection)
 
     def reciveFromAll(self):
@@ -62,7 +62,7 @@ class GameConnection():
         else:
             client = Client()
             self.directionConnections[direction] = client
-            self.directionConnections[direction].connect(addr[0], addr[1])
+            self.directionConnections[direction].accept_connection(addr[0], addr[1])
             self.clientDict[addressTuple] = client
 
     #REVIEW: OBVIOUSLY

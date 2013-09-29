@@ -4,19 +4,14 @@ import socket
 
 class Server():
     def __init__(self, addr, port):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.sock.bind((addr, port))
-        self.sock.listen(20)
-        print "Server listening on addr, port:", self.getPortAndAddress()
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self._sock.bind((addr, port))
+        self._sock.listen(20)
+        # print "Server listening on addr, port:", self.get_port_and_address() Maybe log instead
 
-    def connect(self):
-        try:
-            (connection, addr) = self.sock.accept()
-            print "Client connected", connection, addr  # addr should be a addr, port pair
-            return connection, addr
-        except Exception as e:
-            print "Connection error", e.args
+    def accept_connection(self):
+        return self._sock.accept()
 
     def close(self, connection):
         connection.close()
@@ -28,5 +23,5 @@ class Server():
         connection.settimeout(timeout)
         return connection.recv(length)
 
-    def getPortAndAddress(self):
-        return self.sock.getsockname()
+    def get_port_and_address(self):
+        return self._sock.getsockname()

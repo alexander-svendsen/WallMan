@@ -39,7 +39,7 @@ class WallManMain:
 
     def setup(self, connection):
         fullScreen = 0
-        if self.res is None:
+        if not self.res:
             os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 0)
             self.res = (pygame.display.list_modes()[0])
             fullScreen = pygame.FULLSCREEN
@@ -139,7 +139,7 @@ class WallManMain:
         if name in self.players:
             self.players[name].updateMovement(direction)
         else:
-            print "Error: Non-existing player moved", name  # FIXME means the master is inconsistent
+            print "Error: Non-existing player moved", name  # FIXME means the server is inconsistent
 
     def main(self):
         """Main game loop, runs all the code"""
@@ -206,8 +206,10 @@ class WallManMain:
         sys.exit()
 
 if __name__ == "__main__":  # TODO REFACTOR THE CODE
-    if not pygame.font: print 'Warning, fonts disabled'
-    if not pygame.mixer: print 'Warning, sound disabled'
+    if not pygame.font:
+        print 'Warning, fonts disabled'
+    if not pygame.mixer:
+        print 'Warning, sound disabled'
 
     # Set up arguments
     parser = argparse.ArgumentParser(description="Plays a game of Wallman. Note the external server must be active")

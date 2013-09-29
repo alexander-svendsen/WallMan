@@ -3,7 +3,7 @@ import web
 import json
 import argparse
 import thread
-from Master import Master as SlaveServer
+from master import Master as SlaveServer
 
 urls = (
     '/(.*)', 'Server'
@@ -14,17 +14,17 @@ class Server:  # Single server controlling all states and players
     def GET(self, path=""):
         if path == "start":
             data = {'cmd': 'start'}
-            web.slavesConnectionPoint.sendToAll(json.dumps(data))
+            web.slavesConnectionPoint.send_to_all(json.dumps(data))
 
     def POST(self, path=""):
         if path == "setup":
-            web.slavesConnectionPoint.sendOutSetup()
+            web.slavesConnectionPoint.send_setup()
 
         if path == "join":
             data = json.loads(web.data())
 
-            if len(web.slavesConnectionPoint) > 0:
-                connectionPoint = web.slavesConnectionPoint.getRandomSocket()
+            if web.slavesConnectionPoint:
+                connectionPoint = web.slavesConnectionPoint.get_random_slave()
                 web.players[data["name"]] = connectionPoint
                 data["cmd"] = "join"
                 connectionPoint.send(json.dumps(data))
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     #Set up the Master connection
     slavesConnectionPoint = SlaveServer(args.address, args.port, args.orientation, web.players)
     web.slavesConnectionPoint = slavesConnectionPoint
-    thread.start_new(slavesConnectionPoint.listen, ())  # TODO: Stop the thread when the game has started
+    thread.start_new(slavesConnectionPoint.listen_for_slaves, ())  # TODO: Stop the thread when the game has started
 
     import sys  # Yuck
     if len(sys.argv) > 1:  # Yuck

@@ -50,7 +50,7 @@ class Player():
 
         self.migrateMe = False
 
-    def updateMovement(self, direction):
+    def updateMovement(self, direction):  # review may use an dict instead
         if direction == "left":
             self.newDirection = LEFT
         elif direction == "right":
