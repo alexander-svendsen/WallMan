@@ -5,72 +5,92 @@ from collections import defaultdict
 
 class ScreenLayout():
     """
-    Class to select and use an orientation based on the command line input
+    Class to select and use an screen connection config based on the command line input
     """
 
-    def __init__(self, orientation, path="orientation/"):
-        self.__path = path
-        self.__idDict = defaultdict(lambda: 0)
-        self.default = False
-        if orientation == "default":
-            self.default = True
-            self.__orientation = dict()
-            self.__joinList = list()
-        else:
-            self.__orientation = self.__read(orientation)
+    def __init__(self, screen_config_type='default', screen_config_path='orientation/'):
+        """
+        :param screen_config_type: Which type of config should be used. If not specified a default will be used.
+        :param screen_config_path: Where can the different kinds of connection configs be found
+        """
+        self._idDict = defaultdict(lambda: 0)
 
-    def __read(self, name):
-        with open(self.__path + name, 'r') as content_file:
+        if screen_config_type == 'default':
+            self._screen_config_dict = dict()
+            self._joinList = list()
+        else:
+            self._screen_config_dict = self._read(screen_config_type, screen_config_path)
+
+        self._screen_config_type = screen_config_type
+
+    def _read(self, name, path):
+        with open(path + name, 'r') as content_file:
             content = content_file.read()
         return json.loads(content)
 
-    def getIdOfHost(self, hostname):
+    def get_id_of_host(self, hostname):
         """
-        Sets up an unique ID for the hostname, to decide how the screens are supposed to be orienteted
-        If the default orientation is choosed, an default orientation will be build based on how the screens are added
+        Sets up an unique ID for the hostname. Mostly used in case there is suppose to be multiple game screen per host
+        If the default orientation is chosen, an default orientation will be build based on when the screens joins
 
-        :rtype : str basicly hostname_counter
+        :rtype : the unique hostname
         :param hostname: The hostname to the screen connecting
         """
 
-        if self.__idDict[hostname] == 0:
-            uniqueID = hostname
+        #Only doing this to allow writing hostnames without the counter
+        if self._idDict[hostname]:
+            uniqueID = "{0}_{1}".format(hostname, self._idDict[hostname])
         else:
-            uniqueID = hostname + "_{0}".format(str(self.__idDict[hostname]))
+            uniqueID = hostname
 
-        self.__idDict[hostname] += 1
+        self._idDict[hostname] += 1
 
-        if self.default:
-            if len(self.__joinList) > 0:
-                left, right = (self.__joinList[-1], self.__joinList[0])
-                self.__orientation[left]["right"] = uniqueID
-                self.__orientation[right]["left"] = uniqueID
-            else:
-                left, right = ('', '')  #TODO Remove the sign
-            self.__orientation[uniqueID] = {"left": left, "right": right}
-            self.__joinList.append(uniqueID)
+        if self._screen_config_type == 'default':
+            self._build_default_orientation(uniqueID)
 
         return uniqueID
 
-    def isNameValid(self, name):
-        return name in self.__orientation
+    def _build_default_orientation(self, unique_hostname):
+        if self._joinList:
+            left, right = (self._joinList[-1], self._joinList[0])
+            self._screen_config_dict[left]["right"] = unique_hostname
+            self._screen_config_dict[right]["left"] = unique_hostname
+            self._screen_config_dict[unique_hostname] = {"left": left, "right": right}
+        else:
+            self._screen_config_dict[unique_hostname] = {}
+        self._joinList.append(unique_hostname)
 
-    def getConnectionSetupForId(self, uniqueID):
-        return self.__orientation[uniqueID]
+    def is_hostname_valid(self, name):
+        return name in self._screen_config_dict
 
+    def get_connection_setup_for_hostname(self, uniqueID):
+        return self._screen_config_dict[uniqueID]
+
+    def __str__(self):
+        return '{0}:\n\t{1}'.format(self._screen_config_type, self._screen_config_dict)
 
 
 if __name__ == "__main__":
-    # test1 = ScreenLayout("FailTest.json")
-    # host = test1.getIdOfHost("Alexander-PC")
-    #print test1.getConnectionSetupForId(host)
+    test1 = ScreenLayout("FailTest.json")
+    host = test1.get_id_of_host("Alexander-PC")
+    if test1.is_hostname_valid(host):
+        print test1.get_connection_setup_for_hostname(host)
+    else:
+        print "Host unvalid: {}".format(host)
 
     def printTest(host, screenLayout):
-        print host + ":"
-        print "\t" + str(screenLayout.getConnectionSetupForId(host))
+        print '{0}:\n\t{1}'.format(host, screenLayout.get_connection_setup_for_hostname(host))
 
     test2 = ScreenLayout("SingleScreenTest.json")
-    printTest(test2.getIdOfHost("Alexander-PC"), test2)
-    printTest(test2.getIdOfHost("Alexander-PC"), test2)
-    printTest(test2.getIdOfHost("Alexander-PC"), test2)
-    printTest(test2.getIdOfHost("Alexander-PC"), test2)
+    printTest(test2.get_id_of_host("Alexander-PC"), test2)
+    printTest(test2.get_id_of_host("Alexander-PC"), test2)
+    printTest(test2.get_id_of_host("Alexander-PC"), test2)
+    printTest(test2.get_id_of_host("Alexander-PC"), test2)
+
+    test3 = ScreenLayout('default')
+    host = test3.get_id_of_host("Alexander-PC")
+    print test3
+    print "left" in test3.get_connection_setup_for_hostname(host)
+
+    test3.get_id_of_host("Alexander-PC")
+    print test3
