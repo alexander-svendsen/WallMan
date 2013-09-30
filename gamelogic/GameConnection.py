@@ -22,7 +22,7 @@ class GameConnection():
 
     def sendSetup(self):
         self.connection.send(json.dumps({"cmd": "setup",
-                                         "hostname": self.connection.getHostName(),
+                                         "hostname": self.connection.get_hostname(),
                                          'port': self.server.get_port_and_address()[1]}))
 
     def setup(self, masterAddr, masterPort):
@@ -97,8 +97,8 @@ class GameConnection():
             self.reciveFromAll()
 
         elif data['cmd'] == "setup":
-            print data['orientation']
-            for key, addr in data['orientation'].iteritems():
+            print data['connection_config']
+            for key, addr in data['connection_config'].iteritems():
                 self.connectToDirection(key, addr)
             print "new connections to directions have been established"
             print self.directionConnections

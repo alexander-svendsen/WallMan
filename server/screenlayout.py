@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
-from collections import defaultdict
+import collections
 
 
 class ScreenLayout():
@@ -8,12 +8,12 @@ class ScreenLayout():
     Class to select and use an screen connection config based on the command line input
     """
 
-    def __init__(self, screen_config_type='default', screen_config_path='orientation/'):
+    def __init__(self, screen_config_type='default', screen_config_path='screenconfig/'):
         """
         :param screen_config_type: Which type of config should be used. If not specified a default will be used.
         :param screen_config_path: Where can the different kinds of connection configs be found
         """
-        self._counter_dict_for_hostname = defaultdict(lambda: 0)
+        self._counter_dict_for_hostname = collections.defaultdict(lambda: 0)
 
         if screen_config_type == 'default':
             self._screen_config_dict = dict()
@@ -31,7 +31,7 @@ class ScreenLayout():
     def get_id_of_host(self, hostname):
         """
         Sets up an unique ID for the hostname. Mostly used in case there is suppose to be multiple game screens per host
-        If the default orientation is chosen, an default orientation will be build based on when the screens joins
+        If the default screenconfig is chosen, an default screenconfig will be build based on when the screens joins
 
         :rtype : the unique hostname
         :param hostname: The hostname to the screen connecting

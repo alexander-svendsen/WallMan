@@ -18,5 +18,5 @@ class Client():
         self.cs.settimeout(timeout)
         return self.cs.recv(length)
 
-    def getHostName(self):
+    def get_hostname(self):
         return socket.gethostname()

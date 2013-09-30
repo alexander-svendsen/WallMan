@@ -8,18 +8,31 @@ import screenlayout as sl
 import socketcommunication.server as communication
 
 
-class Master(communication.Server):
+class MasterConnectionPoint(communication.Server):
     def __init__(self, ip, port, screen_config, players):
         communication.Server.__init__(self, ip, port)
         self._screen_layout = sl.ScreenLayout(screen_config)
         self._connected_slaves = dict()
         self._players = players
 
+    def add_player(self, raw):
+        data = json.loads(raw)
+        game_slave = self._get_random_slave()
+        self._players[data["name"]] = game_slave
+
+        data["cmd"] = "join"
+        game_slave.send(json.dumps(data))
+
+    def move_player(self, raw):
+        data = json.loads(raw)
+        if data["name"] in self._players:
+            data["cmd"] = "move"
+            self._players[data["name"]].send(json.dumps(data))
+
     def listen_for_slaves(self):
         for connection, address in iter(self.accept_connection,""):
             thread.start_new(self._receive_data_for_ever, (connection, address))
 
-    # FIXME use the receive error to remove disconnected clients
     def _receive_data_for_ever(self, connection, address):
         try:
             for raw in iter(functools.partial(connection.recv,1024), ""):
@@ -66,7 +79,7 @@ class Master(communication.Server):
                 connection_config[direction] = (self._connected_slaves[hostname]["addr"],
                                                 self._connected_slaves[hostname]["port"])
             print "final mix", connection_config
-            data = {"cmd": "setup", "orientation": connection_config}  #Fixme Orientation ? rename
+            data = {"cmd": "setup", "connection_config": connection_config}
             value["conn"].send(json.dumps(data))
 
     def send_to_all(self, data):
@@ -77,7 +90,7 @@ class Master(communication.Server):
         for key, value in self._connected_slaves.iteritems():
             self.close(value["conn"])
 
-    def get_random_slave(self):
+    def _get_random_slave(self):
         random_key = random.choice(self._connected_slaves.keys())
         return self._connected_slaves[random_key]['conn']
 
