@@ -8,7 +8,6 @@ class Server():
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._sock.bind((addr, port))
         self._sock.listen(20)
-        # print "Server listening on addr, port:", self.get_port_and_address() Maybe log instead
 
     def accept_connection(self):
         return self._sock.accept()

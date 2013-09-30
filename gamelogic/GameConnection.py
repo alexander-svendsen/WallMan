@@ -62,7 +62,7 @@ class GameConnection():
         else:
             client = Client()
             self.directionConnections[direction] = client
-            self.directionConnections[direction].accept_connection(addr[0], addr[1])
+            self.directionConnections[direction].connect(addr[0], addr[1])
             self.clientDict[addressTuple] = client
 
     #REVIEW: OBVIOUSLY
@@ -123,8 +123,16 @@ class GameConnection():
                 print "Closing connection to Master"
                 print "Error:", type(e), e
                 self.close()
+                raise
 
     def close(self):
         self.acceptConnections = False
         self.running = False
+        for client in self.connectedClients:
+            self.server.close(client)
+        self.connection.close()
+
+        for client in self.clientDict.values():
+            client.close()
+
         self.theGame.softQuit()

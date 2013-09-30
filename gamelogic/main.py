@@ -1,9 +1,7 @@
 import os
-import socket
 import time
 import sys
 import random
-import thread
 
 import pygame
 from pygame.locals import *

@@ -13,7 +13,7 @@ class ScreenLayout():
         :param screen_config_type: Which type of config should be used. If not specified a default will be used.
         :param screen_config_path: Where can the different kinds of connection configs be found
         """
-        self._idDict = defaultdict(lambda: 0)
+        self._counter_dict_for_hostname = defaultdict(lambda: 0)
 
         if screen_config_type == 'default':
             self._screen_config_dict = dict()
@@ -38,12 +38,12 @@ class ScreenLayout():
         """
 
         #Only doing this to allow writing hostnames without the counter
-        if self._idDict[hostname]:
-            uniqueID = "{0}_{1}".format(hostname, self._idDict[hostname])
+        if self._counter_dict_for_hostname[hostname]:
+            uniqueID = "{0}_{1}".format(hostname, self._counter_dict_for_hostname[hostname])
         else:
             uniqueID = hostname
 
-        self._idDict[hostname] += 1
+        self._counter_dict_for_hostname[hostname] += 1
 
         if self._screen_config_type == 'default':
             self._build_default_orientation(uniqueID)
@@ -63,7 +63,28 @@ class ScreenLayout():
     def is_hostname_valid(self, name):
         return name in self._screen_config_dict
 
-    def get_setup_for_hostname(self, uniqueID):
+    def _reset_screen_config(self):
+        if len(self._join_list) == 1:
+            self._screen_config_dict[self._join_list[0]] = {}
+            return
+        for index, elem in enumerate(self._join_list):
+            left, right = (self._join_list[index - 1], self._join_list[(index + 1) % len(self._join_list)])
+            self._screen_config_dict[elem]["left"] = left
+            self._screen_config_dict[elem]["right"] = right
+
+    def remove(self, hostname):
+        if hostname not in self._screen_config_dict:
+            return
+
+        del self._screen_config_dict[hostname]
+
+        if self._join_list:
+            self._join_list.remove(hostname)
+            self._reset_screen_config()
+        else:
+            self._counter_dict_for_hostname[hostname] -= 1
+
+    def __getitem__(self, uniqueID):
         return self._screen_config_dict[uniqueID]
 
     def __str__(self):
@@ -71,26 +92,36 @@ class ScreenLayout():
 
 
 if __name__ == "__main__":
-    test1 = ScreenLayout("FailTest.json")
-    host = test1.get_id_of_host("Alexander-PC")
-    if test1.is_hostname_valid(host):
-        print test1.get_setup_for_hostname(host)
-    else:
-        print "Host unvalid: {}".format(host)
+    # test1 = ScreenLayout("FailTest.json")
+    # host = test1.get_id_of_host("Alexander-PC")
+    # if test1.is_hostname_valid(host):
+    #     print test1.get_setup_for_hostname(host)
+    # else:
+    #     print "Host unvalid: {0}".format(host)
 
-    def printTest(host, screenLayout):
-        print '{0}:\n\t{1}'.format(host, screenLayout.get_setup_for_hostname(host))
+    # def printTest(host, screenLayout):
+    #     print '{0}:\n\t{1}'.format(host, screenLayout.get_setup_for_hostname(host))
+    #
+    # test2 = ScreenLayout("SingleScreenTest.json")
+    # printTest(test2.get_id_of_host("Alexander-PC"), test2)
+    # printTest(test2.get_id_of_host("Alexander-PC"), test2)
+    # printTest(test2.get_id_of_host("Alexander-PC"), test2)
+    # printTest(test2.get_id_of_host("Alexander-PC"), test2)
 
-    test2 = ScreenLayout("SingleScreenTest.json")
-    printTest(test2.get_id_of_host("Alexander-PC"), test2)
-    printTest(test2.get_id_of_host("Alexander-PC"), test2)
-    printTest(test2.get_id_of_host("Alexander-PC"), test2)
-    printTest(test2.get_id_of_host("Alexander-PC"), test2)
+    test4 = ScreenLayout()
+    test4.get_id_of_host("Alexander-PC")
+    test4.get_id_of_host("Alexander-PC")
+    test4.remove("Alexander-PC")
+    test4.get_id_of_host("Alexander-PC")
 
-    test3 = ScreenLayout('default')
-    host = test3.get_id_of_host("Alexander-PC")
-    print test3
-    print "left" in test3.get_setup_for_hostname(host)
+    #test4.get_id_of_host("Alexander-PC")
 
-    test3.get_id_of_host("Alexander-PC")
-    print test3
+    print test4
+
+    # test3 = ScreenLayout('default')
+    # host = test3.get_id_of_host("Alexander-PC")
+    # print test3
+    # print "left" in test3.get_setup_for_hostname(host)
+    #
+    # test3.get_id_of_host("Alexander-PC")
+    # print test3
