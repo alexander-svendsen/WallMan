@@ -91,7 +91,7 @@ class WallManMain:
         randomFloor.mark(player.color, name)
 
         self.players[name] = player
-        self.playerSprites.add(player.getSprite())
+        self.playerSprites.add(player.sprite_rect)
         return "OK"
 
     #REVIEW: SO MANY HACKS
@@ -117,24 +117,24 @@ class WallManMain:
                         self.connection)
 
         if direction == "left":
-            player.spriteRect.rect.x = self.res[0] - player.speed
+            player._sprite_rect.rect.x = self.res[0] - player.speed
         elif direction == "right":
-            player.spriteRect.rect.x = - player.spriteRect.rect.w + player.speed
+            player._sprite_rect.rect.x = - player._sprite_rect.rect.w + player.speed
         elif direction == "up":
-            player.spriteRect.rect.y = self.res[1] - player.speed
+            player._sprite_rect.rect.y = self.res[1] - player.speed
         elif direction == "down":
-            player.spriteRect.rect.y = - player.spriteRect.rect.h + player.speed
+            player._sprite_rect.rect.y = - player._sprite_rect.rect.h + player.speed
 
-        player.updateMovement(direction)
-        player.updateMovement([None, "left", "right", "up", "down"][newDirection])  # FIXME UGLY AS HELL
+        player.update_movement(direction)
+        player.update_movement([None, "left", "right", "up", "down"][newDirection])  # FIXME UGLY AS HELL
 
         self.players[name] = player
-        self.playerSprites.add(player.getSprite())  # fixme: need the old color and askii sprite
+        self.playerSprites.add(player.sprite_rect)  # fixme: need the old color and askii sprite
         return "OK"
 
     def movePlayer(self, name, direction):  # TODO: Better error support
         if name in self.players:
-            self.players[name].updateMovement(direction)
+            self.players[name].update_movement(direction)
         else:
             print "Error: Non-existing player moved", name  # FIXME means the server is inconsistent
 
@@ -170,7 +170,7 @@ class WallManMain:
             for name in self.players.keys():
                 player = self.players[name]
                 player.update(self.floorSprites)
-                if player.migrateMe:
+                if player.migrate_me:
                     print "Migrating this player"
                     del self.players[name]
             self.floorSprites.draw(self.screen)
