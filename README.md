@@ -1,4 +1,4 @@
-...
+'''bash
 =======================================================================
 *   __      __            ___    ___                                  *
 *  /\ \  __/\ \          /\_ \  /\_ \    /'\_/`\                      *
@@ -8,7 +8,7 @@
 *     \ `\___ ___/\ \__/.\_\/\____\/\____\\ \_\\ \_\ \__/.\_\ \_\ \_\ *
 *      '\/__//__/  \/__/\/_/\/____/\/____/ \/_/ \/_/\/__/\/_/\/_/\/_/ *
 =======================================================================
-...
+'''
 =======================================================================
 A distributed Wall-Man game made for distributed walls.
 Heavenly inspired by pac-man. More rules will follow.
@@ -24,10 +24,10 @@ TODO
 
 # How to use
 - Run the server inside the '/server' folder
-...
+'''python
 python server.py --help for usages
-...
+'''
 - Then add game screens as you want them or configured them inside '/gamelogic' folder
-...
+'''python
 python main.py --help for usages
-...
+'''
