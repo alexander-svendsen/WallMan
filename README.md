@@ -25,10 +25,13 @@ TODO
 
 # How to use
 - Run the server inside the '/server' folder
+
 ```bash
 python server.py --help for usages
 ```
+
 - Then add game screens as you want them or configured them inside '/gamelogic' folder
+
 ```bash
 python main.py --help for usages
 ```
