@@ -22,5 +22,6 @@ class Server():
         connection.settimeout(timeout)
         return connection.recv(length)
 
-    def get_port_and_address(self):
+    @property
+    def getsockname(self):
         return self._sock.getsockname()

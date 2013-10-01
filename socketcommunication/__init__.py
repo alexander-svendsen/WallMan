@@ -1,4 +1,3 @@
 # -*- coding: utf-8 -*-
-
-from server import Server
-from client import Client
+from client import *
+from server import *

@@ -5,7 +5,7 @@ import random
 import json
 import thread
 import screenlayout as sl
-import socketcommunication.server as communication
+import socketcommunication as communication
 
 
 class MasterConnectionPoint(communication.Server):

@@ -22,8 +22,8 @@ class GameConnection():
 
     def sendSetup(self):
         self.connection.send(json.dumps({"cmd": "setup",
-                                         "hostname": self.connection.get_hostname(),
-                                         'port': self.server.get_port_and_address()[1]}))
+                                         "hostname": self.connection.gethostname,
+                                         'port': self.server.getsockname[1]}))
 
     def setup(self, masterAddr, masterPort):
         self.connectToMaster(masterAddr, masterPort)
