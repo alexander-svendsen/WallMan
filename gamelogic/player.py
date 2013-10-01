@@ -1,26 +1,26 @@
 import pygame
 import maps.config as gameLayoutConfig
 
-
 NONE = 0
 LEFT = 1
 RIGHT = 2
 UP = 3
 DOWN = 4
 
-
-STATE_MOVEFREELY = 1
-STATE_MOVERIGHTOUTOFSCREEN = 2
-STATE_MOVELEFTOUTOFSCREEN = 3
-STATE_MOVEUPOUTOFSCREEN = 4
-STATE_MOVEDOWNOUTOFSCREEN = 5
+STATE_MOVE_FREELY = 1
+STATE_MOVE_RIGHT_OUT_OF_SCREEN = 2
+STATE_MOVE_LEFT_OUT_OF_SCREEN = 3
+STATE_MOVE_UP_OUT_OF_SCREEN = 4
+STATE_MOVE_DOWN_OUT_OF_SCREEN = 5
 
 
 class Player():
-    def __init__(self, spriteRect, playerName, layout, res, connection):
-        self.speed = 4  # TODO more dynamic
-        assert self.speed <= spriteRect.rect.w, "Speed can never be greater then the width of the player"
-        assert self.speed <= spriteRect.rect.h, "Speed can never be greater then the height of the player"
+    def __init__(self, spriterect, name, layout, res, connection, speed=2):
+        self.speed_level = speed
+        self.speed = (spriterect.rect.w + spriterect.rect.h) * self.speed_level / 20
+
+        assert self.speed <= spriterect.rect.w, "Speed can never be greater then the width of the player"
+        assert self.speed <= spriterect.rect.h, "Speed can never be greater then the height of the player"
 
         self.connection = connection
 
@@ -28,12 +28,12 @@ class Player():
         self.yMove = 0
         self.res = res
 
-        self.playerName = playerName
+        self.playerName = name
 
         self.currentDirection = 0
         self.newDirection = 0
-        self.spriteRect = spriteRect
-        self.color = spriteRect.color
+        self.spriteRect = spriterect
+        self.color = spriterect.color
 
         #The position in the layout. Set in the update method
         self.x = 0
@@ -46,7 +46,7 @@ class Player():
         self.layout = layout
         self.layoutHeight = len(layout)
         self.layoutWidth = len(layout[0])
-        self.state = STATE_MOVEFREELY
+        self.state = STATE_MOVE_FREELY
 
         self.migrateMe = False
 
@@ -129,7 +129,7 @@ class Player():
         self.calculateCurrentPositionInLayout()
         self.updateStateOfPlayer()
 
-        if self.state == STATE_MOVEFREELY:
+        if self.state == STATE_MOVE_FREELY:
             if self.newDirection != NONE:
                 delta = self.calculateLengthToNextBlockBasedOnDirection(self.currentDirection)
                 if abs(delta) < self.speed:
@@ -145,13 +145,13 @@ class Player():
             else:
                 self.move(self.currentDirection, self.speed)
             self.checkFloorCollision(spriteFloor)
-        elif self.state == STATE_MOVERIGHTOUTOFSCREEN:
+        elif self.state == STATE_MOVE_RIGHT_OUT_OF_SCREEN:
             self.moveRightOfScreen()
-        elif self.state == STATE_MOVELEFTOUTOFSCREEN:
+        elif self.state == STATE_MOVE_LEFT_OUT_OF_SCREEN:
             self.moveLeftOfScreen()
-        elif self.state == STATE_MOVEDOWNOUTOFSCREEN:
+        elif self.state == STATE_MOVE_DOWN_OUT_OF_SCREEN:
             self.moveDownOfScreen()
-        elif self.state == STATE_MOVEUPOUTOFSCREEN:
+        elif self.state == STATE_MOVE_UP_OUT_OF_SCREEN:
             self.moveUpOfScreen()
         else:
             raise "Invalid state of player, Should never happen" # FIXME
@@ -167,13 +167,13 @@ class Player():
 
     def updateStateOfPlayer(self):
         if self.x + 1 >= self.layoutWidth and self.currentDirection == RIGHT:
-            self.state = STATE_MOVERIGHTOUTOFSCREEN
+            self.state = STATE_MOVE_RIGHT_OUT_OF_SCREEN
         elif self.x - 1 < 0 and self.currentDirection == LEFT:
-            self.state = STATE_MOVELEFTOUTOFSCREEN
+            self.state = STATE_MOVE_LEFT_OUT_OF_SCREEN
         elif self.y + 1 >= self.layoutHeight and self.currentDirection == DOWN:
-            self.state = STATE_MOVEDOWNOUTOFSCREEN
+            self.state = STATE_MOVE_DOWN_OUT_OF_SCREEN
         elif self.y - 1 < 0 and self.currentDirection == UP:
-            self.state = STATE_MOVEUPOUTOFSCREEN
+            self.state = STATE_MOVE_UP_OUT_OF_SCREEN
 
     def moveLeftOfScreen(self):
         self.xMove, self.yMove = self.getSpeed(self.speed, LEFT)

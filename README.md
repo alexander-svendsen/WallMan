@@ -25,8 +25,8 @@ TODO
 - Run the server inside the '/server' folder
 <pre>
 python server.py --help for usages
-<pre>
+</pre>
 - Then add game screens as you want them or configured them inside '/gamelogic' folder
 <pre>
 python main.py --help for usages
-<pre>
+</pre>
