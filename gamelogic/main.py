@@ -9,12 +9,11 @@ from pygame.locals import *
 from gamelogic import gamelayout
 import maps.config as gameLayoutConfig
 
-from graphics.wall import Wall
-from graphics.floor import Floor
+from graphics import Wall, Floor
 
 import settings
 from player import Player
-from graphics.player import Player as playerGraphics
+from graphics.playergraphics import Player as playerGraphics
 from GameConnection import GameConnection
 
 import argparse
@@ -81,7 +80,7 @@ class WallManMain:
             return "Name taken"
 
         randomFloor = random.choice(self.floorSprites.sprites())
-        while randomFloor.getMarker() != "None":  # TODO change to be better
+        while randomFloor.get_marker() != "None":  # TODO change to be better
             randomFloor = random.choice(self.floorSprites.sprites())
 
         player = Player(playerGraphics(randomFloor.rect.center,  self.blockWidth, self.blockHeight),
@@ -185,9 +184,9 @@ class WallManMain:
                 score = dict()
                 for floor in self.floorSprites:
                     try:
-                        score[floor.getMarker()] += 1
+                        score[floor.get_marker()] += 1
                     except KeyError:
-                        score[floor.getMarker()] = 1
+                        score[floor.get_marker()] = 1
                 print score
                 self.running = END
             else:
