@@ -87,8 +87,9 @@ class WallManMain:
                         name,
                         self.layout,
                         self.res,
-                        self.connection)
-        randomFloor.mark(player.color, name)
+                        self.connection
+                        )
+        randomFloor.mark(player._color, name)
 
         self.players[name] = player
         self.playerSprites.add(player.sprite_rect)
@@ -170,9 +171,6 @@ class WallManMain:
             for name in self.players.keys():
                 player = self.players[name]
                 player.update(self.floorSprites)
-                if player.migrate_me:
-                    print "Migrating this player"
-                    del self.players[name]
             self.floorSprites.draw(self.screen)
 
             self.playerSprites.draw(self.screen)

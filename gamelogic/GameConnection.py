@@ -67,9 +67,6 @@ class GameConnection():
 
     #REVIEW: OBVIOUSLY
     def sendPlayerInDirection(self, currentDirection, newDirection, name, x, y, color, askii, askiiColor):
-
-        # need old direction.. not a priority
-        # will need the current block position x,y, so the game can decide where to in... In thouse special cases where there is multiple teleport
         self.directionConnections[currentDirection].send(
             json.dumps({'cmd': 'migrate',
                         'direction': currentDirection,
