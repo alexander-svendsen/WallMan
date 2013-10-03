@@ -83,12 +83,17 @@ class WallManMain:
         while randomFloor.get_marker() != "None":  # TODO change to be better
             randomFloor = random.choice(self.floorSprites.sprites())
 
+        keys = self.connection.directionConnections.keys()
+        connDict = {}
+        for key in keys:
+            connDict[key] = self.connection.sendPlayerInDirection
+
         player = Player(playerGraphics(randomFloor.rect.center,  self.blockWidth, self.blockHeight),
                         name,
                         self.layout,
                         self.res,
-                        self.connection
-                        )
+                        **connDict)
+
         randomFloor.mark(player._color, name)
 
         self.players[name] = player
@@ -106,6 +111,11 @@ class WallManMain:
         y_offset = (self.blockHeight / 2)
         centerPoint = [(x * self.blockWidth) + x_offset, (y * self.blockHeight + y_offset)]
 
+        keys = self.connection.directionConnections.keys()
+        connDict = {}
+        for key in keys:
+            connDict[key] = self.connection.sendPlayerInDirection
+
         player = Player(playerGraphics(centerPoint,
                                        self.blockWidth,
                                        self.blockHeight,
@@ -115,7 +125,7 @@ class WallManMain:
                         name,
                         self.layout,
                         self.res,
-                        self.connection)
+                        **connDict)
 
         if direction == "left":
             player._sprite_rect.rect.x = self.res[0] - player.speed
@@ -127,7 +137,7 @@ class WallManMain:
             player._sprite_rect.rect.y = - player._sprite_rect.rect.h + player.speed
 
         player.update_movement(direction)
-        player.update_movement([None, "left", "right", "up", "down"][newDirection])  # FIXME UGLY AS HELL
+        player.update_movement(["none", "left", "right", "up", "down"][newDirection])  # FIXME UGLY AS HELL
 
         self.players[name] = player
         self.playerSprites.add(player.sprite_rect)  # fixme: need the old color and askii sprite
@@ -171,6 +181,8 @@ class WallManMain:
             for name in self.players.keys():
                 player = self.players[name]
                 player.update(self.floorSprites)
+                if player.migrate_me:
+                    del self.players[name]
             self.floorSprites.draw(self.screen)
 
             self.playerSprites.draw(self.screen)

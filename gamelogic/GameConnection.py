@@ -2,7 +2,7 @@
 import json
 import thread
 from socketcommunication import *
-
+import sys, traceback
 
 class GameConnection():
     def __init__(self, theGame):
@@ -44,10 +44,15 @@ class GameConnection():
             thread.start_new(self.reciveForEver, (client, 1024))
 
     def reciveForEver(self, conn, length):
-        while self.running:
-            data = self.server.receive(conn, length)  # FIXME uses master connection to recive ?
-            print "Client data"
-            self.parseData(data)
+        try:
+            while self.running:
+                data = self.server.receive(conn, length)  # FIXME uses master connection to recive ?
+                print "Client data"
+                self.parseData(data)
+        except Exception as e:
+            print type(e)
+            traceback.print_exc(file=sys.stdout)
+            raise
 
     def receiveSetup(self):  # TODO fix execptions
         rawData = self.connection.receive(1024)
@@ -66,17 +71,17 @@ class GameConnection():
             self.clientDict[addressTuple] = client
 
     #REVIEW: OBVIOUSLY
-    def sendPlayerInDirection(self, currentDirection, newDirection, name, x, y, color, askii, askiiColor):
-        self.directionConnections[currentDirection].send(
+    def sendPlayerInDirection(self, **kwargs):
+        self.directionConnections[kwargs["current_direction"]].send(
             json.dumps({'cmd': 'migrate',
-                        'direction': currentDirection,
-                        'name': name,
-                        'x': x,
-                        'y': y,
-                        'newDirection': newDirection,
-                        'color': color,
-                        'askii': askii,
-                        'askii-color': askiiColor}))
+                        'direction': kwargs["current_direction"],
+                        'name': kwargs["name"],
+                        'x': kwargs["layout_x"],
+                        'y': kwargs["layout_y"],
+                        'newDirection': kwargs["new_direction"],
+                        'color': kwargs["color"],
+                        'askii': kwargs["askii"],
+                        'askii-color': kwargs["askii_color"]}))
 
     #REVIEW
     def parseData(self, msg):

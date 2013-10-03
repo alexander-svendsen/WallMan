@@ -16,17 +16,19 @@ STATE_MOVE_DOWN_OUT_OF_SCREEN = 4
 
 class Player():
     def __init__(self, sprite_rect, name, layout, res, speed=2, **kwargs):
-        self.speed_level = speed
+        self.speed_level = speed  # TODO actually use this
         self.speed = (sprite_rect.rect.w + sprite_rect.rect.h) * self.speed_level / 20
 
         assert self.speed <= sprite_rect.rect.w, "Speed can never be greater then the width of the player"
         assert self.speed <= sprite_rect.rect.h, "Speed can never be greater then the height of the player"
 
+        #review # should be updates as the connection updates
         self.migrate = {LEFT: self._migrate if "left" not in kwargs else kwargs["left"],
                         RIGHT: self._migrate if "right" not in kwargs else kwargs["right"],
                         UP: self._migrate if "up" not in kwargs else kwargs["up"],
                         DOWN: self._migrate if "down" not in kwargs else kwargs["down"]}
 
+        self.migrate_me = False
         self._x_move = 0
         self._y_move = 0
         self._res = res
@@ -38,7 +40,8 @@ class Player():
         self._sprite_rect = sprite_rect
         self._color = sprite_rect.color
 
-        self._movement_converter_dict = {"left": LEFT,
+        self._movement_converter_dict = {"none": NONE,
+                                         "left": LEFT,
                                          "right": RIGHT,
                                          "up": UP,
                                          "down": DOWN}
@@ -59,7 +62,7 @@ class Player():
         self._state = STATE_MOVE_FREELY
 
     def update_movement(self, direction):
-        self._new_direction = self._movement_converter_dict[direction.lower()]
+        self._new_direction = self._movement_converter_dict[direction]
         if self._current_direction == NONE:
             self._current_direction = self._new_direction
             self._new_direction = NONE
@@ -179,11 +182,12 @@ class Player():
             self._build_migrate_package(x=self._sprite_rect.rect.x, y=self._res[1] - self.speed)
 
     def _build_migrate_package(self, x, y):
+        self.migrate_me = True
         self.migrate[
             self._current_direction](pos_x=x,
                                      pos_y=y,
-                                     current_direction=self._current_direction,
-                                     new_direction = self._new_direction,
+                                     current_direction=[None, "left", "right", "up", "down"][self._current_direction],
+                                     new_direction=self._new_direction,
                                      name=self._name,
                                      layout_x=self._x,
                                      layout_y=self._y,
@@ -192,6 +196,7 @@ class Player():
                                      askii_color=self.sprite_rect.inverse_color)
 
     def _migrate(self, **kwargs):
+        self.migrate_me = False
         self._sprite_rect.rect.x = kwargs["pos_x"]
         self._sprite_rect.rect.y = kwargs["pos_y"]
         self._state = STATE_MOVE_FREELY
