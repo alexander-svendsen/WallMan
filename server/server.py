@@ -32,7 +32,6 @@ if __name__ == "__main__":
 
     # Set up arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("-a", "--address", help="Master address", type=str, default='localhost')
     parser.add_argument("-p", "--port", help="Master port", type=int, default=9500)
     parser.add_argument("-sc", "--screen_config",
                         help="Pick a screen config of the available files inside the screenconfig folder",
@@ -40,7 +39,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     #Set up the Master connection
-    connection_point = mcp.MasterConnectionPoint(args.address, args.port, args.screen_config, dict())
+    connection_point = mcp.MasterConnectionPoint('0.0.0.0', args.port, args.screen_config, dict())
     web.connection_point = connection_point
     thread.start_new(connection_point.listen_for_slaves, ())
 

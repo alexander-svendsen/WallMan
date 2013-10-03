@@ -15,51 +15,55 @@ STATE_MOVE_DOWN_OUT_OF_SCREEN = 4
 
 
 class Player():
-    def __init__(self, sprite_rect, name, layout, res, speed=2, **kwargs):
+    def __init__(self, sprite_object, name, res, speed=2):
         self.speed_level = speed  # TODO actually use this
-        self.speed = (sprite_rect.rect.w + sprite_rect.rect.h) * self.speed_level / 20
-
-        assert self.speed <= sprite_rect.rect.w, "Speed can never be greater then the width of the player"
-        assert self.speed <= sprite_rect.rect.h, "Speed can never be greater then the height of the player"
-
-        #review # should be updates as the connection updates
-        self.migrate = {LEFT: self._migrate if "left" not in kwargs else kwargs["left"],
-                        RIGHT: self._migrate if "right" not in kwargs else kwargs["right"],
-                        UP: self._migrate if "up" not in kwargs else kwargs["up"],
-                        DOWN: self._migrate if "down" not in kwargs else kwargs["down"]}
+        self.speed = (sprite_object.rect.w + sprite_object.rect.h) * self.speed_level / 20
+        assert self.speed <= sprite_object.rect.w, "Speed can never be greater then the width of the player"
+        assert self.speed <= sprite_object.rect.h, "Speed can never be greater then the height of the player"
 
         self.migrate_me = False
-        self._x_move = 0
-        self._y_move = 0
+
+        self._x_move = 0  # movement in x direction
+        self._y_move = 0  # movement in y direction
         self._res = res
 
         self._name = name
 
         self._current_direction = NONE
         self._new_direction = NONE
-        self._sprite_rect = sprite_rect
-        self._color = sprite_rect.color
 
+        self._sprite_object = sprite_object
+        self._color = sprite_object.color
+
+        #Dict to convert which way we actually are moving from string to int
         self._movement_converter_dict = {"none": NONE,
                                          "left": LEFT,
                                          "right": RIGHT,
                                          "up": UP,
                                          "down": DOWN}
 
+        #Dict to run the decide which function to use base on the state
         self._state_dict = {STATE_MOVE_FREELY: self._move_freely,
                             STATE_MOVE_DOWN_OUT_OF_SCREEN: self._move_down_of_screen,
                             STATE_MOVE_LEFT_OUT_OF_SCREEN: self._move_left_of_screen,
                             STATE_MOVE_RIGHT_OUT_OF_SCREEN: self._move_right_of_screen,
                             STATE_MOVE_UP_OUT_OF_SCREEN: self._move_up_of_screen}
 
-        #The position in the layout. Set in the update method
-        self._x = 0
-        self._y = 0
+        self._x = 0  # The x position in the layout. calculated later
+        self._y = 0  # The y position in the layout. calculated later
 
-        self.layout = layout  # review: remove, should be an input parameter in case the layout changes
+        self._state = STATE_MOVE_FREELY
+
+    def update_migration(self, **kwargs):
+        self.migrate = {LEFT:   self._migrate if "left" not in kwargs else kwargs["left"],
+                        RIGHT:  self._migrate if "right" not in kwargs else kwargs["right"],
+                        UP:     self._migrate if "up" not in kwargs else kwargs["up"],
+                        DOWN:   self._migrate if "down" not in kwargs else kwargs["down"]}
+
+    def update_layout(self, layout):
+        self.layout = layout
         self.layout_height = len(layout)
         self.layout_width = len(layout[0])
-        self._state = STATE_MOVE_FREELY
 
     def update_movement(self, direction):
         self._new_direction = self._movement_converter_dict[direction]
@@ -79,19 +83,19 @@ class Player():
 
     def _length_to_next_block_based_on_direction(self, direction):
         if direction == LEFT:
-            length = self._length_to_next_block(self._x, self._sprite_rect.rect.w, self._sprite_rect.rect.x)
+            length = self._length_to_next_block(self._x, self._sprite_object.rect.w, self._sprite_object.rect.x)
             if length <= 0:
                 return length
         elif direction == RIGHT:
-            length = self._length_to_next_block(self._x, self._sprite_rect.rect.w, self._sprite_rect.rect.x)
+            length = self._length_to_next_block(self._x, self._sprite_object.rect.w, self._sprite_object.rect.x)
             if length >= 0:
                 return length
         elif direction == UP:
-            length = self._length_to_next_block(self._y, self._sprite_rect.rect.h, self._sprite_rect.rect.y)
+            length = self._length_to_next_block(self._y, self._sprite_object.rect.h, self._sprite_object.rect.y)
             if length <= 0:
                 return length
         elif direction == DOWN:
-            length = self._length_to_next_block(self._y, self._sprite_rect.rect.h, self._sprite_rect.rect.y)
+            length = self._length_to_next_block(self._y, self._sprite_object.rect.h, self._sprite_object.rect.y)
             if length >= 0:
                 return length
         return self.speed
@@ -116,8 +120,8 @@ class Player():
                 self._x_move, self._y_move = self._get_speed(abs(length), direction)
 
     def _calculate_current_position_in_layout(self):
-        self._x = self._sprite_rect.rect.center[0] / self._sprite_rect.rect.w
-        self._y = self._sprite_rect.rect.center[1] / self._sprite_rect.rect.h
+        self._x = self._sprite_object.rect.center[0] / self._sprite_object.rect.w
+        self._y = self._sprite_object.rect.center[1] / self._sprite_object.rect.h
 
     def update(self, floor_sprites):
         self._calculate_current_position_in_layout()
@@ -126,11 +130,11 @@ class Player():
         self._state_dict[self._state]()
 
         self._check_floor_collision(floor_sprites)
-        self._sprite_rect.rect.move_ip(self._x_move, self._y_move)
+        self._sprite_object.rect.move_ip(self._x_move, self._y_move)
 
     def _check_floor_collision(self, sprite_floor):
         # TODO refactor out collision
-        floorCollide = pygame.sprite.spritecollide(self._sprite_rect, sprite_floor, False)
+        floorCollide = pygame.sprite.spritecollide(self._sprite_object, sprite_floor, False)
         if floorCollide:
             for floor in floorCollide:
                 floor.mark(self._color, self._name)
@@ -163,44 +167,44 @@ class Player():
 
     def _move_left_of_screen(self):
         self._x_move, self._y_move = self._get_speed(self.speed, LEFT)
-        if self._sprite_rect.rect.x + self._sprite_rect.rect.w <= 0:
-            self._build_migrate_package(x=self._res[0] - self.speed, y=self._sprite_rect.rect.y)
+        if self._sprite_object.rect.x + self._sprite_object.rect.w <= 0:
+            self._build_migrate_package(x=self._res[0] - self.speed, y=self._sprite_object.rect.y)
 
     def _move_right_of_screen(self):
         self._x_move, self._y_move = self._get_speed(self.speed, RIGHT)
-        if self._sprite_rect.rect.x >= self._res[0]:
-            self._build_migrate_package(x=-self.sprite_rect.rect.w + self.speed, y=self._sprite_rect.rect.y)
+        if self._sprite_object.rect.x >= self._res[0]:
+            self._build_migrate_package(x=-self.sprite_rect.rect.w + self.speed, y=self._sprite_object.rect.y)
 
     def _move_down_of_screen(self):
         self._x_move, self._y_move = self._get_speed(self.speed, DOWN)
-        if self._sprite_rect.rect.y >= self._res[1]:
-            self._build_migrate_package(x=self._sprite_rect.rect.x, y=-self._sprite_rect.rect.h + self.speed)
+        if self._sprite_object.rect.y >= self._res[1]:
+            self._build_migrate_package(x=self._sprite_object.rect.x, y=-self._sprite_object.rect.h + self.speed)
 
     def _move_up_of_screen(self):
         self._x_move, self._y_move = self._get_speed(self.speed, UP)
-        if self._sprite_rect.rect.y + self._sprite_rect.rect.h <= 0:
-            self._build_migrate_package(x=self._sprite_rect.rect.x, y=self._res[1] - self.speed)
+        if self._sprite_object.rect.y + self._sprite_object.rect.h <= 0:
+            self._build_migrate_package(x=self._sprite_object.rect.x, y=self._res[1] - self.speed)
 
     def _build_migrate_package(self, x, y):
         self.migrate_me = True
         self.migrate[
             self._current_direction](pos_x=x,
                                      pos_y=y,
-                                     current_direction=[None, "left", "right", "up", "down"][self._current_direction],
+                                     current_direction=[None, "left", "right", "up", "down"][self._current_direction], #review change it
                                      new_direction=self._new_direction,
                                      name=self._name,
                                      layout_x=self._x,
                                      layout_y=self._y,
                                      color=self._color,
-                                     askii=self._sprite_rect.id,
+                                     askii=self._sprite_object.id,
                                      askii_color=self.sprite_rect.inverse_color)
 
     def _migrate(self, **kwargs):
         self.migrate_me = False
-        self._sprite_rect.rect.x = kwargs["pos_x"]
-        self._sprite_rect.rect.y = kwargs["pos_y"]
+        self._sprite_object.rect.x = kwargs["pos_x"]
+        self._sprite_object.rect.y = kwargs["pos_y"]
         self._state = STATE_MOVE_FREELY
 
     @property
     def sprite_rect(self):
-        return self._sprite_rect
+        return self._sprite_object

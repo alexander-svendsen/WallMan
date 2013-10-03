@@ -4,6 +4,7 @@ import thread
 from socketcommunication import *
 import sys, traceback
 
+
 class GameConnection():
     def __init__(self, theGame):
         self.theGame = theGame
@@ -104,6 +105,7 @@ class GameConnection():
                 self.connectToDirection(key, addr)
             print "new connections to directions have been established"
             print self.directionConnections
+            self.theGame.update_players_migrations()
 
         elif data['cmd'] == "close":
             self.close()

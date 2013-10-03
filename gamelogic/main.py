@@ -74,6 +74,15 @@ class WallManMain:
     def start(self):
         self.running = RUNNING
 
+    def update_players_migrations(self):
+        keys = self.connection.directionConnections.keys()
+        connDict = {}
+        for key in keys:
+            connDict[key] = self.connection.sendPlayerInDirection
+
+        for player in self.players.values():
+            player.update_migration(**connDict)
+
     def newPlayerJoined(self, name):  # TODO: BETTER ERROR SUPPORT
 
         if name in self.players:
@@ -83,19 +92,18 @@ class WallManMain:
         while randomFloor.get_marker() != "None":  # TODO change to be better
             randomFloor = random.choice(self.floorSprites.sprites())
 
+        player = Player(playerGraphics(randomFloor.rect.center,  self.blockWidth, self.blockHeight),
+                        name,
+                        self.res)
+
+        randomFloor.mark(player._color, name)
+
         keys = self.connection.directionConnections.keys()
         connDict = {}
         for key in keys:
             connDict[key] = self.connection.sendPlayerInDirection
-
-        player = Player(playerGraphics(randomFloor.rect.center,  self.blockWidth, self.blockHeight),
-                        name,
-                        self.layout,
-                        self.res,
-                        **connDict)
-
-        randomFloor.mark(player._color, name)
-
+        player.update_migration(**connDict)
+        player.update_layout(self.layout)
         self.players[name] = player
         self.playerSprites.add(player.sprite_rect)
         return "OK"
@@ -104,17 +112,12 @@ class WallManMain:
     def migratePlayer(self, name, direction, newDirection, x, y, color, askii, askiiColor):  # FIXME: Should not join to a random place
         print color, askii, askiiColor
 
-        if name in self.players:  # FIXME Should never happen ... but can it ?
+        if name in self.players:
             return "Name taken"
 
         x_offset = (self.blockWidth / 2)
         y_offset = (self.blockHeight / 2)
         centerPoint = [(x * self.blockWidth) + x_offset, (y * self.blockHeight + y_offset)]
-
-        keys = self.connection.directionConnections.keys()
-        connDict = {}
-        for key in keys:
-            connDict[key] = self.connection.sendPlayerInDirection
 
         player = Player(playerGraphics(centerPoint,
                                        self.blockWidth,
@@ -123,18 +126,23 @@ class WallManMain:
                                        askii,
                                        askiiColor),
                         name,
-                        self.layout,
-                        self.res,
-                        **connDict)
+                        self.res)
+
+        keys = self.connection.directionConnections.keys()
+        connDict = {}
+        for key in keys:
+            connDict[key] = self.connection.sendPlayerInDirection
+        player.update_migration(**connDict)
+        player.update(self.layout)
 
         if direction == "left":
-            player._sprite_rect.rect.x = self.res[0] - player.speed
+            player._sprite_object.rect.x = self.res[0] - player.speed
         elif direction == "right":
-            player._sprite_rect.rect.x = - player._sprite_rect.rect.w + player.speed
+            player._sprite_object.rect.x = - player._sprite_object.rect.w + player.speed
         elif direction == "up":
-            player._sprite_rect.rect.y = self.res[1] - player.speed
+            player._sprite_object.rect.y = self.res[1] - player.speed
         elif direction == "down":
-            player._sprite_rect.rect.y = - player._sprite_rect.rect.h + player.speed
+            player._sprite_object.rect.y = - player._sprite_object.rect.h + player.speed
 
         player.update_movement(direction)
         player.update_movement(["none", "left", "right", "up", "down"][newDirection])  # FIXME UGLY AS HELL
