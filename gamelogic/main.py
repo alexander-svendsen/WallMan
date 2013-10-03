@@ -221,12 +221,16 @@ class WallManMain:
         sys.exit()
 
 
+# May need to demonize the function to support CF
 def main():
     if not pygame.font:
         print 'Warning, fonts disabled'
     if not pygame.mixer:
         print 'Warning, sound disabled'
-        # Set up arguments
+
+    os.putenv('DISPLAY', ':0')  # Attach to local display. Must have it to work on the display wall
+
+    # Set up arguments
     parser = argparse.ArgumentParser(description="Plays a game of Wallman. Note the external server must be active")
     parser.add_argument("-a", "--address", help="Master address", type=str, default='localhost')
     parser.add_argument("-p", "--port", help="Master port", type=int, default=9500)

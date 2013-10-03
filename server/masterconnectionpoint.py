@@ -17,6 +17,8 @@ class MasterConnectionPoint(communication.Server):
 
     def add_player(self, raw):
         data = json.loads(raw)
+        if not self._connected_slaves:  # Error testing
+            return
         game_slave = self._get_random_slave()
         self._players[data["name"]] = game_slave
 

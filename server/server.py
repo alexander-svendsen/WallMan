@@ -33,20 +33,21 @@ def main():
 
     # Set up arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("-p", "--port", help="Master port", type=int, default=9500)
+    parser.add_argument("-ps", "--port_server", help="Server for http client port", type=str, default='35000')
+    parser.add_argument("-pm", "--port_master", help="Master port", type=int, default=9500)
     parser.add_argument("-sc", "--screen_config",
                         help="Pick a screen config of the available files inside the screenconfig folder",
                         type=str, default="default")
     args = parser.parse_args()
 
     #Set up the Master connection
-    connection_point = mcp.MasterConnectionPoint('0.0.0.0', args.port, args.screen_config, dict())
+    connection_point = mcp.MasterConnectionPoint('0.0.0.0', args.port_master, args.screen_config, dict())
     web.connection_point = connection_point
     thread.start_new(connection_point.listen_for_slaves, ())
 
     import sys  # Yuck
-    if len(sys.argv) > 1:  # Yuck
-        sys.argv[1] = '8080'  # Yuck
+    sys.argv.append("bleh")  # Yuck
+    sys.argv[1] = args.port_server  # Yuck
 
     #Start running web.py
     app.run()
