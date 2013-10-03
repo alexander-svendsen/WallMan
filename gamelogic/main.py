@@ -220,13 +220,13 @@ class WallManMain:
         pygame.quit()
         sys.exit()
 
-if __name__ == "__main__":  # TODO REFACTOR THE CODE
+
+def main():
     if not pygame.font:
         print 'Warning, fonts disabled'
     if not pygame.mixer:
         print 'Warning, sound disabled'
-
-    # Set up arguments
+        # Set up arguments
     parser = argparse.ArgumentParser(description="Plays a game of Wallman. Note the external server must be active")
     parser.add_argument("-a", "--address", help="Master address", type=str, default='localhost')
     parser.add_argument("-p", "--port", help="Master port", type=int, default=9500)
@@ -242,11 +242,13 @@ if __name__ == "__main__":  # TODO REFACTOR THE CODE
         print "Can't connect to master"
         print "\t-> Double check the connection point", args.address, args.port
         print e
-        sys.exit()
+        sys.exit(0)
 
     #Setup the main game
     wallman.setup(conn)
     wallman.drawGameLayout()  # Draw the game layout once, since it should not be updated
     wallman.main()
 
+if __name__ == "__main__":  # TODO REFACTOR THE CODE
+    sys.exit(main())
 
