@@ -4,6 +4,7 @@ import json
 import argparse
 import thread
 import masterconnectionpoint as mcp
+import sys
 
 urls = (
     '/(.*)', 'Server'
@@ -27,7 +28,7 @@ class Server:  # Single server controlling all states and players
             web.connection_point.move_player(web.data())
 
 
-if __name__ == "__main__":
+def main():
     app = web.application(urls, globals())
 
     # Set up arguments
@@ -49,3 +50,7 @@ if __name__ == "__main__":
 
     #Start running web.py
     app.run()
+
+
+if __name__ == "__main__":
+    sys.exit(main())
