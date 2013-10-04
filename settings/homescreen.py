@@ -1,1 +1,1 @@
-BLOCKWIDTH = 5
+BLOCKWIDTH = 15 #5 old value

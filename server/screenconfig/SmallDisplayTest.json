@@ -1,0 +1,26 @@
+{
+    "tile-4-1": {
+        "down": "tile-4-2", 
+        "left": "tile-5-1", 
+        "right": "tile-5-1", 
+        "up": "tile-4-2"
+    }, 
+    "tile-4-2": {
+        "down": "tile-4-1", 
+        "left": "tile-5-2", 
+        "right": "tile-5-2", 
+        "up": "tile-4-1"
+    }, 
+    "tile-5-1": {
+        "down": "tile-5-2", 
+        "left": "tile-4-1", 
+        "right": "tile-4-1", 
+        "up": "tile-5-2"
+    }, 
+    "tile-5-2": {
+        "down": "tile-5-1", 
+        "left": "tile-4-2", 
+        "right": "tile-4-2", 
+        "up": "tile-5-1"
+    }
+}
