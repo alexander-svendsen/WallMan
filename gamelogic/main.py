@@ -231,8 +231,8 @@ def main():
 
     # Set up arguments
     parser = argparse.ArgumentParser(description="Plays a game of Wallman. Note the external server must be active")
-    parser.add_argument("-a", "--address", help="Master address", type=str, default='0.0.0.0')
-    parser.add_argument("-p", "--port", help="Master port", type=int, default=9500)
+    parser.add_argument("-a", "--address", help="Master address", type=str, default='rocksvv.cs.uit.no')
+    parser.add_argument("-p", "--port", help="Master port", type=int, default=65523)
     parser.add_argument("-r", "--res", help="Resolution of the screen", type=int, nargs=2, action='append', default=None)
     parser.add_argument("-m", "--map", help="Which map should be run. Different ones can be fund int hte maps folder",
                         type=str, default='level001.json')
