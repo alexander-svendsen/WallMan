@@ -33,6 +33,7 @@ class WallManMain:
         self.players = dict()
         self.res = res
         pygame.init()
+        pygame.mouse.set_visible(False)
 
     def setup(self, connection):
         fullScreen = 0
@@ -93,8 +94,7 @@ class WallManMain:
             randomFloor = random.choice(self.floorSprites.sprites())
 
         player = Player(playerGraphics(randomFloor.rect.center,  self.blockWidth, self.blockHeight),
-                        name,
-                        self.res)
+                        name)
 
         randomFloor.mark(player._color, name)
 
@@ -125,8 +125,7 @@ class WallManMain:
                                        color,
                                        askii,
                                        askiiColor),
-                        name,
-                        self.res)
+                        name)
 
         keys = self.connection.directionConnections.keys()
         connDict = {}
@@ -232,11 +231,14 @@ def main():
 
     # Set up arguments
     parser = argparse.ArgumentParser(description="Plays a game of Wallman. Note the external server must be active")
-    parser.add_argument("-a", "--address", help="Master address", type=str, default='localhost')
+    parser.add_argument("-a", "--address", help="Master address", type=str, default='0.0.0.0')
     parser.add_argument("-p", "--port", help="Master port", type=int, default=9500)
+    parser.add_argument("-r", "--res", help="Resolution of the screen", type=int, nargs=2, action='append', default=None)
     args = parser.parse_args()
 
-    wallman = WallManMain((528, 528))
+    res = None if not args.res else tuple(args.res[0])
+
+    wallman = WallManMain(res)
 
     #Connect to master and start reciving commands
     conn = GameConnection(wallman)

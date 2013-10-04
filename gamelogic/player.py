@@ -15,7 +15,7 @@ STATE_MOVE_DOWN_OUT_OF_SCREEN = 4
 
 
 class Player():
-    def __init__(self, sprite_object, name, res, speed=2):
+    def __init__(self, sprite_object, name, speed=2):
         self.speed_level = speed  # TODO actually use this
         self.speed = (sprite_object.rect.w + sprite_object.rect.h) * self.speed_level / 20
         assert self.speed <= sprite_object.rect.w, "Speed can never be greater then the width of the player"
@@ -25,7 +25,6 @@ class Player():
 
         self._x_move = 0  # movement in x direction
         self._y_move = 0  # movement in y direction
-        self._res = res
 
         self._name = name
 
@@ -64,6 +63,8 @@ class Player():
         self.layout = layout
         self.layout_height = len(layout)
         self.layout_width = len(layout[0])
+        self._res = (self.layout_width * self._sprite_object.rect.w, self.layout_height * self.sprite_rect.rect.h)
+        print self._res
 
     def update_movement(self, direction):
         self._new_direction = self._movement_converter_dict[direction]
