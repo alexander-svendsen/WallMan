@@ -132,8 +132,8 @@ class WallManMain:
         for key in keys:
             connDict[key] = self.connection.sendPlayerInDirection
         player.update_migration(**connDict)
-        player.update(self.layout)
-
+        # player.update_layout(self.layout)
+	
         if direction == "left":
             player._sprite_object.rect.x = self.res[0] - player.speed
         elif direction == "right":
@@ -145,7 +145,7 @@ class WallManMain:
 
         player.update_movement(direction)
         player.update_movement(["none", "left", "right", "up", "down"][newDirection])  # FIXME UGLY AS HELL
-
+	player.update_layout(self.layout)
         self.players[name] = player
         self.playerSprites.add(player.sprite_rect)  # fixme: need the old color and askii sprite
         return "OK"
