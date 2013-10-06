@@ -24,16 +24,19 @@ TODO
 - pygame 1.9.3 - http://www.pygame.org/
 
 ## How to use
-- Run the server inside the '/server' folder
+- Run the server by using the server.sh for linux users or serber.bat for windows users.
+There is a need to reedit these files if you want some other parameters running the python script. To see these type: 
 
 ```bash
 python server.py --help for usages
 ```
 
-- Then add game screens as you want them or configured them inside '/gamelogic' folder
+- Then add game screens as you want them. To run them simply run game.sh for
+linux users or game.bat for windows users. There is a need to reedit these files if you want some other parameters running the python script. 
+To see these type:
 
 ```bash
-python main.py --help for usages
+python gamelogic/main.py --help for usages
 ```
 
 - To actually play the game. The players can go into the link below and follow the instructions
