@@ -33,7 +33,7 @@ if __name__ == "__main__":
     parser.add_argument("x_max", help="End x pos", type=int)
     parser.add_argument("y_max", help="End y pos", type=int)
     parser.add_argument("filename", help="filename of the output", type=str)
-    parser.add_argument("-default_host_name", help="filename of the output", type=str, default="tile-{0}-{0}")
+    parser.add_argument("-default_host_name", help="filename of the output", type=str, default="tile-{0}-{1}.local")
     args = parser.parse_args()
     data = generate_block_layout(min_x=args.x_min, min_y=args.y_min,
                                  max_x=args.x_max, max_y=args.y_max, default=args.default_host_name)
