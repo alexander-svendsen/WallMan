@@ -11,6 +11,7 @@ import socketcommunication as communication
 class MasterConnectionPoint(communication.Server):
     def __init__(self, ip, port, screen_config, players):
         communication.Server.__init__(self, ip, port)
+        print "Master Connection point established at: {0}:{1}".format(ip,port)
         self._screen_layout = sl.ScreenLayout(screen_config)
         self._connected_slaves = dict()
         self._players = players

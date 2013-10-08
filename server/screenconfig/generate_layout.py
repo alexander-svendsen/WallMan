@@ -10,9 +10,9 @@ def generate_block_layout(min_x, min_y, max_x, max_y, default):
     for x in xrange(min_x, max_x + 1):
         for y in xrange(min_y, max_y + 1):
             left = (x - 1) if x - 1 >= min_x else max_x
-            up = (y - 1) if y - 1 >= min_y else max_y
+            down = (y - 1) if y - 1 >= min_y else max_y
             right = (x + 1) if x + 1 <= max_x else min_x
-            down = (y + 1) if y + 1 <= max_y else min_y
+            up = (y + 1) if y + 1 <= max_y else min_y
 
             screen_config_dict[default_name.format(x, y)] = {"left": default_name.format(left, y),
                                                              "right": default_name.format(right, y),

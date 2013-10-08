@@ -1,3 +1,33 @@
+$(document).keydown(function(e){
+    if (e.keyCode == 37) {
+        if (prevDirection != "left"){
+            left(username);
+            prevDirection = "left"
+        }
+        return false;
+    }
+    else if (e.keyCode == 38) {
+        if (prevDirection != "up"){
+            up(username);
+            prevDirection = "up"
+        }
+        return false;
+    }
+    else if (e.keyCode == 39) {
+        if (prevDirection != "right"){
+            right(username);
+            prevDirection = "right"
+        }
+        return false;
+    }
+    else if (e.keyCode == 40) {
+        if (prevDirection != "down"){
+            down(username);
+            prevDirection = "down"
+        }
+        return false;
+    }
+});
 
 var canvas,
     c, // c is the canvas' context 2D

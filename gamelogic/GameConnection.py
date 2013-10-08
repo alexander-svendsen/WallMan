@@ -126,6 +126,7 @@ class GameConnection():
             except Exception as e:
                 print "Closing connection to Master"
                 print "Error:", type(e), e
+                traceback.print_exc(file=sys.stdout)
                 self.close()
                 raise
 

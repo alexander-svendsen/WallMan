@@ -1,3 +1,4 @@
+from collections import namedtuple
 import pygame
 import maps.config as gameLayoutConfig
 
@@ -21,7 +22,9 @@ class Player():
         assert self.speed <= sprite_object.rect.w, "Speed can never be greater then the width of the player"
         assert self.speed <= sprite_object.rect.h, "Speed can never be greater then the height of the player"
 
-        self.migrate_me = False
+        self._migrate_me_in_the_same_game = True
+        self._migrate_me_to_another_screen = False
+        self.delete_me = False
 
         self._x_move = 0  # movement in x direction
         self._y_move = 0  # movement in y direction
@@ -59,12 +62,13 @@ class Player():
                         UP:     self._migrate if "up" not in kwargs else kwargs["up"],
                         DOWN:   self._migrate if "down" not in kwargs else kwargs["down"]}
 
-    def update_layout(self, layout):
+    def update_layout(self, layout):  #review maye send int res
         self.layout = layout
         self.layout_height = len(layout)
         self.layout_width = len(layout[0])
-        self._res = (self.layout_width * self._sprite_object.rect.w, self.layout_height * self.sprite_rect.rect.h)
-        print self._res
+        Resolution = namedtuple('Resolution', ['width', 'height'])
+        self._res = Resolution(self.layout_width * self._sprite_object.rect.w,
+                               self.layout_height * self.sprite_object.rect.h)
 
     def update_movement(self, direction):
         self._new_direction = self._movement_converter_dict[direction]
@@ -126,7 +130,10 @@ class Player():
 
     def update(self, floor_sprites):
         self._calculate_current_position_in_layout()
-        self._update_state_of_player()
+
+        # Don't need to update the state if we are to move out of the screen
+        if self._state == STATE_MOVE_FREELY:
+            self._update_state_of_player()
 
         self._state_dict[self._state]()
 
@@ -141,13 +148,25 @@ class Player():
                 floor.mark(self._color, self._name)
 
     def _update_state_of_player(self):
-        if self._x + 1 >= self.layout_width and self._current_direction == RIGHT:
+        if self._sprite_object.rect.x + self._sprite_object.rect.w > self._res.width and self._current_direction == RIGHT:
+            if self.migrate[RIGHT] != self._migrate:
+                self._migrate_me_to_another_screen = True
+                self._migrate_me_in_the_same_game = False
             self._state = STATE_MOVE_RIGHT_OUT_OF_SCREEN
-        elif self._x - 1 < 0 and self._current_direction == LEFT:
+        elif self._sprite_object.rect.x < 0 and self._current_direction == LEFT:
+            if self.migrate[LEFT] != self._migrate:
+                self._migrate_me_to_another_screen = True
+                self._migrate_me_in_the_same_game = False
             self._state = STATE_MOVE_LEFT_OUT_OF_SCREEN
-        elif self._y + 1 >= self.layout_height and self._current_direction == DOWN:
+        elif self._sprite_object.rect.y + self._sprite_object.rect.h > self._res.height and self._current_direction == DOWN:
+            if self.migrate[DOWN] != self._migrate:
+                self._migrate_me_to_another_screen = True
+                self._migrate_me_in_the_same_game = False
             self._state = STATE_MOVE_DOWN_OUT_OF_SCREEN
-        elif self._y - 1 < 0 and self._current_direction == UP:
+        elif self._sprite_object.rect.y < 0 and self._current_direction == UP:
+            if self.migrate[UP] != self._migrate:
+                self._migrate_me_to_another_screen = True
+                self._migrate_me_in_the_same_game = False
             self._state = STATE_MOVE_UP_OUT_OF_SCREEN
 
     def _move_freely(self):
@@ -167,45 +186,76 @@ class Player():
             self._move(self._current_direction, self.speed)
 
     def _move_left_of_screen(self):
+        if self._migrate_me_to_another_screen:
+            self._build_migrate_package(x=self._res[0] - self.speed, y=self._sprite_object.rect.y)
         self._x_move, self._y_move = self._get_speed(self.speed, LEFT)
         if self._sprite_object.rect.x + self._sprite_object.rect.w <= 0:
-            self._build_migrate_package(x=self._res[0] - self.speed, y=self._sprite_object.rect.y)
+            if self._migrate_me_in_the_same_game:
+                self._build_migrate_package(x=self._res[0] - self.speed, y=self._sprite_object.rect.y)
+            else:
+                self.delete_me = True
 
     def _move_right_of_screen(self):
+        if self._migrate_me_to_another_screen:
+            self._build_migrate_package(x=-self._sprite_object.rect.w + self.speed, y=self._sprite_object.rect.y)
         self._x_move, self._y_move = self._get_speed(self.speed, RIGHT)
         if self._sprite_object.rect.x >= self._res[0]:
-            self._build_migrate_package(x=-self.sprite_rect.rect.w + self.speed, y=self._sprite_object.rect.y)
+            if self._migrate_me_in_the_same_game:
+                self._build_migrate_package(x=-self._sprite_object.rect.w + self.speed, y=self._sprite_object.rect.y)
+            else:
+                self.delete_me = True
 
     def _move_down_of_screen(self):
+        if self._migrate_me_to_another_screen:
+            self._build_migrate_package(x=self._sprite_object.rect.x, y=-self._sprite_object.rect.h + self.speed)
         self._x_move, self._y_move = self._get_speed(self.speed, DOWN)
         if self._sprite_object.rect.y >= self._res[1]:
-            self._build_migrate_package(x=self._sprite_object.rect.x, y=-self._sprite_object.rect.h + self.speed)
+            if self._migrate_me_in_the_same_game:
+                self._build_migrate_package(x=self._sprite_object.rect.x, y=-self._sprite_object.rect.h + self.speed)
+            else:
+                self.delete_me = True
 
     def _move_up_of_screen(self):
+        if self._migrate_me_to_another_screen:
+            self._build_migrate_package(x=self._sprite_object.rect.x, y=self._res[1] - self.speed)
         self._x_move, self._y_move = self._get_speed(self.speed, UP)
         if self._sprite_object.rect.y + self._sprite_object.rect.h <= 0:
-            self._build_migrate_package(x=self._sprite_object.rect.x, y=self._res[1] - self.speed)
+            if self._migrate_me_in_the_same_game:
+                self._build_migrate_package(x=self._sprite_object.rect.x, y=self._res[1] - self.speed)
+            else:
+                self.delete_me = True
 
     def _build_migrate_package(self, x, y):
-        self.migrate_me = True
+        self._migrate_me_to_another_screen = False
         self.migrate[
             self._current_direction](pos_x=x,
                                      pos_y=y,
-                                     current_direction=[None, "left", "right", "up", "down"][self._current_direction], #review change it
+                                     current_direction=self.current_direction, #review change it
                                      new_direction=self._new_direction,
                                      name=self._name,
                                      layout_x=self._x,
                                      layout_y=self._y,
                                      color=self._color,
                                      askii=self._sprite_object.id,
-                                     askii_color=self.sprite_rect.inverse_color)
+                                     askii_color=self.sprite_object.inverse_color)
 
     def _migrate(self, **kwargs):
-        self.migrate_me = False
         self._sprite_object.rect.x = kwargs["pos_x"]
         self._sprite_object.rect.y = kwargs["pos_y"]
         self._state = STATE_MOVE_FREELY
 
     @property
-    def sprite_rect(self):
+    def current_direction(self):
+        return [None, "left", "right", "up", "down"][self._current_direction]
+
+    @property
+    def sprite_object(self):
         return self._sprite_object
+
+    def __str__(self):
+        return "name:\t{name}\n" \
+               "current_dir:\t{current_dir}\n" \
+               "new_dir:\t{new_dir}\n" \
+               "state:\t{state}\n".format(name=self._name, current_dir=self.current_direction,
+                                        new_dir=self._new_direction,
+                                        state=self._state)

@@ -1,170 +1,170 @@
 {
-    "tile-0-0": {
-        "down": "tile-0-1", 
-        "left": "tile-6-0", 
-        "right": "tile-1-0", 
-        "up": "tile-0-3"
+    "tile-0-0.local": {
+        "down": "tile-0-3.local", 
+        "left": "tile-6-0.local", 
+        "right": "tile-1-0.local", 
+        "up": "tile-0-1.local"
     }, 
-    "tile-0-1": {
-        "down": "tile-0-2", 
-        "left": "tile-6-1", 
-        "right": "tile-1-1", 
-        "up": "tile-0-0"
+    "tile-0-1.local": {
+        "down": "tile-0-0.local", 
+        "left": "tile-6-1.local", 
+        "right": "tile-1-1.local", 
+        "up": "tile-0-2.local"
     }, 
-    "tile-0-2": {
-        "down": "tile-0-3", 
-        "left": "tile-6-2", 
-        "right": "tile-1-2", 
-        "up": "tile-0-1"
+    "tile-0-2.local": {
+        "down": "tile-0-1.local", 
+        "left": "tile-6-2.local", 
+        "right": "tile-1-2.local", 
+        "up": "tile-0-3.local"
     }, 
-    "tile-0-3": {
-        "down": "tile-0-0", 
-        "left": "tile-6-3", 
-        "right": "tile-1-3", 
-        "up": "tile-0-2"
+    "tile-0-3.local": {
+        "down": "tile-0-2.local", 
+        "left": "tile-6-3.local", 
+        "right": "tile-1-3.local", 
+        "up": "tile-0-0.local"
     }, 
-    "tile-1-0": {
-        "down": "tile-1-1", 
-        "left": "tile-0-0", 
-        "right": "tile-2-0", 
-        "up": "tile-1-3"
+    "tile-1-0.local": {
+        "down": "tile-1-3.local", 
+        "left": "tile-0-0.local", 
+        "right": "tile-2-0.local", 
+        "up": "tile-1-1.local"
     }, 
-    "tile-1-1": {
-        "down": "tile-1-2", 
-        "left": "tile-0-1", 
-        "right": "tile-2-1", 
-        "up": "tile-1-0"
+    "tile-1-1.local": {
+        "down": "tile-1-0.local", 
+        "left": "tile-0-1.local", 
+        "right": "tile-2-1.local", 
+        "up": "tile-1-2.local"
     }, 
-    "tile-1-2": {
-        "down": "tile-1-3", 
-        "left": "tile-0-2", 
-        "right": "tile-2-2", 
-        "up": "tile-1-1"
+    "tile-1-2.local": {
+        "down": "tile-1-1.local", 
+        "left": "tile-0-2.local", 
+        "right": "tile-2-2.local", 
+        "up": "tile-1-3.local"
     }, 
-    "tile-1-3": {
-        "down": "tile-1-0", 
-        "left": "tile-0-3", 
-        "right": "tile-2-3", 
-        "up": "tile-1-2"
+    "tile-1-3.local": {
+        "down": "tile-1-2.local", 
+        "left": "tile-0-3.local", 
+        "right": "tile-2-3.local", 
+        "up": "tile-1-0.local"
     }, 
-    "tile-2-0": {
-        "down": "tile-2-1", 
-        "left": "tile-1-0", 
-        "right": "tile-3-0", 
-        "up": "tile-2-3"
+    "tile-2-0.local": {
+        "down": "tile-2-3.local", 
+        "left": "tile-1-0.local", 
+        "right": "tile-3-0.local", 
+        "up": "tile-2-1.local"
     }, 
-    "tile-2-1": {
-        "down": "tile-2-2", 
-        "left": "tile-1-1", 
-        "right": "tile-3-1", 
-        "up": "tile-2-0"
+    "tile-2-1.local": {
+        "down": "tile-2-0.local", 
+        "left": "tile-1-1.local", 
+        "right": "tile-3-1.local", 
+        "up": "tile-2-2.local"
     }, 
-    "tile-2-2": {
-        "down": "tile-2-3", 
-        "left": "tile-1-2", 
-        "right": "tile-3-2", 
-        "up": "tile-2-1"
+    "tile-2-2.local": {
+        "down": "tile-2-1.local", 
+        "left": "tile-1-2.local", 
+        "right": "tile-3-2.local", 
+        "up": "tile-2-3.local"
     }, 
-    "tile-2-3": {
-        "down": "tile-2-0", 
-        "left": "tile-1-3", 
-        "right": "tile-3-3", 
-        "up": "tile-2-2"
+    "tile-2-3.local": {
+        "down": "tile-2-2.local", 
+        "left": "tile-1-3.local", 
+        "right": "tile-3-3.local", 
+        "up": "tile-2-0.local"
     }, 
-    "tile-3-0": {
-        "down": "tile-3-1", 
-        "left": "tile-2-0", 
-        "right": "tile-4-0", 
-        "up": "tile-3-3"
+    "tile-3-0.local": {
+        "down": "tile-3-3.local", 
+        "left": "tile-2-0.local", 
+        "right": "tile-4-0.local", 
+        "up": "tile-3-1.local"
     }, 
-    "tile-3-1": {
-        "down": "tile-3-2", 
-        "left": "tile-2-1", 
-        "right": "tile-4-1", 
-        "up": "tile-3-0"
+    "tile-3-1.local": {
+        "down": "tile-3-0.local", 
+        "left": "tile-2-1.local", 
+        "right": "tile-4-1.local", 
+        "up": "tile-3-2.local"
     }, 
-    "tile-3-2": {
-        "down": "tile-3-3", 
-        "left": "tile-2-2", 
-        "right": "tile-4-2", 
-        "up": "tile-3-1"
+    "tile-3-2.local": {
+        "down": "tile-3-1.local", 
+        "left": "tile-2-2.local", 
+        "right": "tile-4-2.local", 
+        "up": "tile-3-3.local"
     }, 
-    "tile-3-3": {
-        "down": "tile-3-0", 
-        "left": "tile-2-3", 
-        "right": "tile-4-3", 
-        "up": "tile-3-2"
+    "tile-3-3.local": {
+        "down": "tile-3-2.local", 
+        "left": "tile-2-3.local", 
+        "right": "tile-4-3.local", 
+        "up": "tile-3-0.local"
     }, 
-    "tile-4-0": {
-        "down": "tile-4-1", 
-        "left": "tile-3-0", 
-        "right": "tile-5-0", 
-        "up": "tile-4-3"
+    "tile-4-0.local": {
+        "down": "tile-4-3.local", 
+        "left": "tile-3-0.local", 
+        "right": "tile-5-0.local", 
+        "up": "tile-4-1.local"
     }, 
-    "tile-4-1": {
-        "down": "tile-4-2", 
-        "left": "tile-3-1", 
-        "right": "tile-5-1", 
-        "up": "tile-4-0"
+    "tile-4-1.local": {
+        "down": "tile-4-0.local", 
+        "left": "tile-3-1.local", 
+        "right": "tile-5-1.local", 
+        "up": "tile-4-2.local"
     }, 
-    "tile-4-2": {
-        "down": "tile-4-3", 
-        "left": "tile-3-2", 
-        "right": "tile-5-2", 
-        "up": "tile-4-1"
+    "tile-4-2.local": {
+        "down": "tile-4-1.local", 
+        "left": "tile-3-2.local", 
+        "right": "tile-5-2.local", 
+        "up": "tile-4-3.local"
     }, 
-    "tile-4-3": {
-        "down": "tile-4-0", 
-        "left": "tile-3-3", 
-        "right": "tile-5-3", 
-        "up": "tile-4-2"
+    "tile-4-3.local": {
+        "down": "tile-4-2.local", 
+        "left": "tile-3-3.local", 
+        "right": "tile-5-3.local", 
+        "up": "tile-4-0.local"
     }, 
-    "tile-5-0": {
-        "down": "tile-5-1", 
-        "left": "tile-4-0", 
-        "right": "tile-6-0", 
-        "up": "tile-5-3"
+    "tile-5-0.local": {
+        "down": "tile-5-3.local", 
+        "left": "tile-4-0.local", 
+        "right": "tile-6-0.local", 
+        "up": "tile-5-1.local"
     }, 
-    "tile-5-1": {
-        "down": "tile-5-2", 
-        "left": "tile-4-1", 
-        "right": "tile-6-1", 
-        "up": "tile-5-0"
+    "tile-5-1.local": {
+        "down": "tile-5-0.local", 
+        "left": "tile-4-1.local", 
+        "right": "tile-6-1.local", 
+        "up": "tile-5-2.local"
     }, 
-    "tile-5-2": {
-        "down": "tile-5-3", 
-        "left": "tile-4-2", 
-        "right": "tile-6-2", 
-        "up": "tile-5-1"
+    "tile-5-2.local": {
+        "down": "tile-5-1.local", 
+        "left": "tile-4-2.local", 
+        "right": "tile-6-2.local", 
+        "up": "tile-5-3.local"
     }, 
-    "tile-5-3": {
-        "down": "tile-5-0", 
-        "left": "tile-4-3", 
-        "right": "tile-6-3", 
-        "up": "tile-5-2"
+    "tile-5-3.local": {
+        "down": "tile-5-2.local", 
+        "left": "tile-4-3.local", 
+        "right": "tile-6-3.local", 
+        "up": "tile-5-0.local"
     }, 
-    "tile-6-0": {
-        "down": "tile-6-1", 
-        "left": "tile-5-0", 
-        "right": "tile-0-0", 
-        "up": "tile-6-3"
+    "tile-6-0.local": {
+        "down": "tile-6-3.local", 
+        "left": "tile-5-0.local", 
+        "right": "tile-0-0.local", 
+        "up": "tile-6-1.local"
     }, 
-    "tile-6-1": {
-        "down": "tile-6-2", 
-        "left": "tile-5-1", 
-        "right": "tile-0-1", 
-        "up": "tile-6-0"
+    "tile-6-1.local": {
+        "down": "tile-6-0.local", 
+        "left": "tile-5-1.local", 
+        "right": "tile-0-1.local", 
+        "up": "tile-6-2.local"
     }, 
-    "tile-6-2": {
-        "down": "tile-6-3", 
-        "left": "tile-5-2", 
-        "right": "tile-0-2", 
-        "up": "tile-6-1"
+    "tile-6-2.local": {
+        "down": "tile-6-1.local", 
+        "left": "tile-5-2.local", 
+        "right": "tile-0-2.local", 
+        "up": "tile-6-3.local"
     }, 
-    "tile-6-3": {
-        "down": "tile-6-0", 
-        "left": "tile-5-3", 
-        "right": "tile-0-3", 
-        "up": "tile-6-2"
+    "tile-6-3.local": {
+        "down": "tile-6-2.local", 
+        "left": "tile-5-3.local", 
+        "right": "tile-0-3.local", 
+        "up": "tile-6-0.local"
     }
 }

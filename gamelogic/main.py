@@ -1,3 +1,4 @@
+import copy
 import os
 import time
 import sys
@@ -105,7 +106,7 @@ class WallManMain:
         player.update_migration(**connDict)
         player.update_layout(self.layout)
         self.players[name] = player
-        self.playerSprites.add(player.sprite_rect)
+        self.playerSprites.add(player.sprite_object)
         return "OK"
 
     #REVIEW: SO MANY HACKS
@@ -132,8 +133,7 @@ class WallManMain:
         for key in keys:
             connDict[key] = self.connection.sendPlayerInDirection
         player.update_migration(**connDict)
-        # player.update_layout(self.layout)
-	
+
         if direction == "left":
             player._sprite_object.rect.x = self.res[0] - player.speed
         elif direction == "right":
@@ -145,9 +145,10 @@ class WallManMain:
 
         player.update_movement(direction)
         player.update_movement(["none", "left", "right", "up", "down"][newDirection])  # FIXME UGLY AS HELL
-	player.update_layout(self.layout)
+        player.update_layout(self.layout)
+
         self.players[name] = player
-        self.playerSprites.add(player.sprite_rect)  # fixme: need the old color and askii sprite
+        self.playerSprites.add(player.sprite_object)  # fixme: need the old color and askii sprite
         return "OK"
 
     def movePlayer(self, name, direction):  # TODO: Better error support
@@ -188,27 +189,12 @@ class WallManMain:
             for name in self.players.keys():
                 player = self.players[name]
                 player.update(self.floorSprites)
-                if player.migrate_me:
+                if player.delete_me:
                     del self.players[name]
             self.floorSprites.draw(self.screen)
 
             self.playerSprites.draw(self.screen)
             pygame.display.flip()
-
-            timer = time.clock()
-            if timer > 60:  # TODO make more dynamic
-                print "Game Over ..."
-                score = dict()
-                for floor in self.floorSprites:
-                    try:
-                        score[floor.get_marker()] += 1
-                    except KeyError:
-                        score[floor.get_marker()] = 1
-                print score
-                self.running = END
-            else:
-                pass
-                #print timer
 
         self.hardQuit()
 
@@ -217,7 +203,7 @@ class WallManMain:
 
     def hardQuit(self):
         pygame.quit()
-        sys.exit()
+        sys.exit(0)
 
 
 # May need to demonize the function to support CF
