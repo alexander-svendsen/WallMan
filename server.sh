@@ -5,4 +5,4 @@ BASEDIR=..
 export PYTHONPATH=$PYTHONPATH:$BASEDIR
 cd server # Must be inside this directory to get static to work
 echo $PYTHONPATH
-python server.py
+python server.py -sc BigDisplayWall.json
