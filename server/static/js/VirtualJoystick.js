@@ -49,7 +49,7 @@ function resetCanvas (e) {
     // resize the canvas - but remember - this clears the canvas too.
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
+    canvas.radius = (canvas.width + canvas.height)/100;
     //make sure we scroll to the top left.
     window.scrollTo(0,0);
 }
@@ -58,7 +58,6 @@ function resetCanvas (e) {
 function setupController(){
     setInterval(draw, 1000/35);
     setupCanvas();
-
 
     if(touchable) {
         canvas.addEventListener( 'touchstart', onTouchStart, false );
@@ -71,6 +70,8 @@ function setupController(){
         canvas.addEventListener( 'mousemove', onMouseMove, false );
         canvas.addEventListener( 'mousedown', onMouseStart, false );
         canvas.addEventListener( 'mouseup', onMouseEnd, false );
+        window.onorientationchange = resetCanvas;
+        window.onresize = resetCanvas;
     }
 }
 function draw() {
@@ -132,7 +133,7 @@ function draw() {
 }
 
 function onTouchStart(e) {
-
+    e.preventDefault(); // Prevent the browser from doing its default thing (scroll, zoom)
     for(var i = 0; i<e.changedTouches.length; i++){
         var touch =e.changedTouches[i];
         if(touchID<0){
@@ -163,6 +164,7 @@ function onTouchMove(e) {
 }
 
 function onTouchEnd(e) {
+    e.preventDefault(); // Prevent the browser from doing its default thing (scroll, zoom)
     touches = e.touches;
     for(var i = 0; i<e.changedTouches.length; i++){
         var touch =e.changedTouches[i];

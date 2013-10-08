@@ -15,6 +15,9 @@ canvas {
     background-color:#000000;
 }
 .drawcanvas {
+    width:  100%;
+    height: 100%;
+    margin: 0px;
     text-align:center;
     background-color:#000000;
 }
