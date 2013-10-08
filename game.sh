@@ -1,6 +1,5 @@
 #!/bin/bash
 # My first script
-BASEDIR=$(dirname $BASH_SOURCE )
-
+BASEDIR $(cd $(dirname $0); pwd)
 export PYTHONPATH=$PYTHONPATH:$BASEDIR 	
 python gamelogic/main.py -m DisplayWallTest.json
