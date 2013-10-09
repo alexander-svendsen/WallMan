@@ -1,3 +1,4 @@
+from collections import defaultdict
 import copy
 import os
 import time
@@ -6,6 +7,7 @@ import random
 
 import pygame
 from pygame.locals import *
+import signal
 
 from gamelogic import gamelayout
 import maps.config as gameLayoutConfig
@@ -157,6 +159,12 @@ class WallManMain:
         else:
             print "Error: Non-existing player moved", name  # FIXME means the server is inconsistent
 
+    def get_tiles(self):
+        score = defaultdict(lambda: 0)
+        for floor in self.floorSprites:
+            score[floor.get_marker()] += 1
+        return score
+
     def main(self):
         """Main game loop, runs all the code"""
         clock = pygame.time.Clock()
@@ -180,9 +188,11 @@ class WallManMain:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     self.running = END
+                    self.connection.send_status_data()
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         self.running = END
+                        self.connection.send_status_data()
 
             clock.tick(30)
 
@@ -244,5 +254,8 @@ def main():
     wallman.main()
 
 if __name__ == "__main__":  # TODO REFACTOR THE CODE
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except KeyboardInterrupt:  # review  maybe should send status anyway ?
+        sys.exit(0)
 

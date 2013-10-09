@@ -14,10 +14,10 @@ class ScreenLayout():
         :param screen_config_path: Where can the different kinds of connection configs be found
         """
         self._counter_dict_for_hostname = collections.defaultdict(lambda: 0)
-
+        self._join_list = None
         if screen_config_type == 'default':
-            self._screen_config_dict = dict()
             self._join_list = list()
+            self._screen_config_dict = dict()
         else:
             self._screen_config_dict = self._read(screen_config_type, screen_config_path)
 
@@ -76,13 +76,14 @@ class ScreenLayout():
         if hostname not in self._screen_config_dict:
             return
 
-        del self._screen_config_dict[hostname]
-
         if self._join_list:
             self._join_list.remove(hostname)
             self._reset_screen_config()
+            del self._screen_config_dict[hostname]
         else:
+            hostname = hostname.rsplit('_', 1)[0]
             self._counter_dict_for_hostname[hostname] -= 1
+            print self._counter_dict_for_hostname
 
     def __getitem__(self, uniqueID):
         return self._screen_config_dict[uniqueID]
@@ -102,21 +103,30 @@ if __name__ == "__main__":
     # def printTest(host, screenLayout):
     #     print '{0}:\n\t{1}'.format(host, screenLayout.get_setup_for_hostname(host))
     #
-    # test2 = ScreenLayout("SingleScreenTest.json")
+
+    test2 = ScreenLayout("SingleScreenTest.json", screen_config_path='server/screenconfig/')
+    test2.get_id_of_host("Alexander-PC")
+    test2.get_id_of_host("Alexander-PC")
+    test2.get_id_of_host("Alexander-PC")
+    test2.remove("Alexander-PC")
+    test2.remove("Alexander-PC_1")
+    test2.remove("Alexander-PC_2")
+    print test2.is_hostname_valid("Alexander-PC")
+    print test2.get_id_of_host("Alexander-PC")
     # printTest(test2.get_id_of_host("Alexander-PC"), test2)
     # printTest(test2.get_id_of_host("Alexander-PC"), test2)
     # printTest(test2.get_id_of_host("Alexander-PC"), test2)
     # printTest(test2.get_id_of_host("Alexander-PC"), test2)
 
-    test4 = ScreenLayout()
-    test4.get_id_of_host("Alexander-PC")
-    test4.get_id_of_host("Alexander-PC")
-    test4.remove("Alexander-PC")
-    test4.get_id_of_host("Alexander-PC")
+    # test4 = ScreenLayout()
+    # test4.get_id_of_host("Alexander-PC")
+    # test4.get_id_of_host("Alexander-PC")
+    # test4.get_id_of_host("Alexander-PC")
+    # test4.remove("Alexander-PC_2")
 
     #test4.get_id_of_host("Alexander-PC")
 
-    print test4
+    print test2
 
     # test3 = ScreenLayout('default')
     # host = test3.get_id_of_host("Alexander-PC")

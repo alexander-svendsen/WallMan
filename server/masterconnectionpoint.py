@@ -1,20 +1,26 @@
 # -*- coding: utf-8 -*-
+from collections import defaultdict
 import functools
 import socket
 import random
 import json
 import thread
+import threading
+from functools import partial
 import screenlayout as sl
 import socketcommunication as communication
 
 
 class MasterConnectionPoint(communication.Server):
-    def __init__(self, ip, port, screen_config, players):
+    def __init__(self, ip, port, screen_config, timer):
         communication.Server.__init__(self, ip, port)
-        print "Master Connection point established at: {0}:{1}".format(ip,port)
+        print "Master Connection point established at: {0}:{1}".format(ip, port)
         self._screen_layout = sl.ScreenLayout(screen_config)
         self._connected_slaves = dict()
-        self._players = players
+        self._players = dict()
+        self._player_score = defaultdict(lambda: 0)
+        self._conn_to_player_dict = defaultdict(lambda: list())
+        self.timer = timer
 
     def add_player(self, raw):
         data = json.loads(raw)
@@ -25,6 +31,7 @@ class MasterConnectionPoint(communication.Server):
 
         game_slave = self._get_random_slave()
         self._players[data["name"]] = game_slave
+        self._conn_to_player_dict[game_slave].append(data["name"])
 
         data["cmd"] = "join"
         game_slave.send(json.dumps(data))
@@ -40,12 +47,15 @@ class MasterConnectionPoint(communication.Server):
             thread.start_new(self._receive_data_for_ever, (connection, address))
 
     def _receive_data_for_ever(self, connection, address):
+        hostname = ""
         try:
             for raw in iter(functools.partial(connection.recv,1024), ""):
                 data = json.loads(raw)
                 if data['cmd'] == 'migrate':
                     print "migrate signal received", data
+                    self._conn_to_player_dict[self._players[data["name"]]].remove(data["name"])
                     self._players[data["name"]] = connection
+                    self._conn_to_player_dict[connection].append(data["name"])
                 elif data['cmd'] == 'setup':
                     hostname = self._screen_layout.get_id_of_host(data["hostname"])
                     if self._screen_layout.is_hostname_valid(hostname):
@@ -54,23 +64,47 @@ class MasterConnectionPoint(communication.Server):
                                                             "port": data['port']}
                         connection.send(json.dumps({"cmd": "ok"}))
                     else:  # Invalid game connected, so send a close signal since it will not be used
+                        print "Invalid host connected"
                         connection.send(json.dumps({"cmd": "close"}))
                         return
                     print "Connected clients:", self._connected_slaves
+                elif data['cmd'] == "status":
+                    for name, score in data['score'].iteritems():
+                        print name,score
+                        self._player_score[name] += score
                 else:
                     print "Received something strange from the client", data
         except ValueError:
-            print "Invalid json received:", raw
+            print "Invalid json data received:", raw
         except KeyError:
-            print "Invalid setup received", data
+            print "Invalid json received, KeyError", data
         except socket.error:
             print "Connection went down"
         finally:
-            # Know this may cause unintentional error in cases where the hostname isn't received, but it can simply
-            # ignore the problem since the it gets run in a thread that completes here anyway and won't cause problem
-            # for the rest of the program  # FIXME: IN THE FUTURE
+            if hostname not in self._connected_slaves:
+                return
+
+            for name in self._conn_to_player_dict[self._connected_slaves[hostname]['conn']]:
+                self.fix_player(name)
+
+            del self._conn_to_player_dict[self._connected_slaves[hostname]['conn']]
             del self._connected_slaves[hostname]
             self._screen_layout.remove(hostname)
+
+    # review should be an other solution
+    def fix_player(self, name):
+        del self._players[name]
+
+    def shutdown_clients(self):
+        self.send_to_all(json.dumps({"cmd": "close"}))
+        # FIXME need to wait
+        print "FINAL SCORE:", self._player_score
+        self._player_score.clear()
+
+    def start_game(self):
+        self.send_to_all(json.dumps({"cmd": "start"}))
+        if self.timer:
+            threading.Timer(self.timer, partial(self.send_to_all, (json.dumps({"cmd": "close"})))).start()
 
     def send_setup(self):
         for key, value in self._connected_slaves.iteritems():

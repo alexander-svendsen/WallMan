@@ -38,11 +38,7 @@ class GameConnection():
         while self.acceptConnections:
             connection, addr = self.server.accept_connection()
             self.connectedClients.append(connection)
-
-    def reciveFromAll(self):
-        print self.connectedClients
-        for client in self.connectedClients:
-            thread.start_new(self.reciveForEver, (client, 1024))
+            thread.start_new(self.reciveForEver, (connection, 1024))
 
     def reciveForEver(self, conn, length):
         try:
@@ -96,19 +92,20 @@ class GameConnection():
 
         elif data['cmd'] == "start":
             self.theGame.start()
-            self.acceptConnections = False
-            self.reciveFromAll()
 
         elif data['cmd'] == "setup":
             print data['connection_config']
             for key, addr in data['connection_config'].iteritems():
-                self.connectToDirection(key, addr)
-            print "new connections to directions have been established"
-            print self.directionConnections
+                if addr != 'BLOCK':  # TODO: should do something about this direction
+                    self.connectToDirection(key, addr)
             self.theGame.update_players_migrations()
 
         elif data['cmd'] == "close":
+            self.send_status_data()
             self.close()
+
+        elif data['cmd'] == "status":
+            self.send_status_data()
 
         elif data['cmd'] == "migrate":
             self.theGame.migratePlayer(data["name"], data["direction"], data["newDirection"], data["x"], data["y"], data["color"], data["askii"], data["askii-color"])
@@ -129,6 +126,11 @@ class GameConnection():
                 traceback.print_exc(file=sys.stdout)  # TODO remove
                 self.close()
                 raise
+
+    def send_status_data(self):
+        raw_data = {'cmd': 'status', 'score': self.theGame.get_tiles()}
+        data = json.dumps(raw_data)
+        self.connection.send(data)
 
     def close(self):
         self.acceptConnections = False

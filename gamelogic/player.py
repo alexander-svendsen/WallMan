@@ -57,6 +57,7 @@ class Player():
         self._state = STATE_MOVE_FREELY
 
     def update_migration(self, **kwargs):
+        print kwargs
         self.migrate = {LEFT:   self._migrate if "left" not in kwargs else kwargs["left"],
                         RIGHT:  self._migrate if "right" not in kwargs else kwargs["right"],
                         UP:     self._migrate if "up" not in kwargs else kwargs["up"],

@@ -2,5 +2,7 @@
 
 setlocal
 set PYTHONPATH=%cd%;%PYTHONPATH%
-python gamelogic/main.py -a 129.242.22.192  #You must change the address if the master has moved
+
+#You must change the address if the master has moved
+python gamelogic/main.py -a 129.242.22.192 -r 528 528
 endlocal

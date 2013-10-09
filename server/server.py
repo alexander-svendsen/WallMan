@@ -14,8 +14,7 @@ urls = (
 class Server:  # Single server controlling all states and players
     def GET(self, path=""):
         if path == "start":
-            data = {'cmd': 'start'}
-            web.connection_point.send_to_all(json.dumps(data))
+            web.connection_point.start_game()
 
     def POST(self, path=""):  # FIXME error messages and such
         if path == "setup":
@@ -26,6 +25,9 @@ class Server:  # Single server controlling all states and players
 
         if path == "move":
             web.connection_point.move_player(web.data())
+
+        if path == "close":
+            web.connection_point.shutdown_clients()
 
 
 def main():
@@ -38,10 +40,11 @@ def main():
     parser.add_argument("-sc", "--screen_config",
                         help="Pick a screen config of the available files inside the screenconfig folder",
                         type=str, default="default")
+    parser.add_argument("-t", "--time", help="How long should the game run before it shutdown, in second", type=int)
     args = parser.parse_args()
 
     #Set up the Master connection
-    connection_point = mcp.MasterConnectionPoint('0.0.0.0', args.port_master, args.screen_config, dict())
+    connection_point = mcp.MasterConnectionPoint('0.0.0.0', args.port_master, args.screen_config, args.time)
     web.connection_point = connection_point
     thread.start_new(connection_point.listen_for_slaves, ())
 
@@ -51,7 +54,6 @@ def main():
 
     #Start running web.py
     app.run()
-
 
 if __name__ == "__main__":
     sys.exit(main())
