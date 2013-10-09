@@ -20,6 +20,9 @@ class MasterConnectionPoint(communication.Server):
         data = json.loads(raw)
         if not self._connected_slaves:  # Error testing
             return
+        if data["name"] in self._players:  # Should not rejoin a player
+            return  # review Error support
+
         game_slave = self._get_random_slave()
         self._players[data["name"]] = game_slave
 
