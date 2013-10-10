@@ -29,6 +29,9 @@ class Server:  # Single server controlling all states and players
         if path == "close":
             web.connection_point.shutdown_clients()
 
+        if path == "status":
+            return web.connection_point.get_status()
+
 
 def main():
     app = web.application(urls, globals())

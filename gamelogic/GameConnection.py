@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from functools import partial
 import json
 import thread
+import threading
 from socketcommunication import *
 import sys, traceback
 
@@ -16,6 +18,11 @@ class GameConnection():
 
         self.acceptConnections = True
         self.running = True
+
+    #review a good time?
+    def periodic_send_status(self, time=10):
+        threading.Timer(time, partial(self.periodic_send_status, time)).start()
+        self.send_status_data()
 
     def connectToMaster(self, addr, port):
         self.connection = Client()
@@ -92,6 +99,7 @@ class GameConnection():
 
         elif data['cmd'] == "start":
             self.theGame.start()
+            self.periodic_send_status()
 
         elif data['cmd'] == "setup":
             print data['connection_config']

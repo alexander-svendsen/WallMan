@@ -63,7 +63,8 @@ class MasterConnectionPoint(communication.Server):
                     if self._screen_layout.is_hostname_valid(hostname):
                         self._connected_slaves[hostname] = {"conn": connection,
                                                             "addr": address[0],
-                                                            "port": data['port']}
+                                                            "port": data['port'],
+                                                            "score": dict()}
                         connection.send(json.dumps({"cmd": "ok"}))
                     else:  # Invalid game connected, so send a close signal since it will not be used
                         print "Invalid host connected"
@@ -71,15 +72,14 @@ class MasterConnectionPoint(communication.Server):
                         return
                     print "Connected clients:", self._connected_slaves
                 elif data['cmd'] == "status":
-                    for name, score in data['score'].iteritems():
-                        self._player_score[name] += score
+                    self._connected_slaves[hostname]["score"] = data['score']
+
                     if self.shutdown:
                         self._shutdown_dict[connection] = 1  # Uses dict to ensure uniqueness of the signal
-                        if len(self._shutdown_dict) == self.waiting_len:  # FIXME, what if conn has gone down? here i simply don't care about them
-                            print "FINAL SCORE:", self._player_score
-                            self._player_score.clear()
-                            self.shutdown = False
-                            self._shutdown_dict.clear()
+                        # FIXME, what if conn has gone down? here i simply don't care about them
+                        if len(self._shutdown_dict) == len(self._connected_slaves):
+                            self.calculate_score()
+                            print self._player_score
                 else:
                     print "Received something strange from the client", data
         except ValueError:
@@ -103,9 +103,22 @@ class MasterConnectionPoint(communication.Server):
     def fix_player(self, name):
         del self._players[name]
 
+    def get_status(self):
+        if self.shutdown:  # No point calculating anything since the game has ended
+            return self._player_score.items()
+        else:
+            self._player_score.clear()
+            return self.calculate_score()
+
+    def calculate_score(self):
+        for item in self._connected_slaves.itervalues():
+            for name, score in item["score"].iteritems():
+                self._player_score[name] += score  # TODO NOT ATOMIC CAN BE WRONG. FIX
+        return self._player_score.items()
+
     def shutdown_clients(self):
         self.send_to_all(json.dumps({"cmd": "close"}))
-        # FIXME, what if conn has gone down? here i simply don't care about them
+        # FIXME, calc final score
         self.waiting_len = len(self._connected_slaves)
         if self.waiting_len:
             self.shutdown = True
@@ -113,7 +126,7 @@ class MasterConnectionPoint(communication.Server):
     def start_game(self):
         self.send_to_all(json.dumps({"cmd": "start"}))
         if self.timer:
-            threading.Timer(self.timer, partial(self.send_to_all, (json.dumps({"cmd": "close"})))).start()
+            threading.Timer(self.timer, self.shutdown_clients).start()
 
     def send_setup(self):
         for key, value in self._connected_slaves.iteritems():
