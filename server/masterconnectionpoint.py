@@ -20,6 +20,8 @@ class MasterConnectionPoint(communication.Server):
         self._players = dict()
         self._player_score = defaultdict(lambda: 0)
         self._conn_to_player_dict = defaultdict(lambda: list())
+        self.shutdown = False
+        self._shutdown_dict = dict()
         self.timer = timer
 
     def add_player(self, raw):
@@ -70,8 +72,14 @@ class MasterConnectionPoint(communication.Server):
                     print "Connected clients:", self._connected_slaves
                 elif data['cmd'] == "status":
                     for name, score in data['score'].iteritems():
-                        print name,score
                         self._player_score[name] += score
+                    if self.shutdown:
+                        self._shutdown_dict[connection] = 1  # Uses dict to ensure uniqueness of the signal
+                        if len(self._shutdown_dict) == self.waiting_len:  # FIXME, what if conn has gone down? here i simply don't care about them
+                            print "FINAL SCORE:", self._player_score
+                            self._player_score.clear()
+                            self.shutdown = False
+                            self._shutdown_dict.clear()
                 else:
                     print "Received something strange from the client", data
         except ValueError:
@@ -97,9 +105,10 @@ class MasterConnectionPoint(communication.Server):
 
     def shutdown_clients(self):
         self.send_to_all(json.dumps({"cmd": "close"}))
-        # FIXME need to wait
-        print "FINAL SCORE:", self._player_score
-        self._player_score.clear()
+        # FIXME, what if conn has gone down? here i simply don't care about them
+        self.waiting_len = len(self._connected_slaves)
+        if self.waiting_len:
+            self.shutdown = True
 
     def start_game(self):
         self.send_to_all(json.dumps({"cmd": "start"}))

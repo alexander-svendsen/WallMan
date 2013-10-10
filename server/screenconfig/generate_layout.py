@@ -27,13 +27,16 @@ def write_to_file(filename, data):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate a .json file for the layout. Fitted to block the design wall")
+    parser = argparse.ArgumentParser(description="Generate a .json file for the layout in a block fashion. "
+                                                 "Best matched on a distributed display wall")
     parser.add_argument("x_min", help="Start x pos", type=int)
     parser.add_argument("y_min", help="Start y pos", type=int)
     parser.add_argument("x_max", help="End x pos", type=int)
     parser.add_argument("y_max", help="End y pos", type=int)
     parser.add_argument("filename", help="filename of the output", type=str)
-    parser.add_argument("-default_host_name", help="filename of the output", type=str, default="tile-{0}-{1}.local")
+    parser.add_argument("-default_host_name",
+                        help="How the host names should match. Must written in a standard python string.format way",
+                        type=str, default="tile-{0}-{1}.local")
     args = parser.parse_args()
     data = generate_block_layout(min_x=args.x_min, min_y=args.y_min,
                                  max_x=args.x_max, max_y=args.y_max, default=args.default_host_name)
