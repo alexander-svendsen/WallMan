@@ -105,7 +105,7 @@ class MasterConnectionPoint(communication.Server):
 
     def get_status(self):
         if self.shutdown:  # No point calculating anything since the game has ended
-            return self._player_score.items()
+            return self._player_score
         else:
             self._player_score.clear()
             return self.calculate_score()
@@ -114,7 +114,7 @@ class MasterConnectionPoint(communication.Server):
         for item in self._connected_slaves.itervalues():
             for name, score in item["score"].iteritems():
                 self._player_score[name] += score  # TODO NOT ATOMIC CAN BE WRONG. FIX
-        return self._player_score.items()
+        return self._player_score
 
     def shutdown_clients(self):
         self.send_to_all(json.dumps({"cmd": "close"}))

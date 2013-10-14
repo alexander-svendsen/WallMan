@@ -1,23 +1,69 @@
+@font-face
+{
+    font-family: PressStart2P;
+    src: url(../font/PressStart2P.ttf);
+}
+
+
 
 body {
-    background-color: #000000;
-    margin: 0px;
-    padding-left: 0px;
-    padding-right: 0px;
-}
-canvas {
+    #background-color: #FFFFFF;
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
     background-color:#111133;
-    display:block;
-    position:absolute;
 }
-.container {
-    text-align:center;
-    background-color:#000000;
-}
+
 .drawcanvas {
+    position: absolute;
+    left: 0;
+    top: 0;
     width:  100%;
     height: 100%;
-    margin: 0px;
-    text-align:center;
-    background-color:#000000;
+    margin: 0;
+    z-index: 1000;
+    overflow:hidden;
 }
+
+.bull {
+    left: 10px;
+    top: 10px;
+    padding: 10px;
+    position: absolute;
+}
+.info{
+    text-align: left;
+    padding-top: 10px;
+    font-size: 0.5em;
+}
+.highlightPlayer {
+    color: #cc0473;
+}
+
+table {
+    width: 300px;
+    font-family: 'pressstart2p';
+    *border-collapse: collapse; /* IE7 and lower */
+    border-spacing: 0;
+    font-size: 14px;
+}
+
+
+.div_bordered {
+    font-family: 'pressstart2p';
+    color: #cc8a12;
+    background-color:#111133;
+    text-align: center;
+    font-size: 0.8em;
+}
+
+.bordered td, .td_name{
+    text-align: left;
+    padding: 10px
+}
+
+.bordered td, .bordered th {
+    padding: 10px;
+}
+
+

@@ -15,6 +15,8 @@ class Server:  # Single server controlling all states and players
     def GET(self, path=""):
         if path == "start":
             web.connection_point.start_game()
+        if path == "status":
+            return json.dumps(web.connection_point.get_status())
 
     def POST(self, path=""):  # FIXME error messages and such
         if path == "setup":
@@ -28,9 +30,6 @@ class Server:  # Single server controlling all states and players
 
         if path == "close":
             web.connection_point.shutdown_clients()
-
-        if path == "status":
-            return web.connection_point.get_status()
 
 
 def main():

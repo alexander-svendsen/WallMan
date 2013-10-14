@@ -189,6 +189,7 @@ function onMouseMove(e) {
 }
 
 function onMouseStart(e){
+    e.preventDefault(); // Prevent the browser from doing its default thing (scroll, zoom)
     if(touchID<0){
         touchID = 1;
         touchStartPos.reset(event.offsetX, event.offsetY);
@@ -240,17 +241,14 @@ function getDirection(){
 
 }
 function setupCanvas() {
-
     canvas = document.createElement( 'canvas' );
     c = canvas.getContext( '2d' );
     container = document.createElement( 'div' );
     container.className = "drawcanvas";
-
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     document.body.appendChild( container );
     container.appendChild(canvas);
-
-    c.strokeStyle = "#ffffff";
-    c.lineWidth =2;
+    c.strokeStyle = "#000000";
+    c.lineWidth = 2;
 }

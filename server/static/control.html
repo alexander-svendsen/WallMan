@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="target-densitydpi=device-dpi, initial-scale=1.0, maximum-scale=1.0" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0" />
     <title>Controls</title>
     <link rel="stylesheet" type="text/css" href="style/main.css">
 </head>
 <body onload="init()">
-<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
-<script src="libs/jquery.cookie.js"></script>
-<script src="libs/Vector2.js"></script>
-<script src="js/CustomAjaxCalls.js"></script>
-<script src="js/VirtualJoystick.js"></script>
+<script type='text/javascript' src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+<script type='text/javascript' src="libs/jquery.cookie.js"></script>
+<script type='text/javascript' src="libs/Vector2.js"></script>
+<script type='text/javascript' src="libs/knockout-2.3.0.js"></script>
+<script type='text/javascript' src="js/CustomAjaxCalls.js"></script>
+<script type='text/javascript' src="js/VirtualJoystick.js"></script>
+<script type='text/javascript' src="js/scoresystem.js"></script>
+
+
 <script>
 
 var username = $.cookie("username");
 var prevDirection = ""
-
 
 function init(){
     //In those cases where there is no username
@@ -28,7 +31,7 @@ function init(){
     // To discover if the page is refreshed or not
     if($.cookie("refresh") == undefined){
         $.cookie("refresh", true);
-        ajax(tasksURI + '/join', 'POST', {"name" : username}).done();
+        ajax(tasksURI + '/join', 'POST', {"name" : username});
     }
 }
 
@@ -37,5 +40,22 @@ var removeCookies = function(){
 };
 window.onbeforeunload = removeCookies;
 </script>
+<div class="bull div_bordered">
+    <h2>Score</h2>
+    <span class="time">Last update <span data-bind="text: seconds"></span>s </span>
+    <table class="bordered">
+        <thead><tr>
+            <th>#</th><th class="td_name">Name</th><th>Score</th>
+        </tr></thead>
+        <tbody data-bind="foreach: scoreArray">
+            <tr data-bind="css: { highlightPlayer: me}">
+                <td data-bind="text: rank"></td>
+                <td class="td_name" data-bind="text: name"></td>
+                <td data-bind="text: score"></td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="info">*Yourself + 4 closed players displayed</p>
+</div>
 </body>
 </html>

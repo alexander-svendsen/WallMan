@@ -1,5 +1,4 @@
 var tasksURI =  "http://" + $(location).attr('host');
-console.log(tasksURI);
 var ajax = function(uri, method, data) {
     var request = {
         url: uri,

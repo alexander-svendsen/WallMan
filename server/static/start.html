@@ -4,8 +4,8 @@
 <meta charset=utf-8>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
-<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
 <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
 <link rel="stylesheet" type="text/css" href="style/main.css">
 <title>WallMan</title>
 </head>
@@ -24,42 +24,7 @@
 
 <script src="js/CustomAjaxCalls.js"></script>
 <script src="libs/jquery.cookie.js"></script>
-<script>
+<script src="js/submit_system.js"></script>
 
-$("#playerProp").on("submit", function(e) {
-    e.preventDefault();
-    var button = $('#joinButton');
-
-    var inputField = $('#appendedInputButton');
-    var username = inputField.val();
-
-    if (username.length == 0){
-        button.toggleClass('btn-primary', false);
-        button.toggleClass('btn-danger', true);
-        $('#errorContainer').toggleClass('error', true);
-        var input = $('#appendedInputButton');
-        input.attr("placeholder", "Must have one");
-        input.css('border-color', '#b94a48');
-        return;
-    }
-
-    button.prop('disabled', true);
-    inputField.prop('disabled', true);
-
-    button.toggleClass('btn-primary', true);
-    button.toggleClass('btn-danger', false);
-    $('#errorContainer').toggleClass('error', false);
-    ajax(tasksURI + '/join', 'POST', {"name" : username}).success(redirect(username));
-});
-
-var redirect = function(username){
-    $.cookie("username", username);
-    $.cookie("refresh", true);
-    window.location.replace("/static/control.html");
-}
-
-
-
-</script>
 </body>
 </html>
