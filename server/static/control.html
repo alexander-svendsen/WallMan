@@ -22,7 +22,7 @@ var prevDirection = ""
 
 function init(){
     //In those cases where there is no username
-    if (username.length == 0){
+    if (!username){
         window.location.replace("/static/start.html");
     }
 
@@ -42,7 +42,7 @@ window.onbeforeunload = removeCookies;
 </script>
 <div class="bull div_bordered">
     <h2>Score</h2>
-    <span class="time">Last update <span data-bind="text: seconds"></span>s </span>
+    <span>Last update <span data-bind="text: seconds"></span>s </span>
     <table class="bordered">
         <thead><tr>
             <th>#</th><th class="td_name">Name</th><th>Score</th>

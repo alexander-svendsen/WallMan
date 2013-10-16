@@ -4,8 +4,6 @@
     src: url(../font/PressStart2P.ttf);
 }
 
-
-
 body {
     #background-color: #FFFFFF;
     margin: 0;
@@ -47,7 +45,6 @@ table {
     border-spacing: 0;
     font-size: 14px;
 }
-
 
 .div_bordered {
     font-family: 'pressstart2p';

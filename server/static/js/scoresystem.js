@@ -44,7 +44,7 @@ $(document).ready(function(){
                 start = 0;
                 end = 5;
             }
-            else if(end > self.fullScoreArray.length){
+            if(end > self.fullScoreArray.length){
                 end = self.fullScoreArray.length;
                 start = end - 5;
                 if (start < 0)
