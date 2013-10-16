@@ -6,10 +6,9 @@ import random
 import json
 import thread
 import threading
-from functools import partial
 import screenlayout as sl
 import socketcommunication as communication
-
+import time
 
 class MasterConnectionPoint(communication.Server):
     def __init__(self, ip, port, screen_config, timer):
@@ -23,6 +22,9 @@ class MasterConnectionPoint(communication.Server):
         self.shutdown = False
         self._shutdown_dict = dict()
         self.timer = timer
+        self._start_time = None
+        self._end_time = None
+        self.start = False
 
     def add_player(self, raw):
         data = json.loads(raw)
@@ -78,6 +80,7 @@ class MasterConnectionPoint(communication.Server):
                         self._shutdown_dict[connection] = 1  # Uses dict to ensure uniqueness of the signal
                         # FIXME, what if conn has gone down? here i simply don't care about them
                         if len(self._shutdown_dict) == len(self._connected_slaves):
+                            self._player_score.clear()
                             self.calculate_score()
                             print self._player_score
                 else:
@@ -104,11 +107,16 @@ class MasterConnectionPoint(communication.Server):
         del self._players[name]
 
     def get_status(self):
+        time_since_beginning = self.timer
+        if self._start_time and self.start:
+            time_since_beginning = int(self.timer - (time.clock() - self._start_time))
+        status = {"started": self.start, "score": {}, "time_left": time_since_beginning}
         if self.shutdown:  # No point calculating anything since the game has ended
-            return self._player_score
+            status["score"] = self._player_score
         else:
             self._player_score.clear()
-            return self.calculate_score()
+            status["score"] = self.calculate_score()
+        return status
 
     def calculate_score(self):
         for item in self._connected_slaves.itervalues():
@@ -117,15 +125,18 @@ class MasterConnectionPoint(communication.Server):
         return self._player_score
 
     def shutdown_clients(self):
+        self.start = False
         self.send_to_all(json.dumps({"cmd": "close"}))
         # FIXME, calc final score
-        self.waiting_len = len(self._connected_slaves)
-        if self.waiting_len:
+        if len(self._connected_slaves):
             self.shutdown = True
 
     def start_game(self):
+        self.start = True
+        self.shutdown = False  # Can refresh the game now again
         self.send_to_all(json.dumps({"cmd": "start"}))
         if self.timer:
+            self._start_time = time.clock()
             threading.Timer(self.timer, self.shutdown_clients).start()
 
     def send_setup(self):

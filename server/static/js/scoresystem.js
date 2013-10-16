@@ -23,6 +23,7 @@ $(document).ready(function(){
         var self = this;
         self.seconds = ko.observable(0);  // seconds since last update
         self.index = 0;
+        self.timeLeft = ko.observable('\u221e');
 
         self.scoreArrayMaxLength = 5;
         // Score dict - would come from the server
@@ -72,6 +73,8 @@ $(document).ready(function(){
 
     // Hack to allow to update a value periodically
     var sec = 0;
+    var countdown = 0;
+    var timerID
     setInterval( function(){
         window.vm.seconds(++sec%60);
     } , 1000);
@@ -84,10 +87,13 @@ $(document).ready(function(){
     setInterval( function(){
 
         $.getJSON(tasksURI + '/status', function(json){
-            window.vm.clearScore();
             var array = Array();
-            for (var key in json) {
-                array.push([key, json[key]])
+            if (Object.keys(json["score"]).length <= 0)
+                return;
+
+            window.vm.clearScore();
+            for (var key in json["score"]) {
+                array.push([key, json["score"][key]])
             }
             array.sort(sortFunction);
             for (var i = 0; i < array.length; i++) {
@@ -95,8 +101,31 @@ $(document).ready(function(){
             }
             window.vm.sliceScoreArray();
             sec = 0;
+            if (json["time_left"]){
+                countdown = json["time_left"];
+                if (countdown <= 0){
+                    window.vm.timeLeft = 0;
+                    if (timerID)
+                        clearInterval(timerID);
+                    return;
+                }
+                window.vm.timeLeft(countdown + 's');
+                if (json["started"] == true)
+                    startCountDown()
+            }
         });
     }, 5000);
+
+    var startCountDown = function(){
+        if (timerID)
+            clearInterval(timerID);
+        timerID = setInterval( function(){
+            if (countdown <= 0)
+                clearInterval(timerID);
+            else
+                window.vm.timeLeft(--countdown + 's');
+        }, 1000);
+    };
 
 
 });

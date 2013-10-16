@@ -34,6 +34,7 @@ var canvas,
     container,
     touchID = -1,
     radius = 40,
+    color = "#FFDA50",
     touchPos = new Vector2(0,0),
     touchStartPos = new Vector2(0,0),
     vector = new Vector2(0,0);
@@ -88,17 +89,17 @@ function draw() {
                 //--------------
 
                 c.beginPath();
-                c.strokeStyle = "cyan";
+                c.strokeStyle = color;
                 c.lineWidth = 6;
                 c.arc(touchStartPos.x, touchStartPos.y, radius,0,Math.PI*2,true);
                 c.stroke();
                 c.beginPath();
-                c.strokeStyle = "cyan";
+                c.strokeStyle = color;
                 c.lineWidth = 2;
                 c.arc(touchStartPos.x, touchStartPos.y, 60,0,Math.PI*2,true);
                 c.stroke();
                 c.beginPath();
-                c.strokeStyle = "cyan";
+                c.strokeStyle = color;
                 c.arc(touchPos.x, touchPos.y, radius, 0,Math.PI*2, true);
                 c.stroke();
             }
@@ -113,17 +114,17 @@ function draw() {
 
         if (touchID > 0){
             c.beginPath();
-            c.strokeStyle = "cyan";
+            c.strokeStyle = color;
             c.lineWidth = 6;
             c.arc(touchStartPos.x, touchStartPos.y, 40,0,Math.PI*2,true);
             c.stroke();
             c.beginPath();
-            c.strokeStyle = "cyan";
+            c.strokeStyle = color;
             c.lineWidth = 2;
             c.arc(touchStartPos.x, touchStartPos.y, 60,0,Math.PI*2,true);
             c.stroke();
             c.beginPath();
-            c.strokeStyle = "cyan";
+            c.strokeStyle = color;
             c.arc(touchPos.x, touchPos.y, 40, 0,Math.PI*2, true);
             c.stroke();
         }

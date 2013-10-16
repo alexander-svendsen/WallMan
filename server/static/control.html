@@ -40,7 +40,7 @@ var removeCookies = function(){
 };
 window.onbeforeunload = removeCookies;
 </script>
-<div class="bull div_bordered">
+<div class="div_bordered">
     <h2>Score</h2>
     <span>Last update <span data-bind="text: seconds"></span>s </span>
     <table class="bordered">
@@ -57,5 +57,6 @@ window.onbeforeunload = removeCookies;
     </table>
     <p class="info">*Yourself + 4 closed players displayed</p>
 </div>
+<div class="timeLeft">Time left: <span data-bind="text: timeLeft"></span></div>
 </body>
 </html>

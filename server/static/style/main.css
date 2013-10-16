@@ -10,6 +10,8 @@ body {
     padding-left: 0;
     padding-right: 0;
     background-color:#111133;
+    font-family: 'pressstart2p';
+    color: #cc8a12;
 }
 
 .drawcanvas {
@@ -23,12 +25,6 @@ body {
     overflow:hidden;
 }
 
-.bull {
-    left: 10px;
-    top: 10px;
-    padding: 10px;
-    position: absolute;
-}
 .info{
     text-align: left;
     padding-top: 10px;
@@ -40,27 +36,34 @@ body {
 
 table {
     width: 300px;
-    font-family: 'pressstart2p';
     *border-collapse: collapse; /* IE7 and lower */
     border-spacing: 0;
     font-size: 14px;
+    text-align: center;
 }
 
 .div_bordered {
-    font-family: 'pressstart2p';
-    color: #cc8a12;
+    left: 10px;
+    top: 10px;
+    padding: 10px;
+    position: absolute;
     background-color:#111133;
     text-align: center;
     font-size: 0.8em;
 }
 
-.bordered td, .td_name{
+.td_name{
     text-align: left;
-    padding: 10px
 }
 
-.bordered td, .bordered th {
+.div_bordered td, .div_bordered th {
     padding: 10px;
 }
 
+.timeLeft{
+    position: fixed;
+    padding: 20px;
+    bottom: 0;
+    right: 0;
 
+}
