@@ -119,6 +119,8 @@ class GameConnection():
             self.theGame.migratePlayer(data["name"], data["direction"], data["newDirection"], data["x"], data["y"], data["color"], data["askii"], data["askii-color"])
             self.connection.send(json.dumps({'cmd': 'migrate', 'name': data["name"]}))
 
+        elif data['cmd'] == "flash":
+            self.theGame.flash_player(data["name"])
         else:
             print "Strange cmd recived", data
 

@@ -1,5 +1,4 @@
 from collections import defaultdict
-import copy
 import os
 import time
 import sys
@@ -7,7 +6,6 @@ import random
 
 import pygame
 from pygame.locals import *
-import signal
 
 from gamelogic import gamelayout
 import maps.config as gameLayoutConfig
@@ -165,6 +163,13 @@ class WallManMain:
             score[floor.get_marker()] += 1
         return score
 
+    def flash_player(self, name):
+        if name in self.players:
+            self.players[name].sprite_object.set_flashing(7)
+        else:
+            print "Error: Non-existing player moved", name  # FIXME means the server is inconsistent
+
+
     def main(self):
         """Main game loop, runs all the code"""
         clock = pygame.time.Clock()
@@ -179,6 +184,7 @@ class WallManMain:
             clock.tick(10)  # Don't need many frames as the games is basically paused
 
             # Enables to draw the players as they join
+            self.playerSprites.update()
             self.playerSprites.draw(self.screen)
             pygame.display.flip()
 
@@ -203,6 +209,7 @@ class WallManMain:
                     del self.players[name]
             self.floorSprites.draw(self.screen)
 
+            self.playerSprites.update()
             self.playerSprites.draw(self.screen)
             pygame.display.flip()
 

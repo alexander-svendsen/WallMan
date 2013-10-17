@@ -102,6 +102,13 @@ class MasterConnectionPoint(communication.Server):
             del self._connected_slaves[hostname]
             self._screen_layout.remove(hostname)
 
+    def flash_player(self, data):
+        json_data = json.loads(data)
+        player_name = json_data["name"]
+        if player_name in self._players:
+            json_data["cmd"] = "flash"
+            self._players[player_name].send(json.dumps(json_data))
+
     # review should be an other solution
     def fix_player(self, name):
         del self._players[name]

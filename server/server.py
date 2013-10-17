@@ -31,6 +31,9 @@ class Server:  # Single server controlling all states and players
         if path == "close":
             web.connection_point.shutdown_clients()
 
+        if path == "doubletap":
+            web.connection_point.flash_player(web.data())
+
 
 def main():
     app = web.application(urls, globals())

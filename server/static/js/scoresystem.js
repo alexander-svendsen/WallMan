@@ -88,8 +88,10 @@ $(document).ready(function(){
 
         $.getJSON(tasksURI + '/status', function(json){
             var array = Array();
-            if (Object.keys(json["score"]).length <= 0)
+            if (Object.keys(json["score"]).length <= 0){
+                sec = 0;
                 return;
+            }
 
             window.vm.clearScore();
             for (var key in json["score"]) {

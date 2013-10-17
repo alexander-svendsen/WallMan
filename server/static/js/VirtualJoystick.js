@@ -29,6 +29,19 @@ $(document).keydown(function(e){
     }
 });
 
+var mylatesttap;
+function doubletap() {
+
+    var now = new Date().getTime();
+    var timesince = now - mylatesttap;
+    //Tweeked it. 200ms Seems like a good time for double click
+    if((timesince < 200) && (timesince > 0)){
+        ajax(tasksURI + '/doubletap', 'POST', {"name" : username});
+    }
+    mylatesttap = new Date().getTime();
+
+}
+
 var canvas,
     c, // c is the canvas' context 2D
     container,
@@ -135,6 +148,7 @@ function draw() {
 
 function onTouchStart(e) {
     e.preventDefault(); // Prevent the browser from doing its default thing (scroll, zoom)
+    doubletap();
     for(var i = 0; i<e.changedTouches.length; i++){
         var touch =e.changedTouches[i];
         if(touchID<0){
@@ -191,6 +205,7 @@ function onMouseMove(e) {
 
 function onMouseStart(e){
     e.preventDefault(); // Prevent the browser from doing its default thing (scroll, zoom)
+    doubletap();
     if(touchID<0){
         touchID = 1;
         touchStartPos.reset(event.offsetX, event.offsetY);
