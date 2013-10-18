@@ -1,24 +1,56 @@
 <!doctype html>
-<html lang=en>
+<html lang=en xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
 <meta charset=utf-8>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
-<link rel="stylesheet" type="text/css" href="style/main.css">
+<link rel="stylesheet" type="text/css" href="style/start.css">
 <title>WallMan</title>
 </head>
-<body>
+
+
+<body onload="init()">
+
+<div id="console">
+<p><span class="userinput">alexandersvendsen@hotmail.com</span><span>:</span><span id="b">~</span><span id="c">$</span> python WallMan.py</p>
+<p>&nbsp;</p>
+<pre class="nospace">   __      __            ___    ___      </pre>
+<pre class="nospace">  /\ \  __/\ \          /\_ \  /\_ \    /'\_/`\</pre>
+<pre class="nospace">  \ \ \/\ \ \ \     __  \//\ \ \//\ \  /\      \     __      ____</pre>
+<pre class="nospace">   \ \ \ \ \ \ \  /'__`\  \ \ \  \ \ \ \ \ \__\ \  /'__`\  /' _ `\</pre>
+<pre class="nospace">    \ \ \_/ \_\ \/\ \_\.\_ \_\ \_ \_\ \_\ \ \_/\ \/\ \_\.\_/\ \/\ \</pre>
+<pre class="nospace">     \`\ ___ ___/\ \__/.\_\/\____\/\____\\ \_\\ \_\ \__/.\_\ \_\ \_\</pre>
+<pre class="nospace">      \/___//__/  \/__/\/_/\/____/\/____/ \/_/ \/_/\/__/\/_/\/_/\/_/</pre>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Welcome to the game WallMan, A Distributed Game. For game rules go to <a href="http://www.google.no">Help</a>.</p>
+<p>&nbsp;</p>
+<p>If you would like to get in touch with me, For whatever reason. My email address is:</p>
+<p><a href="mailto:alexandersvendsen@hotmail.com">alexandersvendsen@hotmail.com</a></p>
+<p>&nbsp;</p>
+<p>Whiteout further a do. Lets play the game.</p>
+<p>&nbsp;</p>
+<p>Type A user name to join the game:</p>
+</div>
 
 <div class="container">
-    <h1>WallMan</h1>
-    <p>A Distributed Client</p>
     <form id="playerProp">
         <div class="input-append">
-            <input class="span2" id="appendedInputButton" type="text" placeholder="Username">
-            <input type="submit" class="button" id="joinButton" data-loading-text="joining..." value="Join Game!">
+            <span class="userinput">>>> </span><input id="appendedInputButton"  autofocus autocomplete="off" type="text" maxlength="87%">
         </div>
     </form>
 </div>
+
+
+<script>
+    function init(){
+        var terminal = $('#console');
+        terminal.first().contents().first().remove();
+        while(terminal.first().contents().first()[0].nodeName == "#text"){
+            terminal.first().contents().first().remove();
+        }
+    }
+</script>
 <script src="js/CustomAjaxCalls.js"></script>
 <script src="libs/jquery.cookie.js"></script>
 <script src="js/submit_system.js"></script>
