@@ -38,7 +38,7 @@ input[type="text"], textarea {
     font-family: courier, monospace;
     color: #fff;
     box-sizing: border-box;
-    width: 95%;
+    width: 80%;
     padding-right: 10px;
     border: none;
 }
@@ -58,3 +58,24 @@ p{
 .error{
     color: #f92c18;
 }
+
+.enterButton {
+    margin-top: -5px;
+    background-color: black;
+    border:1px solid #00f000;
+    color:#00f000;
+    font-family: Courier New;
+    font-weight:bold;
+    font-style:normal;
+    height:30px;
+    line-height:20px;
+    width:100px;
+    text-decoration:none;
+    text-align:center;
+    display: inline-block;
+    float: right;
+
+}.enterButton:active {
+    color: #000000;
+    background-color: #00f000;
+ }
