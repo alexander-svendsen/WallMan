@@ -89,40 +89,44 @@ class GameConnection():
 
     #REVIEW
     def parseData(self, msg):
-        data = json.loads(msg)
-        print "\tRecived data:", data
-        if data['cmd'] == "join":
-            self.theGame.newPlayerJoined(data["name"])
+        print "\tRecived data:", msg
+        list_msg = msg.split('\n')
+        for data_entry in list_msg:
+            if not len(data_entry):
+                continue
+            data = json.loads(data_entry)
+            if data['cmd'] == "join":
+                self.theGame.newPlayerJoined(data["name"])
 
-        elif data['cmd'] == "move":
-            self.theGame.movePlayer(data["name"], data["direction"])
+            elif data['cmd'] == "move":
+                self.theGame.movePlayer(data["name"], data["direction"])
 
-        elif data['cmd'] == "start":
-            self.theGame.start()
-            self.periodic_send_status()
+            elif data['cmd'] == "start":
+                self.theGame.start()
+                self.periodic_send_status()
 
-        elif data['cmd'] == "setup":
-            print data['connection_config']
-            for key, addr in data['connection_config'].iteritems():
-                if addr != 'BLOCK':  # TODO: should do something about this direction
-                    self.connectToDirection(key, addr)
-            self.theGame.update_players_migrations()
+            elif data['cmd'] == "setup":
+                print data['connection_config']
+                for key, addr in data['connection_config'].iteritems():
+                    if addr != 'BLOCK':  # TODO: should do something about this direction
+                        self.connectToDirection(key, addr)
+                self.theGame.update_players_migrations()
 
-        elif data['cmd'] == "close":
-            self.send_status_data()
-            self.close()
+            elif data['cmd'] == "close":
+                self.send_status_data()
+                self.close()
 
-        elif data['cmd'] == "status":
-            self.send_status_data()
+            elif data['cmd'] == "status":
+                self.send_status_data()
 
-        elif data['cmd'] == "migrate":
-            self.theGame.migratePlayer(data["name"], data["direction"], data["newDirection"], data["x"], data["y"], data["color"], data["askii"], data["askii-color"])
-            self.connection.send(json.dumps({'cmd': 'migrate', 'name': data["name"]}))
+            elif data['cmd'] == "migrate":
+                self.theGame.migratePlayer(data["name"], data["direction"], data["newDirection"], data["x"], data["y"], data["color"], data["askii"], data["askii-color"])
+                self.connection.send(json.dumps({'cmd': 'migrate', 'name': data["name"]}))
 
-        elif data['cmd'] == "flash":
-            self.theGame.flash_player(data["name"])
-        else:
-            print "Strange cmd recived", data
+            elif data['cmd'] == "flash":
+                self.theGame.flash_player(data["name"])
+            else:
+                print "Strange cmd recived", data
 
     def reciveCommandsFromMaster(self):
         while self.running:

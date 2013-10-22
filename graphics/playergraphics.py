@@ -4,6 +4,7 @@ import string
 from graphicspriteobject import GraphicSpriteObject
 import time
 
+
 class Player(GraphicSpriteObject):
     def __init__(self, centerPoint, width, height, color=None, askii=None, inverse_color=None):
         GraphicSpriteObject.__init__(self, width, height)
@@ -30,7 +31,6 @@ class Player(GraphicSpriteObject):
         self.start_time = -0.25
 
     def update(self):
-        #print "WOOOOT", self.display
         if self.times_flashing:
             if (time.clock() - self.start_time) >= 0.25:
                 self._flash = not self._flash
@@ -41,9 +41,6 @@ class Player(GraphicSpriteObject):
                 else:
                     self.image.fill(self.color, self.drawingRect)
                     self.image.blit(self.label, (0, 0))
-
-
-
 
     @staticmethod
     def _generator_random_askii(askii, size=6, chars=string.ascii_uppercase + string.digits):

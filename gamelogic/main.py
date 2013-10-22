@@ -16,6 +16,7 @@ import settings
 from player import Player
 from graphics.playergraphics import Player as playerGraphics
 from GameConnection import GameConnection
+import graphics.powerups
 
 import argparse
 
@@ -51,6 +52,7 @@ class WallManMain:
         self.playerSprites = pygame.sprite.Group()
         self.blockSprites = pygame.sprite.Group()
         self.floorSprites = pygame.sprite.Group()
+        self.power_ups = pygame.sprite.Group()
 
         layout = self.gamelayout.readLayoutAsDict(map)
 
@@ -69,8 +71,27 @@ class WallManMain:
                 elif blockData == gameLayoutConfig.BLOCK:
                     self.blockSprites.add(
                         Wall(centerPoint, settings.BLOCKCOLORS, self.blockWidth, self.blockHeight, settings.BLOCKWIDTH))
+                elif blockData == gameLayoutConfig.SPEEDUP:
+                    self.floorSprites.add(Floor(centerPoint, self.blockWidth, self.blockHeight))
+                    self.power_ups.add(graphics.powerups.PowerUp(centerPoint, self.blockWidth, self.blockHeight,
+                                                                 "images/speed-icon.png", "SPEED"))
+                elif blockData == gameLayoutConfig.LOCK:
+                    self.floorSprites.add(Floor(centerPoint, self.blockWidth, self.blockHeight))
+                    self.power_ups.add(graphics.powerups.PowerUp(centerPoint, self.blockWidth, self.blockHeight,
+                                                                      "images/lock-icon.png", "LOCK"))
+                elif blockData == gameLayoutConfig.NUKE:
+                    self.floorSprites.add(Floor(centerPoint, self.blockWidth, self.blockHeight))
+                    self.power_ups.add(graphics.powerups.PowerUp(centerPoint, self.blockWidth, self.blockHeight,
+                                                                 "images/nuke-icon.png", "NUKE"))
+                elif blockData == gameLayoutConfig.CLEAN:
+                    self.floorSprites.add(Floor(centerPoint, self.blockWidth, self.blockHeight))
+                    self.power_ups.add(graphics.powerups.PowerUp(centerPoint, self.blockWidth, self.blockHeight,
+                                                                 "images/clean-icon.png", "CLEAN"))
+
+
 
         self.blockSprites.draw(self.screen)
+        self.power_ups.draw(self.screen)
         self.layout = layout
 
     def start(self):
@@ -163,12 +184,11 @@ class WallManMain:
             score[floor.get_marker()] += 1
         return score
 
-    def flash_player(self, name):
+    def flash_player(self, name):  # FIXME. should really not go directly to the spriteobject i think
         if name in self.players:
             self.players[name].sprite_object.set_flashing(7)
         else:
             print "Error: Non-existing player moved", name  # FIXME means the server is inconsistent
-
 
     def main(self):
         """Main game loop, runs all the code"""
@@ -205,9 +225,25 @@ class WallManMain:
             for name in self.players.keys():
                 player = self.players[name]
                 player.update(self.floorSprites)
-                if player.delete_me:
-                    del self.players[name]
+                #Time to active awsome powers
+                powers = pygame.sprite.spritecollide(player.sprite_object, self.power_ups, True)
+                for power in powers:
+                    if power.type == "SPEED":
+                        player.speed += 1  #Fixme. should be a method or something
+                    elif power.type == "LOCK":
+                        for floor in self.floorSprites:
+                            floor.lock()
+                    elif power.type == "CLEAN":
+                        for floor in self.floorSprites:
+                            floor.unmark()
+                    elif power.type == "NUKE":
+                        for floor in self.floorSprites:
+                            floor.mark(player._color, player._name)
+
+                    if player.delete_me:
+                        del self.players[name]
             self.floorSprites.draw(self.screen)
+            self.power_ups.draw(self.screen)
 
             self.playerSprites.update()
             self.playerSprites.draw(self.screen)

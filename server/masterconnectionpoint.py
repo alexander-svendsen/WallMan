@@ -10,6 +10,7 @@ import screenlayout as sl
 import socketcommunication as communication
 import time
 
+
 class MasterConnectionPoint(communication.Server):
     def __init__(self, ip, port, screen_config, timer):
         communication.Server.__init__(self, ip, port)
@@ -38,13 +39,13 @@ class MasterConnectionPoint(communication.Server):
         self._conn_to_player_dict[game_slave].append(data["name"])
 
         data["cmd"] = "join"
-        game_slave.send(json.dumps(data))
+        game_slave.send(json.dumps(data) + '\n')
 
     def move_player(self, raw):
         data = json.loads(raw)
         if data["name"] in self._players:
             data["cmd"] = "move"
-            self._players[data["name"]].send(json.dumps(data))
+            self._players[data["name"]].send(json.dumps(data) + '\n')
 
     def listen_for_slaves(self):
         for connection, address in iter(self.accept_connection,""):
@@ -107,7 +108,7 @@ class MasterConnectionPoint(communication.Server):
         player_name = json_data["name"]
         if player_name in self._players:
             json_data["cmd"] = "flash"
-            self._players[player_name].send(json.dumps(json_data))
+            self._players[player_name].send(json.dumps(json_data) + '\n')
 
     # review should be an other solution
     def fix_player(self, name):

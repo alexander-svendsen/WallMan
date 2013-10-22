@@ -13,14 +13,14 @@ var ajax = function(uri, method, data) {
 };
 
 var right = function(username){
-    ajax(tasksURI + '/move', 'POST', {"name" : username, "direction" : "right"});
+    return ajax(tasksURI + '/move', 'POST', {"name" : username, "direction" : "right"});
 };
 var left = function(username){
-    ajax(tasksURI + '/move', 'POST', {"name" : username, "direction" : "left"});
+    return ajax(tasksURI + '/move', 'POST', {"name" : username, "direction" : "left"});
 };
 var up = function(username){
-    ajax(tasksURI + '/move', 'POST', {"name" : username, "direction" : "up"});
+    return ajax(tasksURI + '/move', 'POST', {"name" : username, "direction" : "up"});
 };
 var down = function(username){
-    ajax(tasksURI + '/move', 'POST', {"name" : username, "direction" : "down"});
+    return ajax(tasksURI + '/move', 'POST', {"name" : username, "direction" : "down"});
 };

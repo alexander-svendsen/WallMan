@@ -10,16 +10,22 @@ class Floor(GraphicSpriteObject):
 
         # Move the rect into the correct position
         self.rect.center = center_point
+        self._lock = False
 
     def mark(self, color, playerName):
-        self.image.fill(color, self.drawingRect)
-        self.playerName = playerName
+        if not self._lock:
+            self.image.fill(color, self.drawingRect)
+            self.playerName = playerName
 
     def unmark(self):
-        pass
+        self.image.fill((0, 0, 0), self.drawingRect)
+        self.playerName = "None"
 
     def get_marker(self):
         return self.playerName
+
+    def lock(self):
+        self._lock = True
 
 
 class Wall(GraphicSpriteObject):

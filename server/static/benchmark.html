@@ -4,23 +4,22 @@
     <title></title>
 </head>
 <body>
-<script src="js/CustomAjaxCalls.js"></script>
 <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+<script src="js/CustomAjaxCalls.js"></script>
 
 <script>
-var numberOfPlayers = 50
+var numberOfPlayers = 50;
 var startTimeArray = new Array();
 var time = function (index, prev, now) {
     startTimeArray[index] = now-prev;
 };
+var ajaxTime;
 for (var i = 0; i < numberOfPlayers; i++) {
-    var ajaxTime= Date.now();
-    ajax(tasksURI + 'join', 'POST', {"name" : i}).done(
+    ajaxTime = Date.now();
+    ajax(tasksURI + '/join', 'POST', {"name" : i}).success(
             time(i, ajaxTime, Date.now()));
 }
-
 console.log(startTimeArray);
-
 var sum = 0;
 var max = 0;
 var min = 1000;
@@ -39,27 +38,23 @@ var avg = sum/startTimeArray.length;
 console.log("Avg time on join: " + avg + " max: " + max + " min: " + min);
 ajax(tasksURI + 'start', 'GET');
 //random movement test
-for (var i = 0; i < numberOfPlayers; i++) {
-    var ajaxTime= Date.now();
+for (i = 0; i < numberOfPlayers; i++) {
+    ajaxTime= Date.now();
     var direction = Math.floor((Math.random()*4)+1);
 
     if (direction == 1)
-        ajax(tasksURI + 'move', 'POST', {"name" : i, "direction" : "left"}).done(
-                time(i, ajaxTime, Date.now()));
+        left(i).success(time(i, ajaxTime, Date.now()));
     else if (direction == 2)
-        ajax(tasksURI + 'move', 'POST', {"name" : i, "direction" : "right"}).done(
-                time(i, ajaxTime, Date.now()));
+        right(i).success(time(i, ajaxTime, Date.now()));
     else if (direction == 3)
-        ajax(tasksURI + 'move', 'POST', {"name" : i, "direction" : "up"}).done(
-                time(i, ajaxTime, Date.now()));
+        up(i).success(time(i, ajaxTime, Date.now()));
     else
-        ajax(tasksURI + 'move', 'POST', {"name" : i, "direction" : "down"}).done(
-                time(i, ajaxTime, Date.now()));
+        down(i).success(time(i, ajaxTime, Date.now()));
 }
 
-var sum = 0;
-var max = 0;
-var min = 1000;
+sum = 0;
+max = 0;
+min = 1000;
 for(i = 0; i < startTimeArray.length; i++){
     var elem = startTimeArray[i];
     sum += elem;
@@ -70,7 +65,7 @@ for(i = 0; i < startTimeArray.length; i++){
         min = elem;
 }
 
-var avg = sum/startTimeArray.length;
+avg = sum/startTimeArray.length;
 
 console.log("Avg time on movement: " + avg + " max: " + max + " min: " + min);
 

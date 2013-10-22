@@ -3,4 +3,7 @@
 
 FLOOR = 0
 BLOCK = 1
-
+SPEEDUP = 2
+LOCK = 3
+NUKE = 4
+CLEAN = 5

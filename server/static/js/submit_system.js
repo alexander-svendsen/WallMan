@@ -13,8 +13,6 @@ $("#playerProp").on("submit", function(e) {
         return;
     }
     terminal.append('<p>'+ input + '</p>');
-    inputField.prop('disabled', true);
-
     ajax(tasksURI + '/join', 'POST', {"name" : input}).success(redirect(input));
 });
 
