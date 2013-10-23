@@ -129,7 +129,7 @@ class WallManMain:
         return "OK"
 
     #REVIEW: SO MANY HACKS
-    def migratePlayer(self, name, direction, newDirection, x, y, color, askii, askiiColor):  # FIXME: Should not join to a random place
+    def migratePlayer(self, name, direction, newDirection, x, y, color, askii, askiiColor, speed_level):  # FIXME: Should not join to a random place
         print color, askii, askiiColor
 
         if name in self.players:
@@ -145,7 +145,8 @@ class WallManMain:
                                        color,
                                        askii,
                                        askiiColor),
-                        name)
+                        name,
+                        speed_level)
 
         keys = self.connection.directionConnections.keys()
         connDict = {}
@@ -224,11 +225,12 @@ class WallManMain:
             for name in self.players.keys():
                 player = self.players[name]
                 player.update(time_passed_micro_seconds, self.floorSprites)
+
                 #Time to active awsome powers
                 powers = pygame.sprite.spritecollide(player.sprite_object, self.power_ups, True)
                 for power in powers:
                     if power.type == "SPEED":
-                        player.speed += 1  #Fixme. should be a method or something
+                        player.speed_level += 0.25  #Fixme. should be a method or something
                     elif power.type == "LOCK":
                         for floor in self.floorSprites:
                             floor.lock()

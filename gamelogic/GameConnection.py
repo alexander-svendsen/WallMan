@@ -85,6 +85,7 @@ class GameConnection():
                         'newDirection': kwargs["new_direction"],
                         'color': kwargs["color"],
                         'askii': kwargs["askii"],
+                        'speed_level': kwargs["speed_level"],
                         'askii-color': kwargs["askii_color"]}))
 
     #REVIEW
@@ -120,7 +121,7 @@ class GameConnection():
                 self.send_status_data()
 
             elif data['cmd'] == "migrate":
-                self.theGame.migratePlayer(data["name"], data["direction"], data["newDirection"], data["x"], data["y"], data["color"], data["askii"], data["askii-color"])
+                self.theGame.migratePlayer(data["name"], data["direction"], data["newDirection"], data["x"], data["y"], data["color"], data["askii"], data["askii-color"], data["speed_level"])
                 self.connection.send(json.dumps({'cmd': 'migrate', 'name': data["name"]}))
 
             elif data['cmd'] == "flash":
