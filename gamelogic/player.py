@@ -16,9 +16,10 @@ STATE_MOVE_DOWN_OUT_OF_SCREEN = 4
 
 
 class Player():
-    def __init__(self, sprite_object, name, speed=2):
+    def __init__(self, sprite_object, name, speed=1.5):
         self.speed_level = speed  # TODO actually use this
-        self.speed = (sprite_object.rect.w + sprite_object.rect.h) * self.speed_level / 20
+        self.speed = 4.0
+        #self.speed = (sprite_object.rect.w + sprite_object.rect.h) * self.speed_level / 20
         assert self.speed <= sprite_object.rect.w, "Speed can never be greater then the width of the player"
         assert self.speed <= sprite_object.rect.h, "Speed can never be greater then the height of the player"
 
@@ -128,7 +129,8 @@ class Player():
         self._x = self._sprite_object.rect.center[0] / self._sprite_object.rect.w
         self._y = self._sprite_object.rect.center[1] / self._sprite_object.rect.h
 
-    def update(self, floor_sprites):
+    def update(self, time, floor_sprites):
+        self.speed = self.speed_level * time
         self._calculate_current_position_in_layout()
 
         # Don't need to update the state if we are to move out of the screen

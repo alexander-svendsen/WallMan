@@ -88,8 +88,6 @@ class WallManMain:
                     self.power_ups.add(graphics.powerups.PowerUp(centerPoint, self.blockWidth, self.blockHeight,
                                                                  "images/clean-icon.png", "CLEAN"))
 
-
-
         self.blockSprites.draw(self.screen)
         self.power_ups.draw(self.screen)
         self.layout = layout
@@ -220,11 +218,12 @@ class WallManMain:
                         self.running = END
                         self.connection.send_status_data()
 
-            clock.tick(30)
+            time_passed = clock.tick(60)
+            time_passed_micro_senconds = time_passed / 10.0
 
             for name in self.players.keys():
                 player = self.players[name]
-                player.update(self.floorSprites)
+                player.update(time_passed_micro_senconds, self.floorSprites)
                 #Time to active awsome powers
                 powers = pygame.sprite.spritecollide(player.sprite_object, self.power_ups, True)
                 for power in powers:
