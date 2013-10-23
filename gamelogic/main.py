@@ -240,8 +240,8 @@ class WallManMain:
                         for floor in self.floorSprites:
                             floor.mark(player._color, player._name)
 
-                    if player.delete_me:
-                        del self.players[name]
+                if player.delete_me:
+                    del self.players[name]
             self.floorSprites.draw(self.screen)
             self.power_ups.draw(self.screen)
 
