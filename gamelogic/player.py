@@ -131,7 +131,6 @@ class Player():
 
     def update(self, time, floor_sprites):
         self.speed = self.speed_level * time
-        print self.speed
         self._calculate_current_position_in_layout()
 
         # Don't need to update the state if we are to move out of the screen
@@ -239,9 +238,9 @@ class Player():
                                      layout_x=self._x,
                                      layout_y=self._y,
                                      color=self._color,
-                                     askii=self._sprite_object.id,
-                                     speed_level=self.speed_level,
-                                     askii_color=self.sprite_object.inverse_color)
+                                     sprite_x=self._sprite_object.x,
+                                     sprite_y=self._sprite_object.y,
+                                     speed_level=self.speed_level)
 
     def _migrate(self, **kwargs):
         self._sprite_object.rect.x = kwargs["pos_x"]

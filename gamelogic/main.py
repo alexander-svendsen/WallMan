@@ -129,9 +129,7 @@ class WallManMain:
         return "OK"
 
     #REVIEW: SO MANY HACKS
-    def migratePlayer(self, name, direction, newDirection, x, y, color, askii, askiiColor, speed_level):  # FIXME: Should not join to a random place
-        print color, askii, askiiColor
-
+    def migratePlayer(self, name, direction, newDirection, x, y, color, sprite_x, sprite_y, speed_level):  # FIXME: Should not join to a random place
         if name in self.players:
             return "Name taken"
 
@@ -143,8 +141,8 @@ class WallManMain:
                                        self.blockWidth,
                                        self.blockHeight,
                                        color,
-                                       askii,
-                                       askiiColor),
+                                       sprite_x,
+                                       sprite_y),
                         name,
                         speed_level)
 

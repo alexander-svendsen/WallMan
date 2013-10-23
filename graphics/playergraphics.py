@@ -6,20 +6,25 @@ import time
 
 
 class Player(GraphicSpriteObject):
-    def __init__(self, centerPoint, width, height, color=None, askii=None, inverse_color=None):
+    def __init__(self, centerPoint, width, height, color=None, sprite_x=None, sprite_y=None):
         GraphicSpriteObject.__init__(self, width, height)
         self.color = self._generate_color(color)
-        self.image.fill(self.color, self.rect)
-        #pygame.draw.rect(self.image, self.color, self.rect)
+
         self.drawingRect = pygame.Rect(self.rect.x, self.rect.y, self.rect.w, self.rect.h)
 
-        #Inverse the colors and set the random askii in the player
-        self.inverse_color = self._generate_inverse_color(inverse_color, self.color)
-        self.id = self._generator_random_askii(askii, 2)
-        myfont = pygame.font.SysFont("monospace", (width + height) / 2 - 4)
-        myfont.set_bold(1)
-        self.label = myfont.render(self.id, 1, self.inverse_color)
-        self.image.blit(self.label, (0, 0))
+        self.drawImage = pygame.Surface([width, height])
+        self.drawImage.fill(self.color, self.rect)
+
+        self.x = sprite_x if sprite_x else random.randint(0, 24)
+        self.y = sprite_y if sprite_y else random.randint(0, 19)
+        pokemon_image = pygame.image.load("images/pokemon.png")  # review a more efficent way for this ?
+        pos = pygame.Rect(self.x * 80, self.y * 80, 80, 80)
+        pokeImage = pokemon_image.subsurface(pos)
+        pokeImage = pygame.transform.scale(pokeImage, (width, height))
+
+        self.drawImage.blit(pokeImage, (0, 0))
+
+        self.image.blit(self.drawImage, (0, 0))
 
         # Move the rect into the correct position
         self.rect.center = centerPoint
@@ -39,23 +44,10 @@ class Player(GraphicSpriteObject):
                 if self._flash and self.times_flashing:
                     self.image.fill((0, 0, 0), self.drawingRect)
                 else:
-                    self.image.fill(self.color, self.drawingRect)
-                    self.image.blit(self.label, (0, 0))
-
-    @staticmethod
-    def _generator_random_askii(askii, size=6, chars=string.ascii_uppercase + string.digits):
-        if askii:
-            return askii
-        return ''.join(random.choice(chars) for _ in range(size))
+                    self.image.blit(self.drawImage, (0, 0))
 
     @staticmethod
     def _generate_color(color):
         if color:
             return color
         return random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
-
-    @staticmethod
-    def _generate_inverse_color(inverse_color, color):
-        if inverse_color:
-            return inverse_color
-        return  255 - color[0], 255 - color[1], 255 - color[2]
