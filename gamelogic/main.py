@@ -218,12 +218,12 @@ class WallManMain:
                         self.running = END
                         self.connection.send_status_data()
 
-            time_passed = clock.tick(60)
-            time_passed_micro_senconds = time_passed / 10.0
+            time_passed = clock.tick(120)
+            time_passed_micro_seconds = time_passed / 10.0
 
             for name in self.players.keys():
                 player = self.players[name]
-                player.update(time_passed_micro_senconds, self.floorSprites)
+                player.update(time_passed_micro_seconds, self.floorSprites)
                 #Time to active awsome powers
                 powers = pygame.sprite.spritecollide(player.sprite_object, self.power_ups, True)
                 for power in powers:
