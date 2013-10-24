@@ -117,7 +117,7 @@ class MasterConnectionPoint(communication.Server):
     def get_status(self):
         time_since_beginning = self.timer
         if self._start_time and self.start:
-            time_since_beginning = int(self.timer - (time.clock() - self._start_time))
+            time_since_beginning = int(self.timer - (time.time() - self._start_time))
         status = {"started": self.start, "score": {}, "time_left": time_since_beginning}
         if self.shutdown:  # No point calculating anything since the game has ended
             status["score"] = self._player_score
@@ -144,7 +144,7 @@ class MasterConnectionPoint(communication.Server):
         self.shutdown = False  # Can refresh the game now again
         self.send_to_all(json.dumps({"cmd": "start"}))
         if self.timer:
-            self._start_time = time.clock()
+            self._start_time = time.time()
             threading.Timer(self.timer, self.shutdown_clients).start()
 
     def send_setup(self):
