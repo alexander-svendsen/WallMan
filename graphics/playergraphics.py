@@ -37,9 +37,9 @@ class Player(GraphicSpriteObject):
 
     def update(self):
         if self.times_flashing:
-            if (time.clock() - self.start_time) >= 0.25:
+            if (time.time() - self.start_time) >= 0.25:
                 self._flash = not self._flash
-                self.start_time = time.clock()
+                self.start_time = time.time()
                 self.times_flashing -= 1
                 if self._flash and self.times_flashing:
                     self.image.fill((0, 0, 0), self.drawingRect)
