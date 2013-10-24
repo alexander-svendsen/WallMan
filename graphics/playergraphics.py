@@ -50,4 +50,7 @@ class Player(GraphicSpriteObject):
     def _generate_color(color):
         if color:
             return color
-        return random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
+        color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        while color[0] + color[1] + color[2] < 125:  # TO guarantee not the darkest colors is shown
+            color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        return color
