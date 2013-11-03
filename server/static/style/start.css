@@ -1,5 +1,5 @@
 body {
-    background-color: #000;
+    background-color:#111133;
 }
 .console {
     font-family: courier, monospace;
@@ -34,7 +34,7 @@ a {
 }
 input[type="text"], textarea {
     -webkit-box-sizing: border-box;
-    background-color : #000;
+    background-color:#111133;
     font-family: courier, monospace;
     color: #fff;
     box-sizing: border-box;
@@ -65,7 +65,7 @@ p{
 
 .enterButton {
     margin-top: -5px;
-    background-color: black;
+    background-color:#111133;
     border:1px solid #00f000;
     color:#00f000;
     font-family: Courier New;
