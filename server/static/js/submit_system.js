@@ -3,7 +3,7 @@ $("#playerProp").on("submit", function(e) {
     var inputField = $('#appendedInputButton');
     var input = inputField.val();
 
-    var terminal = $('#console');
+    var terminal = $('.console');
     terminal.first().contents().first().remove();
     while(terminal.first().contents().first()[0].nodeName == "#text"){
         terminal.first().contents().first().remove();

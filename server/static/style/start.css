@@ -1,7 +1,7 @@
 body {
     background-color: #000;
 }
-#console {
+.console {
     font-family: courier, monospace;
     color: #fff;
     width:750px;
@@ -58,6 +58,10 @@ p{
 .error{
     color: #f92c18;
 }
+.mobile_info{
+    display: none;
+}
+
 
 .enterButton {
     margin-top: -5px;
@@ -78,4 +82,37 @@ p{
 }.enterButton:active {
     color: #000000;
     background-color: #00f000;
- }
+}
+
+/* Smartphones (portrait) ----------- */
+@media only screen
+and (max-width: 480px){
+    #header {
+        height: auto;
+    }
+    .console{
+        display: none;
+    }
+    input[type="text"], textarea {
+        width: 50%;
+    }
+    .container{
+        width: auto;
+    }
+
+    .mobile_info{
+        margin-top: 20px;
+        display: block;
+        padding-bottom: 15px;
+        width: auto;
+        overflow: auto;
+    }
+}
+
+@media only screen
+and (max-width: 300px){
+    .enterButton{
+        width:50px;
+    }
+
+}
