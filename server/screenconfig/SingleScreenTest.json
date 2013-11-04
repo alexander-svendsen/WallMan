@@ -3,24 +3,28 @@
         "left" : "Alexander-PC",
         "right" : "Alexander-PC",
         "up" : "Alexander-PC_3",
+        "map": "level001.json",
         "down" : "Alexander-PC_3"
     },
     "Alexander-PC_2": {
         "left" : "Alexander-PC_3",
         "right" : "Alexander-PC_3",
         "up" : "Alexander-PC",
+        "map": "level002.json",
         "down" : "Alexander-PC"
     },
     "Alexander-PC_3": {
         "left" : "Alexander-PC_2",
         "right" : "Alexander-PC_2",
         "up" : "Alexander-PC_1",
+        "map": "level002.json",
         "down" : "Alexander-PC_1"
     },
     "Alexander-PC": {
         "left" : "Alexander-PC_1",
         "right" : "Alexander-PC_1",
         "up" : "Alexander-PC_2",
+        "map": "level002.json",
         "down" : "Alexander-PC_2"
     }
 

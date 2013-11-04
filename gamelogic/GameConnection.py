@@ -63,6 +63,8 @@ class GameConnection():
         data = json.loads(rawData)
         if data["cmd"] == "close":
             self.theGame.hardQuit()
+        elif data["cmd"] == "setup":
+            self.theGame.map = data["map"]
 
     def connectToDirection(self, direction, addr):
         addressTuple = addr[0], addr[1]

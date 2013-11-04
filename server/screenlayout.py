@@ -55,9 +55,9 @@ class ScreenLayout():
             left, right = (self._join_list[-1], self._join_list[0])
             self._screen_config_dict[left]["right"] = unique_hostname
             self._screen_config_dict[right]["left"] = unique_hostname
-            self._screen_config_dict[unique_hostname] = {"left": left, "right": right}
+            self._screen_config_dict[unique_hostname] = {"left": left, "right": right, "map": "default"}
         else:
-            self._screen_config_dict[unique_hostname] = {}
+            self._screen_config_dict[unique_hostname] = {"map": "default"}
         self._join_list.append(unique_hostname)
 
     def is_hostname_valid(self, name):

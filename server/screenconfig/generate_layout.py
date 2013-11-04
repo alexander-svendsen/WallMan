@@ -3,7 +3,7 @@ import argparse
 import json
 
 
-def generate_block_layout(min_x, min_y, max_x, max_y, default):
+def generate_block_layout(min_x, min_y, max_x, max_y, map, default):
     default_name = default
     screen_config_dict = {}
 
@@ -17,7 +17,8 @@ def generate_block_layout(min_x, min_y, max_x, max_y, default):
             screen_config_dict[default_name.format(x, y)] = {"left": default_name.format(left, y),
                                                              "right": default_name.format(right, y),
                                                              "up": default_name.format(x, up),
-                                                             "down": default_name.format(x, down)}
+                                                             "down": default_name.format(x, down),
+                                                             "map": map}
     return screen_config_dict
 
 
@@ -37,7 +38,10 @@ if __name__ == "__main__":
     parser.add_argument("-default_host_name",
                         help="How the host names should match. Must written in a standard python string.format way",
                         type=str, default="tile-{0}-{1}.local")
+    parser.add_argument("-map",
+                        help="Which map should be used for all. Uses default if not specified",
+                        type=str, default="default")
     args = parser.parse_args()
     data = generate_block_layout(min_x=args.x_min, min_y=args.y_min,
-                                 max_x=args.x_max, max_y=args.y_max, default=args.default_host_name)
+                                 max_x=args.x_max, max_y=args.y_max, map=args.map, default=args.default_host_name)
     write_to_file(args.filename, data)

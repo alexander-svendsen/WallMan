@@ -36,6 +36,7 @@ class WallManMain:
         self.res = res
         pygame.init()
         pygame.mouse.set_visible(False)
+        self.map = None
 
     def setup(self, connection):
         fullScreen = 0
@@ -48,13 +49,18 @@ class WallManMain:
         self.screen = pygame.display.set_mode(self.res, fullScreen)
         pygame.display.set_caption("WallMan - Alexander Svendsen")
 
-    def drawGameLayout(self, map):
+    def drawGameLayout(self):
+        if self.map is None:
+            print "Error: Map not set"
+            self.hardQuit()
+            return
+
         self.playerSprites = pygame.sprite.Group()
         self.blockSprites = pygame.sprite.Group()
         self.floorSprites = pygame.sprite.Group()
         self.power_ups = pygame.sprite.Group()
 
-        layout = self.gamelayout.readLayoutAsDict(map)
+        layout = self.gamelayout.readLayoutAsDict(self.map)
 
         self.blockHeight = int(self.res[1] / len(layout))
         self.blockWidth = int(self.res[0] / len(layout[0]))
@@ -272,8 +278,6 @@ def main():
     parser.add_argument("-a", "--address", help="Master address", type=str, default='rocksvv.cs.uit.no')
     parser.add_argument("-p", "--port", help="Master port", type=int, default=65523)
     parser.add_argument("-r", "--res", help="Resolution of the screen", type=int, nargs=2, action='append', default=None)
-    parser.add_argument("-m", "--map", help="Which map should be run. Different ones can be fund int hte maps folder",
-                        type=str, default='level001.json')
     args = parser.parse_args()
 
     res = None if not args.res else tuple(args.res[0])
@@ -292,7 +296,7 @@ def main():
 
     #Setup the main game
     wallman.setup(conn)
-    wallman.drawGameLayout(args.map)  # Draw the game layout once, since it should not be updated
+    wallman.drawGameLayout()  # Draw the game layout once, since it should not be updated
     wallman.main()
 
 if __name__ == "__main__":  # TODO REFACTOR THE CODE

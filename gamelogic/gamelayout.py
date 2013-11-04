@@ -5,7 +5,9 @@ class GameLayout():
     def __init__(self, path="maps/"):
         self.path = path
 
-    def readLayoutAsDict(self, name="level001.json"):
+    def readLayoutAsDict(self, name="default"):
+        if name == "default":
+            name = "level001.json"
         with open(self.path + name, 'r') as content_file:
             content = content_file.read()
         return json.loads(content)

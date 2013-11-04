@@ -68,7 +68,8 @@ class MasterConnectionPoint(communication.Server):
                                                             "addr": address[0],
                                                             "port": data['port'],
                                                             "score": dict()}
-                        connection.send(json.dumps({"cmd": "ok"}))
+                        print self._screen_layout[hostname]
+                        connection.send(json.dumps({"cmd": "setup", "map": self._screen_layout[hostname]["map"]}))
                     else:  # Invalid game connected, so send a close signal since it will not be used
                         print "Invalid host connected"
                         connection.send(json.dumps({"cmd": "close"}))
