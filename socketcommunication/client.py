@@ -3,9 +3,11 @@ import socket
 
 
 class Client():
+    def __init__(self):
+        self.cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     def connect(self, addr, port):
         print "Client connecting to: ", addr, port
-        self.cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.cs.connect((addr, port))
 
     def close(self):
@@ -17,6 +19,9 @@ class Client():
     def receive(self, length, timeout=None):
         self.cs.settimeout(timeout)
         return self.cs.recv(length)
+
+    def getsockname(self):
+        return self.cs.getsockname()
 
     @property
     def gethostname(self):

@@ -1,17 +1,22 @@
 # -*- coding: utf-8 -*-
-import web
 import json
 import argparse
 import thread
-import masterconnectionpoint as mcp
 import sys
+import web
+import masterconnectionpoint as mcp
 
 urls = (
     '/(.*)', 'Server'
 )
 
 
-class Server:  # Single server controlling all states and players
+class Server:
+    """
+    The main server. It should have the master server stored as a parameter. This class itself only handle the REST
+    requests and forward them to the master server. All the REST request are all handled by a separate thread by the
+    help of web.py
+    """
     def GET(self, path=""):
         if path == "start":
             web.connection_point.start_game()
@@ -53,6 +58,8 @@ def main():
     web.connection_point = connection_point
     thread.start_new(connection_point.listen_for_slaves, ())
 
+    #web.py ones its own set of special input parameters, so need to give it the parameters it wants and remove the
+    #current ones
     import sys  # Yuck
     sys.argv.append("bleh")  # Yuck
     sys.argv[1] = args.port_server  # Yuck

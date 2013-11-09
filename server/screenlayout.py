@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
+import copy
 import json
 import collections
 
 
 class ScreenLayout():
     """
-    Class to select and use an screen connection config based on the command line input
+    Class to select and use an screen connection config. Takes care of figuring out what config is the right one, If the
+    host connecting is a valid one and build a default config if such is specified.
     """
-
     def __init__(self, screen_config_type='default', screen_config_path='screenconfig/'):
         """
         :param screen_config_type: Which type of config should be used. If not specified a default will be used.
@@ -31,7 +32,7 @@ class ScreenLayout():
     def get_id_of_host(self, hostname):
         """
         Sets up an unique ID for the hostname. Mostly used in case there is suppose to be multiple game screens per host
-        If the default screenconfig is chosen, an default screenconfig will be build based on when the screens joins
+        If the default screen-config is chosen, an default screen-config will be build based on when the screens joins
 
         :rtype : the unique hostname
         :param hostname: The hostname to the screen connecting
@@ -60,8 +61,13 @@ class ScreenLayout():
             self._screen_config_dict[unique_hostname] = {"map": "default"}
         self._join_list.append(unique_hostname)
 
-    def is_hostname_valid(self, name):
-        return name in self._screen_config_dict
+    def is_hostname_valid(self, hostname):
+        """
+        Returns whether or not the hostname is a valid one for this screen config
+        :param hostname:
+        :return: boolean
+        """
+        return hostname in self._screen_config_dict
 
     def _reset_screen_config(self):
         if len(self._join_list) == 1:
@@ -73,6 +79,12 @@ class ScreenLayout():
             self._screen_config_dict[elem]["right"] = right
 
     def remove(self, hostname):
+        """
+        Removes the current hostname from the screen config, making it possible for new connections to join.
+        Use it when the client disconnects
+        :param hostname:
+        :return:
+        """
         if hostname not in self._screen_config_dict:
             return
 
@@ -85,53 +97,18 @@ class ScreenLayout():
             self._counter_dict_for_hostname[hostname] -= 1
             print self._counter_dict_for_hostname
 
-    def __getitem__(self, uniqueID):
-        return self._screen_config_dict[uniqueID]
+    def get_map_for_hostname(self, hostname):
+        """
+        Returns the map file name for the hostname
+        :param hostname:
+        :return:
+        """
+        return self._screen_config_dict[hostname]["map"]
+
+    def __getitem__(self, hostname):
+        connection_dict = copy.copy(self._screen_config_dict[hostname])
+        del connection_dict["map"]
+        return connection_dict
 
     def __str__(self):
         return '{0}:\n\t{1}'.format(self._screen_config_type, self._screen_config_dict)
-
-
-if __name__ == "__main__":
-    # test1 = ScreenLayout("FailTest.json")
-    # host = test1.get_id_of_host("Alexander-PC")
-    # if test1.is_hostname_valid(host):
-    #     print test1.get_setup_for_hostname(host)
-    # else:
-    #     print "Host unvalid: {0}".format(host)
-
-    # def printTest(host, screenLayout):
-    #     print '{0}:\n\t{1}'.format(host, screenLayout.get_setup_for_hostname(host))
-    #
-
-    test2 = ScreenLayout("SingleScreenTest.json", screen_config_path='server/screenconfig/')
-    test2.get_id_of_host("Alexander-PC")
-    test2.get_id_of_host("Alexander-PC")
-    test2.get_id_of_host("Alexander-PC")
-    test2.remove("Alexander-PC")
-    test2.remove("Alexander-PC_1")
-    test2.remove("Alexander-PC_2")
-    print test2.is_hostname_valid("Alexander-PC")
-    print test2.get_id_of_host("Alexander-PC")
-    # printTest(test2.get_id_of_host("Alexander-PC"), test2)
-    # printTest(test2.get_id_of_host("Alexander-PC"), test2)
-    # printTest(test2.get_id_of_host("Alexander-PC"), test2)
-    # printTest(test2.get_id_of_host("Alexander-PC"), test2)
-
-    # test4 = ScreenLayout()
-    # test4.get_id_of_host("Alexander-PC")
-    # test4.get_id_of_host("Alexander-PC")
-    # test4.get_id_of_host("Alexander-PC")
-    # test4.remove("Alexander-PC_2")
-
-    #test4.get_id_of_host("Alexander-PC")
-
-    print test2
-
-    # test3 = ScreenLayout('default')
-    # host = test3.get_id_of_host("Alexander-PC")
-    # print test3
-    # print "left" in test3.get_setup_for_hostname(host)
-    #
-    # test3.get_id_of_host("Alexander-PC")
-    # print test3
