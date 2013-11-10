@@ -15,7 +15,7 @@ from graphics import Wall, Floor
 import settings
 from player import Player
 from graphics.playergraphics import Player as playerGraphics
-from GameConnection import GameConnection
+from gameconnection import *
 import graphics.powerups
 
 import argparse
@@ -37,6 +37,11 @@ class WallManMain:
         pygame.init()
         pygame.mouse.set_visible(False)
         self.map = None
+        self.floorRight = list()
+        self.floorLeft = list()
+        self.floorUp = list()
+        self.floorDown = list()
+        self.time_passed_micro_seconds = 0.0
 
     def setup(self, connection):
         fullScreen = 0
@@ -45,9 +50,44 @@ class WallManMain:
             self.res = (pygame.display.list_modes()[0])
             fullScreen = pygame.FULLSCREEN
 
-        self.connection = connection
+        self.connection = connection  # fixme, remove throw, only uses it to to make pycharm love me
         self.screen = pygame.display.set_mode(self.res, fullScreen)
         pygame.display.set_caption("WallMan - Alexander Svendsen")
+
+    def checkCorners(self, x, y, max_x, max_y, floor):
+        if y == 0:
+            self.floorUp.append((x, y, floor))
+        if y == max_y:
+            self.floorDown.append((x, y, floor))
+        if x == 0:
+            self.floorLeft.append((x, y, floor))
+        if x == max_x:
+            self.floorRight.append((x, y, floor))
+
+    def change_floor_to_wall(self, floors):
+        for floor_info in floors:
+            self.floorSprites.remove(floor_info[2])
+            self.blockSprites.add(
+                Wall(floor_info[2].rect.center, settings.BLOCKCOLORS, self.blockWidth, self.blockHeight,
+                     settings.BLOCKWIDTH))
+            self.layout[floor_info[1]][floor_info[0]] = gameLayoutConfig.BLOCK
+        return []
+
+    def blockPathsInDirection(self, direction):
+        if direction == "right":
+            self.floorRight = self.change_floor_to_wall(self.floorRight)
+        elif direction == "left":
+            self.floorLeft = self.change_floor_to_wall(self.floorLeft)
+        elif direction == "down":
+            self.floorUp = self.change_floor_to_wall(self.floorUp)
+        elif direction == "up":
+            self.floorDown = self.change_floor_to_wall(self.floorDown)
+
+    def redrawGameLayout(self):
+        for player in self.players.values():
+            player.update_layout(self.layout)
+
+        self.blockSprites.draw(self.screen)
 
     def drawGameLayout(self):
         if self.map is None:
@@ -73,11 +113,13 @@ class WallManMain:
                 centerPoint = [(x * self.blockWidth) + x_offset, (y * self.blockHeight + y_offset)]
                 blockData = layout[y][x]
                 if blockData == gameLayoutConfig.FLOOR:
-                    self.floorSprites.add(Floor(centerPoint, self.blockWidth, self.blockHeight))
+                    floor = Floor(centerPoint, self.blockWidth, self.blockHeight)
+                    self.floorSprites.add(floor)
+                    self.checkCorners(x, y, len(layout[y]) - 1, len(layout) - 1, floor) #fixme a must for all tests
                 elif blockData == gameLayoutConfig.BLOCK:
                     self.blockSprites.add(
                         Wall(centerPoint, settings.BLOCKCOLORS, self.blockWidth, self.blockHeight, settings.BLOCKWIDTH))
-                elif blockData == gameLayoutConfig.SPEEDUP:
+                elif blockData == gameLayoutConfig.SPEEDUP:  # FIXME can refactor all of these to the same thing
                     self.floorSprites.add(Floor(centerPoint, self.blockWidth, self.blockHeight))
                     self.power_ups.add(graphics.powerups.PowerUp(centerPoint, self.blockWidth, self.blockHeight,
                                                                  "images/speed-icon.png", "SPEED"))
@@ -102,10 +144,10 @@ class WallManMain:
         self.running = RUNNING
 
     def update_players_migrations(self):
-        keys = self.connection.directionConnections.keys()
+        keys = self.connection.direction_connection_dict.keys()
         connDict = {}
         for key in keys:
-            connDict[key] = self.connection.sendPlayerInDirection
+            connDict[key] = self.connection.send_player_in_direction
 
         for player in self.players.values():
             player.update_migration(**connDict)
@@ -124,10 +166,10 @@ class WallManMain:
 
         randomFloor.mark(player._color, name)
 
-        keys = self.connection.directionConnections.keys()
+        keys = self.connection.direction_connection_dict.keys()
         connDict = {}
         for key in keys:
-            connDict[key] = self.connection.sendPlayerInDirection
+            connDict[key] = self.connection.send_player_in_direction
         player.update_migration(**connDict)
         player.update_layout(self.layout)
         self.players[name] = player
@@ -149,30 +191,34 @@ class WallManMain:
                                        color,
                                        sprite_x,
                                        sprite_y),
-                        name,
-                        speed_level)
+                        name)
 
-        keys = self.connection.directionConnections.keys()
+        player.speed_level = speed_level
+
+        keys = self.connection.direction_connection_dict.keys()
         connDict = {}
         for key in keys:
-            connDict[key] = self.connection.sendPlayerInDirection
+            connDict[key] = self.connection.send_player_in_direction
         player.update_migration(**connDict)
 
+
+        #Setts where the player will come in at
+        #Fixme may be a wrong speed to use
         if direction == "left":
-            player._sprite_object.rect.x = self.res[0] - player.speed
+            player._sprite_object.rect.x = self.res[0] - speed_level * self.time_passed_micro_seconds
         elif direction == "right":
-            player._sprite_object.rect.x = - player._sprite_object.rect.w + player.speed
+            player._sprite_object.rect.x = - player._sprite_object.rect.w + speed_level * self.time_passed_micro_seconds
         elif direction == "up":
-            player._sprite_object.rect.y = self.res[1] - player.speed
+            player._sprite_object.rect.y = self.res[1] - speed_level * self.time_passed_micro_seconds
         elif direction == "down":
-            player._sprite_object.rect.y = - player._sprite_object.rect.h + player.speed
+            player._sprite_object.rect.y = - player._sprite_object.rect.h + speed_level * self.time_passed_micro_seconds
 
         player.update_movement(direction)
         player.update_movement(["none", "left", "right", "up", "down"][newDirection])  # FIXME UGLY AS HELL
         player.update_layout(self.layout)
 
         self.players[name] = player
-        self.playerSprites.add(player.sprite_object)  # fixme: need the old color and askii sprite
+        self.playerSprites.add(player.sprite_object)
         return "OK"
 
     def movePlayer(self, name, direction):  # TODO: Better error support
@@ -224,11 +270,11 @@ class WallManMain:
                         self.connection.send_status_data()
 
             time_passed = clock.tick(120)
-            time_passed_micro_seconds = time_passed / 10.0
+            self.time_passed_micro_seconds = time_passed / 10.0
 
             for name in self.players.keys():
                 player = self.players[name]
-                player.update(time_passed_micro_seconds, self.floorSprites)
+                player.update(self.time_passed_micro_seconds, self.floorSprites)
 
                 #Time to active awsome powers
                 powers = pygame.sprite.spritecollide(player.sprite_object, self.power_ups, True)

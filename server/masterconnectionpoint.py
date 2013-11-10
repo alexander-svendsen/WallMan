@@ -128,7 +128,7 @@ class MasterConnectionPoint(communication.Server):
                 self._fix_player(name)
 
             del self._conn_to_player_dict[self._connected_slaves[hostname]['conn']]
-            self._connected_slaves[hostname]['conn'].close()
+            self._connected_slaves[hostname]['conn']._close()
 
             del self._connected_slaves[hostname]
 

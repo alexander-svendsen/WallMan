@@ -13,7 +13,7 @@ class Server():
         return self._sock.accept()
 
     def close(self, connection):
-        connection.close()
+        connection._close()
 
     def send(self, connection, data):
         connection.send(data)

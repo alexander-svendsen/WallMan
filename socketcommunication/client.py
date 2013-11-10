@@ -24,5 +24,9 @@ class Client():
         return self.cs.getsockname()
 
     @property
+    def connection(self):
+        return self.cs
+
+    @property
     def gethostname(self):
         return socket.gethostname()
