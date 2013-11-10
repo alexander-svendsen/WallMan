@@ -23,7 +23,7 @@ class MasterConnectionPoint(communication.Server):
         self._connected_slaves = {}
         self._players = {}
         self._player_score = defaultdict(lambda: 0)
-        self._conn_to_player_dict = defaultdict(lambda: list)
+        self._conn_to_player_dict = defaultdict(lambda: list())
 
         self._shutdown_dict = {}
 
@@ -57,6 +57,8 @@ class MasterConnectionPoint(communication.Server):
         Method for moving the specified player. Doesn't really matter if the player isn't in the game.
         :param raw_data: json string data. Must look like: "{'name': <username> }"
         """
+        print raw_data
+        print  self._players
         data = json.loads(raw_data)
         if data["name"] in self._players:
             data["cmd"] = "move"
@@ -81,9 +83,9 @@ class MasterConnectionPoint(communication.Server):
 
                 if data['cmd'] == 'migrate':
                     print "migrate signal received", data
-                    self._players[data["name"]] = connection
                     self._conn_to_player_dict[self._players[data["name"]]].remove(data["name"])
                     self._conn_to_player_dict[connection].append(data["name"])
+                    self._players[data["name"]] = connection
 
                 elif data['cmd'] == 'setup':
                     hostname = self._screen_layout.get_id_of_host(data["hostname"])
