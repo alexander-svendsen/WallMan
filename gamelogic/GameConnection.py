@@ -229,7 +229,7 @@ class GameConnection():
                 msg = self.connection.receive(1024)
                 print "Data from master"
                 self._parse_data(self.connection, msg)
-            except socket.error as e:
+            except socket.error:
                 print "Closing connection to Master"
                 self._close()
             except Exception as e:
@@ -248,7 +248,12 @@ class GameConnection():
     def _close(self):
         self.accept_connections = False
         self.running = False
-        for client in self.connected_clients:  # closes all the connected clients, just to be sure
-            self.server.close(client)
-        self.connection.close()
+        print self.connected_clients
+        try:
+            for client in self.connected_clients:  # closes all the connected clients, just to be sure
+                self.server.close(client)
+            self.connection.close()
+        except Exception as e:  # Don't really care here anymore
+            pass
+
         self.the_game.softQuit()
