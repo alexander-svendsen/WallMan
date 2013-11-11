@@ -173,7 +173,8 @@ class GameConnection():
             elif data['cmd'] == 'setup_migration_direction':
                 for direction in data['direction']:
                     self.direction_connection_dict[direction] = conn
-                    self.wait_list.remove(direction)
+                    if direction in self.wait_list:  # In those cases where its quicker to connect then i am to add it
+                        self.wait_list.remove(direction)
                 self.connection_direction_dict[conn].extend(data['direction'])
                 self.the_game.update_players_migrations()
 
@@ -183,7 +184,9 @@ class GameConnection():
             elif data['cmd'] == 'start':
                 # Blocks directions that haven't connected
                 for direction in self.wait_list:
-                    self.the_game.blockPathsInDirection(direction)
+                    # In those cases where its quicker to connect then i am to add it
+                    if direction not in self.direction_connection_dict:
+                        self.the_game.blockPathsInDirection(direction)
                 if self.wait_list:
                     self.the_game.redrawGameLayout()
 
