@@ -14,6 +14,9 @@ STATE_MOVE_LEFT_OUT_OF_SCREEN = 2
 STATE_MOVE_UP_OUT_OF_SCREEN = 3
 STATE_MOVE_DOWN_OUT_OF_SCREEN = 4
 
+#Dict to convert which way we actually are moving from string to int
+MOVEMENT_CONVERTER_DICT = {"none": NONE, "left": LEFT, "right": RIGHT, "up": UP, "down": DOWN}
+
 
 class Player():
     def __init__(self, sprite_object, name, speed=1.5):
@@ -36,13 +39,6 @@ class Player():
 
         self._sprite_object = sprite_object
         self._color = sprite_object.color
-
-        #Dict to convert which way we actually are moving from string to int
-        self._movement_converter_dict = {"none": NONE,
-                                         "left": LEFT,
-                                         "right": RIGHT,
-                                         "up": UP,
-                                         "down": DOWN}
 
         #Dict to run the decide which function to use base on the state
         self._state_dict = {STATE_MOVE_FREELY: self._move_freely,
@@ -71,7 +67,7 @@ class Player():
                                self.layout_height * self.sprite_object.rect.h)
 
     def update_movement(self, direction):
-        self._new_direction = self._movement_converter_dict[direction]
+        self._new_direction = MOVEMENT_CONVERTER_DICT[direction]
         if self._current_direction == NONE:
             self._current_direction = self._new_direction
             self._new_direction = NONE

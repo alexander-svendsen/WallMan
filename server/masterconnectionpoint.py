@@ -127,11 +127,9 @@ class MasterConnectionPoint(communication.Server):
             for name in self._conn_to_player_dict[self._connected_slaves[hostname]['conn']]:
                 self._fix_player(name)
             del self._conn_to_player_dict[self._connected_slaves[hostname]['conn']]
-            self._connected_slaves[hostname]['conn']._close()
-
+            self._connected_slaves[hostname]['conn'].close()
             del self._connected_slaves[hostname]
             self._screen_layout.remove(hostname)
-
             print "Clients left connected: ", self._connected_slaves
 
     def flash_player(self, raw_data):
