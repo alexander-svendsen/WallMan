@@ -1,0 +1,77 @@
+{
+    "tile-1-0.local": {
+        "down": "tile-1-3.local", 
+        "map": "tight_fit_corners.json", 
+        "up": "tile-1-1.local"
+    }, 
+    "tile-1-1.local": {
+        "down": "tile-1-0.local", 
+        "map": "tight_fit_corners.json", 
+        "right": "tile-2-1.local", 
+        "up": "tile-1-2.local"
+    }, 
+    "tile-1-2.local": {
+        "down": "tile-1-1.local", 
+        "map": "tight_fit_corners.json", 
+        "right": "tile-2-2.local", 
+        "up": "tile-1-3.local"
+    }, 
+    "tile-1-3.local": {
+        "down": "tile-1-2.local", 
+        "map": "tight_fit_corners.json", 
+        "up": "tile-1-0.local"
+    }, 
+    "tile-2-1.local": {
+        "down": "tile-2-2.local", 
+        "left": "tile-1-1.local", 
+        "map": "tight_fit_corners.json", 
+        "up": "tile-2-2.local"
+    }, 
+    "tile-2-2.local": {
+        "down": "tile-2-1.local", 
+        "left": "tile-1-2.local", 
+        "map": "tight_fit_corners.json", 
+        "right": "tile-3-2.local", 
+        "up": "tile-2-1.local"
+    }, 
+    "tile-3-2.local": {
+        "left": "tile-2-2.local", 
+        "map": "tight_fit_corners.json", 
+        "right": "tile-4-2.local"
+    }, 
+    "tile-4-1.local": {
+        "down": "tile-4-2.local", 
+        "map": "tight_fit_corners.json", 
+        "right": "tile-5-1.local", 
+        "up": "tile-4-2.local"
+    }, 
+    "tile-4-2.local": {
+        "down": "tile-4-1.local", 
+        "left": "tile-3-2.local", 
+        "map": "tight_fit_corners.json", 
+        "right": "tile-5-2.local", 
+        "up": "tile-4-1.local"
+    }, 
+    "tile-5-0.local": {
+        "down": "tile-5-3.local", 
+        "map": "tight_fit_corners.json", 
+        "up": "tile-5-1.local"
+    }, 
+    "tile-5-1.local": {
+        "down": "tile-5-0.local", 
+        "left": "tile-4-1.local", 
+        "map": "tight_fit_corners.json", 
+        "up": "tile-5-2.local"
+    }, 
+    "tile-5-2.local": {
+        "down": "tile-5-1.local", 
+        "left": "tile-4-2.local", 
+        "map": "tight_fit_corners.json", 
+        "up": "tile-5-3.local"
+    }, 
+    "tile-5-3.local": {
+        "down": "tile-5-2.local", 
+        "map": "tight_fit_corners.json", 
+        "up": "tile-5-0.local"
+    }
+}
