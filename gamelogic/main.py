@@ -50,7 +50,7 @@ class WallManMain:
             self.res = (pygame.display.list_modes()[0])
             fullScreen = pygame.FULLSCREEN
 
-        self.connection = connection  # fixme, remove throw, only uses it to to make pycharm love me
+        self.connection = connection
         self.screen = pygame.display.set_mode(self.res, fullScreen)
         pygame.display.set_caption("WallMan - Alexander Svendsen")
 
@@ -75,7 +75,10 @@ class WallManMain:
 
     def blockPathsInDirection(self, direction):
         if direction == "right":
+            # colliding_player = pygame.sprite.spritecollide(self.playerSprites, self.floorRight, False)
             self.floorRight = self.change_floor_to_wall(self.floorRight)
+            # print colliding_player
+
         elif direction == "left":
             self.floorLeft = self.change_floor_to_wall(self.floorLeft)
         elif direction == "down":
