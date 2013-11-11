@@ -213,13 +213,12 @@ class GameConnection():
                 self.send_status_data()
 
             elif data['cmd'] == 'migrate':
-                #review can you simply pack the dict out here ?
-                self.the_game.migratePlayer(data['name'], data['direction'], data['newDirection'], data['x'], data['y'],
-                                            data['color'], data['sprite_x'], data['sprite_y'], data['speed_level'])
+                self.the_game.migratePlayer(data)
                 self.connection.send(json.dumps({'cmd': 'migrate', 'name': data['name']}))
 
             elif data['cmd'] == 'flash':
                 self.the_game.flash_player(data["name"])
+
             else:
                 print "Strange cmd recived", data
 
