@@ -90,7 +90,11 @@ class application:
                     __import__(main_module_name())
                 except ImportError:
                     pass
-                    
+
+    def set_ip(self, addr, port):
+        self.my_addr = addr
+        self.my_port = port
+
     def _load(self):
         web.ctx.app_stack.append(self)
         
@@ -310,7 +314,7 @@ class application:
         `middleware` is a list of WSGI middleware which is applied to the resulting WSGI
         function.
         """
-        return wsgi.runwsgi(self.wsgifunc(*middleware))
+        return wsgi.runwsgi(self.wsgifunc(*middleware), self.my_addr, self.my_port)
 
     def stop(self):
         """Stops the http server started by run.

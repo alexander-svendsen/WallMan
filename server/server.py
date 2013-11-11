@@ -58,12 +58,7 @@ def main():
     web.connection_point = connection_point
     thread.start_new(connection_point.listen_for_slaves, ())
 
-    #web.py ones its own set of special input parameters, so need to give it the parameters it wants and remove the
-    #current ones
-    import sys  # Yuck
-    sys.argv.append("bleh")  # Yuck
-    sys.argv[1] = args.port_server  # Yuck
-
+    app.set_ip('0.0.0.0', args.port_server)
     #Start running web.py
     app.run()
 

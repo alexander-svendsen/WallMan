@@ -21,7 +21,7 @@ def runscgi(func, addr=('localhost', 4000)):
     import flup.server.scgi as flups
     return flups.WSGIServer(func, bindAddress=addr, debug=False).run()
 
-def runwsgi(func):
+def runwsgi(func, addr='0.0.0.0', port=8080):
     """
     Runs a WSGI-compatible `func` using FCGI, SCGI, or a simple web server,
     as appropriate based on context and `sys.argv`.
@@ -39,7 +39,7 @@ def runwsgi(func):
         if 'fastcgi' in args: args.remove('fastcgi')
         elif 'fcgi' in args: args.remove('fcgi')
         if args:
-            return runfcgi(func, validaddr(args[0]))
+            return runfcgi(func, validaddr(addr))
         else:
             return runfcgi(func, None)
     
@@ -47,11 +47,11 @@ def runwsgi(func):
         args = sys.argv[1:]
         args.remove('scgi')
         if args:
-            return runscgi(func, validaddr(args[0]))
+            return runscgi(func, validaddr(addr))
         else:
             return runscgi(func)
     
-    return httpserver.runsimple(func, validip(listget(sys.argv, 1, '')))
+    return httpserver.runsimple(func, validip(addr + ':' + str(port)))
     
 def _is_dev_mode():
     # Some embedded python interpreters won't have sys.arv
