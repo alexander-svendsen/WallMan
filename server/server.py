@@ -3,6 +3,7 @@ import json
 import argparse
 import thread
 import sys
+import signal
 import web
 import masterconnectionpoint as mcp
 
@@ -40,6 +41,11 @@ class Server:
             web.connection_point.flash_player(web.data())
 
 
+def signal_handler(signal, frame):
+    print 'You pressed Ctrl+C!'
+    sys.exit(0)
+
+
 def main():
     app = web.application(urls, globals())
 
@@ -60,10 +66,10 @@ def main():
 
     #web.py ones its own set of special input parameters, so need to give it the parameters it wants and remove the
     #current ones
-    import sys  # Yuck
     sys.argv.append("bleh")  # Yuck
     sys.argv[1] = args.port_server  # Yuck
 
+    signal.signal(signal.SIGINT, signal_handler)
     #Start running web.py
     app.run()
 
