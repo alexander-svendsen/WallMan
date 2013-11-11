@@ -54,7 +54,7 @@
     }, 
     "tile-5-0.local": {
         "down": "tile-5-3.local", 
-        "map": "tight_fit_column_5.json", 
+        "map": "tight_fit_corners.json", 
         "up": "tile-5-1.local"
     }, 
     "tile-5-1.local": {
@@ -66,7 +66,7 @@
     "tile-5-2.local": {
         "down": "tile-5-1.local", 
         "left": "tile-4-2.local", 
-        "map": "tight_fit_corners.json", 
+        "map": "tight_fit_column_5.json", 
         "up": "tile-5-3.local"
     }, 
     "tile-5-3.local": {
