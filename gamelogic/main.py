@@ -177,23 +177,23 @@ class WallManMain:
         return "OK"
 
     #REVIEW: SO MANY HACKS
-    def migratePlayer(self, name, direction, newDirection, x, y, color, sprite_x, sprite_y, speed_level):  # FIXME: Should not join to a random place
-        if name in self.players:
+    def migratePlayer(self, data):
+        if data['name'] in self.players:
             return "Name taken"
 
         x_offset = (self.blockWidth / 2)
         y_offset = (self.blockHeight / 2)
-        centerPoint = [(x * self.blockWidth) + x_offset, (y * self.blockHeight + y_offset)]
+        centerPoint = [(data['x'] * self.blockWidth) + x_offset, (data['y'] * self.blockHeight + y_offset)]
 
         player = Player(playerGraphics(centerPoint,
                                        self.blockWidth,
                                        self.blockHeight,
-                                       color,
-                                       sprite_x,
-                                       sprite_y),
-                        name)
+                                       data['color'],
+                                       data['sprite_x'],
+                                       data['sprite_y']),
+                        data['name'])
 
-        player.speed_level = speed_level
+        player.speed_level = data['speed_level']
 
         keys = self.connection.direction_connection_dict.keys()
         connDict = {}
@@ -201,23 +201,22 @@ class WallManMain:
             connDict[key] = self.connection.send_player_in_direction
         player.update_migration(**connDict)
 
-
         #Setts where the player will come in at
         #Fixme may be a wrong speed to use
-        if direction == "left":
-            player._sprite_object.rect.x = self.res[0] - speed_level * self.time_passed_micro_seconds
-        elif direction == "right":
-            player._sprite_object.rect.x = - player._sprite_object.rect.w + speed_level * self.time_passed_micro_seconds
-        elif direction == "up":
-            player._sprite_object.rect.y = self.res[1] - speed_level * self.time_passed_micro_seconds
-        elif direction == "down":
-            player._sprite_object.rect.y = - player._sprite_object.rect.h + speed_level * self.time_passed_micro_seconds
+        if data['direction'] == "left":
+            player._sprite_object.rect.x = self.res[0] - data['speed_level'] * self.time_passed_micro_seconds
+        elif data['direction'] == "right":
+            player._sprite_object.rect.x = - player._sprite_object.rect.w + data['speed_level'] * self.time_passed_micro_seconds
+        elif data['direction'] == "up":
+            player._sprite_object.rect.y = self.res[1] - data['speed_level'] * self.time_passed_micro_seconds
+        elif data['direction'] == "down":
+            player._sprite_object.rect.y = - player._sprite_object.rect.h + data['speed_level'] * self.time_passed_micro_seconds
 
-        player.update_movement(direction)
-        player.update_movement(["none", "left", "right", "up", "down"][newDirection])  # FIXME UGLY AS HELL
+        player.update_movement(data['direction'])
+        player.update_movement(["none", "left", "right", "up", "down"][data['newDirection']])  # FIXME UGLY AS HELL
         player.update_layout(self.layout)
 
-        self.players[name] = player
+        self.players[data['name']] = player
         self.playerSprites.add(player.sprite_object)
         return "OK"
 
