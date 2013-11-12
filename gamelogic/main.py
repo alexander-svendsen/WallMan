@@ -108,35 +108,53 @@ class WallManMain:
         self.blockHeight = int(self.res[1] / len(layout))
         self.blockWidth = int(self.res[0] / len(layout[0]))
 
+        rest_height = self.res[1] - (self.blockHeight * len(layout))
+        rest_width = self.res[0] - (self.blockWidth * len(layout[0]))
+
         x_offset = (self.blockWidth / 2)
         y_offset = (self.blockHeight / 2)
 
+        blockHeight = self.blockHeight
+        blockWidth = self.blockWidth
+        print "w", rest_height
+        print "h", rest_width
+
         for y in xrange(len(layout)):
             for x in xrange(len(layout[y])):
+                if y == len(layout) - 1:
+                    blockHeight = self.blockHeight + rest_height
+                else:
+                    blockHeight = self.blockHeight
+
+                if x == len(layout[y]) - 1:
+                    blockWidth = self.blockWidth + rest_width
+                else:
+                    blockWidth = self.blockWidth
+
                 centerPoint = [(x * self.blockWidth) + x_offset, (y * self.blockHeight + y_offset)]
                 blockData = layout[y][x]
                 if blockData == gameLayoutConfig.FLOOR:
-                    floor = Floor(centerPoint, self.blockWidth, self.blockHeight)
+                    floor = Floor(centerPoint, blockWidth, blockHeight)
                     self.floorSprites.add(floor)
                     self.checkCorners(x, y, len(layout[y]) - 1, len(layout) - 1, floor) #fixme a must for all tests
                 elif blockData == gameLayoutConfig.BLOCK:
                     self.blockSprites.add(
-                        Wall(centerPoint, settings.BLOCKCOLORS, self.blockWidth, self.blockHeight, settings.BLOCKWIDTH))
+                        Wall(centerPoint, settings.BLOCKCOLORS, blockWidth, blockHeight, settings.BLOCKWIDTH))
                 elif blockData == gameLayoutConfig.SPEEDUP:  # FIXME can refactor all of these to the same thing
-                    self.floorSprites.add(Floor(centerPoint, self.blockWidth, self.blockHeight))
-                    self.power_ups.add(graphics.powerups.PowerUp(centerPoint, self.blockWidth, self.blockHeight,
+                    self.floorSprites.add(Floor(centerPoint, blockWidth, blockHeight))
+                    self.power_ups.add(graphics.powerups.PowerUp(centerPoint, blockWidth, blockHeight,
                                                                  "images/speed-icon.png", "SPEED"))
                 elif blockData == gameLayoutConfig.LOCK:
-                    self.floorSprites.add(Floor(centerPoint, self.blockWidth, self.blockHeight))
-                    self.power_ups.add(graphics.powerups.PowerUp(centerPoint, self.blockWidth, self.blockHeight,
+                    self.floorSprites.add(Floor(centerPoint, blockWidth, blockHeight))
+                    self.power_ups.add(graphics.powerups.PowerUp(centerPoint, blockWidth, blockHeight,
                                                                       "images/lock-icon.png", "LOCK"))
                 elif blockData == gameLayoutConfig.NUKE:
-                    self.floorSprites.add(Floor(centerPoint, self.blockWidth, self.blockHeight))
-                    self.power_ups.add(graphics.powerups.PowerUp(centerPoint, self.blockWidth, self.blockHeight,
+                    self.floorSprites.add(Floor(centerPoint, blockWidth, blockHeight))
+                    self.power_ups.add(graphics.powerups.PowerUp(centerPoint, blockWidth, blockHeight,
                                                                  "images/nuke-icon.png", "NUKE"))
                 elif blockData == gameLayoutConfig.CLEAN:
-                    self.floorSprites.add(Floor(centerPoint, self.blockWidth, self.blockHeight))
-                    self.power_ups.add(graphics.powerups.PowerUp(centerPoint, self.blockWidth, self.blockHeight,
+                    self.floorSprites.add(Floor(centerPoint, blockWidth, blockHeight))
+                    self.power_ups.add(graphics.powerups.PowerUp(centerPoint, blockWidth, blockHeight,
                                                                  "images/clean-icon.png", "CLEAN"))
 
         self.blockSprites.draw(self.screen)
