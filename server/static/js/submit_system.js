@@ -13,7 +13,9 @@ $("#playerProp").on("submit", function(e) {
         return;
     }
     terminal.append('<p>'+ input + '</p>');
-    ajax(tasksURI + '/join', 'POST', {"name" : input}).success(redirect(input));
+    ajax(tasksURI + '/join', 'POST', {"name" : input}).always(function(a){
+        redirect(input);
+    });
 });
 
 var redirect = function(username){

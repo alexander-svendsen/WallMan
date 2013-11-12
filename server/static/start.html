@@ -51,9 +51,9 @@
 
 <script>
     function init(){
-        var terminal = $('#console');
+        var terminal = $('.console');
         terminal.first().contents().first().remove();
-        while(terminal.first().contents().first()[0].nodeName == "#text"){
+        while(terminal.first().contents().first()[0].nodeName == ".text"){
             terminal.first().contents().first().remove();
         }
     }
