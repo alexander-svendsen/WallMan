@@ -74,7 +74,7 @@ class GameConnection():
         try:
             while self.running:
                 data = conn.recv(length)
-                if data == 0:  # The python program crashed
+                if data == 0 or data == '':  # The python program crashed
                     raise socket.error
                 print "Client data"
                 self._parse_data(conn, data)
@@ -90,7 +90,7 @@ class GameConnection():
 
     def _receive_setup(self):
         rawData = self.connection.receive(1024)
-        if rawData == 0:  # The python program crashed
+        if rawData == 0 or rawData == '':  # The python program crashed
             raise socket.error
 
         data = json.loads(rawData)
@@ -237,7 +237,7 @@ class GameConnection():
             try:
                 msg = self.connection.receive(1024)
                 print "Data from master"
-                if msg == 0:  # The python program crashed
+                if msg == 0 or msg == '':  # The python program crashed
                     raise socket.error
                 self._parse_data(self.connection, msg)
             except socket.error:
