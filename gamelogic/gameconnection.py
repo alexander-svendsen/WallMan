@@ -41,7 +41,7 @@ class GameConnection():
 
     def _connect_to_master(self, addr, port):
         self.connection = Client()
-        self.connection.connect(addr, port)
+        self.connection.connect(addr, port, 5)
 
     def _send_setup(self):
         self.connection.send(json.dumps({"cmd": "setup",
@@ -74,6 +74,8 @@ class GameConnection():
         try:
             while self.running:
                 data = conn.recv(length)
+                if data == 0:  # The python program crashed
+                    raise socket.error
                 print "Client data"
                 self._parse_data(conn, data)
         except socket.error:
@@ -88,11 +90,16 @@ class GameConnection():
 
     def _receive_setup(self):
         rawData = self.connection.receive(1024)
+        if rawData == 0:  # The python program crashed
+            raise socket.error
+
         data = json.loads(rawData)
         if data["cmd"] == "close":
             self.the_game.hardQuit()
         elif data["cmd"] == "setup":
             self.the_game.map = data["map"]
+        else:
+            print "Strange setup from master", data
 
     def send_player_in_direction(self, **kwargs):
         """
@@ -230,6 +237,8 @@ class GameConnection():
             try:
                 msg = self.connection.receive(1024)
                 print "Data from master"
+                if msg == 0:  # The python program crashed
+                    raise socket.error
                 self._parse_data(self.connection, msg)
             except socket.error:
                 print "Closing connection to Master"

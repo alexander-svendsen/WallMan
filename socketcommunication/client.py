@@ -6,8 +6,9 @@ class Client():
     def __init__(self):
         self.cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    def connect(self, addr, port):
+    def connect(self, addr, port, timeout=None):
         print "Client connecting to: ", addr, port
+        self.cs.settimeout(timeout)
         self.cs.connect((addr, port))
 
     def close(self):
