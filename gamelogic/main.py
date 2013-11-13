@@ -113,9 +113,11 @@ class WallManMain:
 
         x_offset = (self.blockWidth / 2)
         y_offset = (self.blockHeight / 2)
-
+        x_off = x_offset
+        y_off = y_offset
         blockHeight = self.blockHeight
         blockWidth = self.blockWidth
+        print blockHeight, blockWidth
         print "w", rest_height
         print "h", rest_width
 
@@ -123,15 +125,19 @@ class WallManMain:
             for x in xrange(len(layout[y])):
                 if y == len(layout) - 1:
                     blockHeight = self.blockHeight + rest_height
+                    y_off = blockHeight / 2
                 else:
                     blockHeight = self.blockHeight
+                    y_off = y_offset
 
                 if x == len(layout[y]) - 1:
                     blockWidth = self.blockWidth + rest_width
+                    x_off = blockWidth / 2
                 else:
                     blockWidth = self.blockWidth
+                    x_off = x_offset
 
-                centerPoint = [(x * self.blockWidth) + x_offset, (y * self.blockHeight + y_offset)]
+                centerPoint = [(x * self.blockWidth) + x_off, (y * self.blockHeight + y_off)]
                 blockData = layout[y][x]
                 if blockData == gameLayoutConfig.FLOOR:
                     floor = Floor(centerPoint, blockWidth, blockHeight)
