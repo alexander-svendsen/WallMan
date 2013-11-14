@@ -4,41 +4,68 @@ import argparse
 import thread
 import sys
 import signal
-import web
 import masterconnectionpoint as mcp
+import flask
 
-urls = (
-    '/(.*)', 'Server'
-)
+app = flask.Flask(__name__)
 
 
-class Server:
-    """
-    The main server. It should have the master server stored as a parameter. This class itself only handle the REST
-    requests and forward them to the master server. All the REST request are all handled by a separate thread by the
-    help of web.py
-    """
-    def GET(self, path=""):
-        if path == "start":
-            web.connection_point.start_game()
-        if path == "status":
-            return json.dumps(web.connection_point.get_status())
+@app.route("/")
+def start():
+    return flask.redirect(flask.url_for('static', filename='start.html'))
 
-    def POST(self, path=""):  # FIXME error messages and such
-        if path == "setup":
-            web.connection_point.send_setup()
 
-        if path == "join":
-            web.connection_point.add_player(web.data())
+@app.route("/favicon.ico")
+def favicon():
+    return flask.redirect(flask.url_for('static', filename='favicon.ico'))
 
-        if path == "move":
-            web.connection_point.move_player(web.data())
 
-        if path == "close":
-            web.connection_point.shutdown_clients()
+@app.route("/start", methods=['GET'])
+def start_game():
+    app.connection_point.start_game()
+    return status(200)
 
-        if path == "doubletap":
-            web.connection_point.flash_player(web.data())
+
+@app.route("/status", methods=['GET'])
+def get_status():
+    return json.dumps(app.connection_point.get_status())
+
+
+@app.route("/setup", methods=['POST'])
+def set_setup():
+    app.connection_point.send_setup()
+    return status(200)
+
+
+@app.route("/join", methods=['POST'])
+def join_game():
+    app.connection_point.add_player(flask.request.data)
+    return status(200)
+
+
+@app.route("/move", methods=['POST'])
+def move_player():
+    app.connection_point.move_player(flask.request.data)
+    return status(200)
+
+
+@app.route("/close", methods=['POST'])
+def close_games():
+    app.connection_point.shutdown_clients()
+    return status(200)
+
+
+@app.route("/doubletap", methods=['POST'])
+def double_tap():
+    app.connection_point.flash_player(flask.request.data)
+    return status(200)
+
+
+def status(status):
+    response = flask.make_response()
+    response.status_code = status
+    response.data = response.status
+    return response
 
 
 def signal_handler(signal, frame):
@@ -47,11 +74,9 @@ def signal_handler(signal, frame):
 
 
 def main():
-    app = web.application(urls, globals())
-
     # Set up arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("-ps", "--port_server", help="Server for http client port", type=str, default='35001')
+    parser.add_argument("-ps", "--port_server", help="Server for http client port", type=int, default=35001)
     parser.add_argument("-pm", "--port_master", help="Master port", type=int, default=65523)
     parser.add_argument("-sc", "--screen_config",
                         help="Pick a screen config of the available files inside the screenconfig folder",
@@ -61,17 +86,12 @@ def main():
 
     #Set up the Master connection
     connection_point = mcp.MasterConnectionPoint('0.0.0.0', args.port_master, args.screen_config, args.time)
-    web.connection_point = connection_point
+    app.connection_point = connection_point
     thread.start_new(connection_point.listen_for_slaves, ())
 
-    #web.py ones its own set of special input parameters, so need to give it the parameters it wants and remove the
-    #current ones
-    sys.argv.append("bleh")  # Yuck
-    sys.argv[1] = args.port_server  # Yuck
-
     signal.signal(signal.SIGINT, signal_handler)
-    #Start running web.py
-    app.run()
+    #Start running flask
+    app.run(host='0.0.0.0', port=args.port_server)
 
 if __name__ == "__main__":
     sys.exit(main())

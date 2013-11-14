@@ -57,8 +57,6 @@ class MasterConnectionPoint(communication.Server):
         Method for moving the specified player. Doesn't really matter if the player isn't in the game.
         :param raw_data: json string data. Must look like: "{'name': <username> }"
         """
-        print raw_data
-        print  self._players
         data = json.loads(raw_data)
         if data["name"] in self._players:
             data["cmd"] = "move"
@@ -183,7 +181,7 @@ class MasterConnectionPoint(communication.Server):
         Starts the game. Sends a start signal to all the connected clients
         """
         self.start = True
-        self.shutdown = False  # Can refresh the game now again
+        self.shutdown = 0  # Can refresh the game now again
         self._send_to_all(json.dumps({"cmd": "start"}))
         if self.timer:  # A timer for how long until the game ends
             self._start_time = time.time()
