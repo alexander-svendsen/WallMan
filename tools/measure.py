@@ -2,8 +2,9 @@
 import os
 import time
 import psutil
+import socket
 
-TMP_FOLDER = "/tmp/wallman/"
+FILE = socket.gethostname()
 
 
 # store these as .csv files
@@ -13,9 +14,7 @@ class Measure():
         self.process = psutil.Process(self.pid)
 
         # creates an empty file at the tmp location
-        if not os.path.exists(TMP_FOLDER):
-            os.makedirs(TMP_FOLDER)
-        a = open(TMP_FOLDER + "measurement.csv", "w+")
+        a = open(FILE + ".csv", "w+")
         a.close()
 
         self.write_to_file = False
@@ -31,14 +30,14 @@ class Measure():
         if not self.write_to_file:
             return
         timestamp = time.strftime("%H:%M:%S", time.gmtime())
-        with open(TMP_FOLDER + 'measurement.csv', 'a+') as csv_file:
+        with open(FILE + '.csv', 'a+') as csv_file:
             csv_file.write("{0},{1},{2}\n".format(timestamp, cpu, mem_percentage))
 
     def make_note(self, note):
         if not self.write_to_file:
             return
 
-        with open(TMP_FOLDER + 'measurement.csv', 'a+') as csv_file:
+        with open(FILE + '.csv', 'a+') as csv_file:
             csv_file.write(', , ,{0}\n'.format(note))
 
     def measure_cpu(self):
