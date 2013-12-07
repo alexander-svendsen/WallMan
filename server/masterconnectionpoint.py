@@ -6,16 +6,18 @@ import json
 import thread
 import threading
 import time
+import tools
 from collections import defaultdict
 import socketcommunication as communication
 from screenlayout import ScreenLayout
+from tools import measure
 
 
 class MasterConnectionPoint(communication.Server):
     """
     The master server. Handles everything when it comes to the game screens
     """
-    def __init__(self, ip, port, screen_config, timer):
+    def __init__(self, ip, port, screen_config, timer, measure=False):
         communication.Server.__init__(self, ip, port)
         print "Master Connection point established at: {0}:{1}".format(ip, port)
 
@@ -32,6 +34,12 @@ class MasterConnectionPoint(communication.Server):
         self._end_time = None
         self.start = False
         self.shutdown = 0
+
+        self.measure = measure
+        if self.measure:
+            self.measure_tool = tools.Measure()
+            self.measure_tool.write_to_file = True
+            thread.start_new(self.measure_tool.start_measurement, (1, ))
 
     def add_player(self, raw_data):
         """
@@ -51,6 +59,10 @@ class MasterConnectionPoint(communication.Server):
 
         data["cmd"] = "join"
         game_slave.send(json.dumps(data) + '\n')
+
+        if self.measure:
+            self.measure_tool.make_note("New player added: " + str(len(self._players)))
+
 
     def move_player(self, raw_data):
         """
@@ -100,6 +112,9 @@ class MasterConnectionPoint(communication.Server):
                         connection.send(json.dumps({"cmd": "close"}))
                         return
                     print "Connected clients:", self._connected_slaves
+
+                    if self.measure:
+                        self.measure_tool.make_note("Node tried to join: " + str(len(self._connected_slaves)))
 
                 elif data['cmd'] == "status":
                     self._connected_slaves[hostname]["score"] = data['score']
@@ -186,6 +201,9 @@ class MasterConnectionPoint(communication.Server):
         if self.timer:  # A timer for how long until the game ends
             self._start_time = time.time()
             threading.Timer(self.timer, self.shutdown_clients).start()
+
+        if self.measure:
+            self.measure_tool.make_note("Game started")
 
     def send_setup(self):
         """

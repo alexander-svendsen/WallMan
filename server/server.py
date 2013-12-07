@@ -82,10 +82,16 @@ def main():
                         help="Pick a screen config of the available files inside the screenconfig folder",
                         type=str, default="default")
     parser.add_argument("-t", "--time", help="How long should the game run before it shutdown, in second", type=int)
+    parser.add_argument("-m", "--measure", help="Should game resources be measured", type=bool, default=False)
     args = parser.parse_args()
 
     #Set up the Master connection
-    connection_point = mcp.MasterConnectionPoint('0.0.0.0', args.port_master, args.screen_config, args.time)
+    connection_point = mcp.MasterConnectionPoint('0.0.0.0',
+                                                 args.port_master,
+                                                 args.screen_config,
+                                                 args.time,
+                                                 args.measure)
+
     app.connection_point = connection_point
     thread.start_new(connection_point.listen_for_slaves, ())
 

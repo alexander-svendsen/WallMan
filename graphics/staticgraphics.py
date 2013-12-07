@@ -7,6 +7,7 @@ class Floor(GraphicSpriteObject):
         GraphicSpriteObject.__init__(self, width, height)
         self.drawingRect = pygame.Rect(width / 2 - width / 4, height / 2 - height / 4, width / 2, height / 2)
         self.playerName = "None"
+        self.res_size = (width, height)
 
         # Move the rect into the correct position
         self.rect.center = center_point
@@ -29,7 +30,7 @@ class Floor(GraphicSpriteObject):
 
 
 class Wall(pygame.sprite.Sprite):
-    def __init__(self, center_point, color, width, height, border):
+    def __init__(self, center_point, width, height):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load("images/brick.png")
         self.image = pygame.transform.scale(self.image, (width, height))

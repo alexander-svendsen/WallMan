@@ -235,7 +235,7 @@ class GameConnection():
     def _receive_commands_from_master(self):
         while self.running:
             try:
-                msg = self.connection.receive(1024)
+                msg = self.connection.receive(4096)  # Will create problems if not all data is received
                 print "Data from master"
                 if msg == 0 or msg == '':  # The python program crashed
                     raise socket.error
@@ -246,7 +246,7 @@ class GameConnection():
             except Exception as e:
                 print "Error:", type(e), e
                 traceback.print_exc(file=sys.stdout)
-                raise
+                self._close()
 
     def send_status_data(self):
         """

@@ -12,7 +12,7 @@ import maps.config as gameLayoutConfig
 
 from graphics import Wall, Floor
 
-import settings
+import tools
 from player import Player
 from graphics.playergraphics import Player as playerGraphics
 from gameconnection import *
@@ -23,6 +23,7 @@ import argparse
 RUNNING = 1
 PAUSE = 2
 END = 3
+MEASUREMENT = tools.Measure()
 
 
 class WallManMain:
@@ -68,17 +69,17 @@ class WallManMain:
         for floor_info in floors:
             self.floorSprites.remove(floor_info[2])
             self.blockSprites.add(
-                Wall(floor_info[2].rect.center, settings.BLOCKCOLORS, self.blockWidth, self.blockHeight,
-                     settings.BLOCKWIDTH))
+                Wall(floor_info[2].rect.center,
+                     tools.BLOCKCOLORS,
+                     floor_info[2].res_size[0],
+                     floor_info[2].res_size[0],
+                     tools.BLOCKWIDTH))
             self.layout[floor_info[1]][floor_info[0]] = gameLayoutConfig.BLOCK
         return []
 
     def blockPathsInDirection(self, direction):
         if direction == "right":
-            # colliding_player = pygame.sprite.spritecollide(self.playerSprites, self.floorRight, False)
             self.floorRight = self.change_floor_to_wall(self.floorRight)
-            # print colliding_player
-
         elif direction == "left":
             self.floorLeft = self.change_floor_to_wall(self.floorLeft)
         elif direction == "down":
@@ -113,8 +114,6 @@ class WallManMain:
 
         x_offset = (self.blockWidth / 2)
         y_offset = (self.blockHeight / 2)
-        x_off = x_offset
-        y_off = y_offset
         blockHeight = self.blockHeight
         blockWidth = self.blockWidth
         print blockHeight, blockWidth
@@ -145,7 +144,7 @@ class WallManMain:
                     self.checkCorners(x, y, len(layout[y]) - 1, len(layout) - 1, floor) #fixme a must for all tests
                 elif blockData == gameLayoutConfig.BLOCK:
                     self.blockSprites.add(
-                        Wall(centerPoint, settings.BLOCKCOLORS, blockWidth, blockHeight, settings.BLOCKWIDTH))
+                        Wall(centerPoint, blockWidth, blockHeight))
                 elif blockData == gameLayoutConfig.SPEEDUP:  # FIXME can refactor all of these to the same thing
                     self.floorSprites.add(Floor(centerPoint, blockWidth, blockHeight))
                     self.power_ups.add(graphics.powerups.PowerUp(centerPoint, blockWidth, blockHeight,
@@ -169,6 +168,7 @@ class WallManMain:
 
     def start(self):
         self.running = RUNNING
+        MEASUREMENT.make_note("Game started")
 
     def update_players_migrations(self):
         keys = self.connection.direction_connection_dict.keys()
@@ -201,6 +201,8 @@ class WallManMain:
         player.update_layout(self.layout)
         self.players[name] = player
         self.playerSprites.add(player.sprite_object)
+
+        MEASUREMENT.make_note("New player migrated in: " + str(len(self.players)))
         return "OK"
 
     #REVIEW: SO MANY HACKS
@@ -245,6 +247,9 @@ class WallManMain:
 
         self.players[data['name']] = player
         self.playerSprites.add(player.sprite_object)
+
+        MEASUREMENT.make_note("New player joined: " + str(len(self.players)))
+
         return "OK"
 
     def movePlayer(self, name, direction):  # TODO: Better error support
@@ -295,7 +300,7 @@ class WallManMain:
                         self.running = END
                         self.connection.send_status_data()
 
-            time_passed = clock.tick(120)
+            time_passed = clock.tick(60)
             self.time_passed_micro_seconds = time_passed / 10.0
 
             for name in self.players.keys():
@@ -318,6 +323,7 @@ class WallManMain:
                             floor.mark(player._color, player._name)
 
                 if player.delete_me:
+                    self.playerSprites.remove(self.players[name].sprite_object)
                     del self.players[name]
             self.floorSprites.draw(self.screen)
             self.power_ups.draw(self.screen)
@@ -336,7 +342,6 @@ class WallManMain:
         sys.exit(0)
 
 
-# May need to demonize the function to support CF
 def main():
     if not pygame.font:
         print 'Warning, fonts disabled'
@@ -350,6 +355,7 @@ def main():
     parser.add_argument("-a", "--address", help="Master address", type=str, default='rocksvv.cs.uit.no')
     parser.add_argument("-p", "--port", help="Master port", type=int, default=65523)
     parser.add_argument("-r", "--res", help="Resolution of the screen", type=int, nargs=2, action='append', default=None)
+    parser.add_argument("-m", "--measure", help="Should game resources be measured", type=bool, default=False)
     args = parser.parse_args()
 
     res = None if not args.res else tuple(args.res[0])
@@ -366,12 +372,16 @@ def main():
         print e
         sys.exit(0)
 
+    if args.measure:
+        thread.start_new(MEASUREMENT.start_measurement, (1, ))
+        MEASUREMENT.write_to_file = True
+
     #Setup the main game
     wallman.setup(conn)
     wallman.drawGameLayout()  # Draw the game layout once, since it should not be updated
     wallman.main()
 
-if __name__ == "__main__":  # TODO REFACTOR THE CODE
+if __name__ == "__main__":
     try:
         sys.exit(main())
     except KeyboardInterrupt:  # review  maybe should send status anyway ?
