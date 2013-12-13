@@ -12,5 +12,5 @@ for i in xrange(0, 50):
     round_trip = end - start
 
     timestamp = time.strftime("%H:%M:%S", time.gmtime())
-    with open('../measurement/master/delay.csv', 'a+') as csv_file:
+    with open('measurement.csv', 'a+') as csv_file:
         csv_file.write('{0}, {1}\n'.format(timestamp, round_trip))

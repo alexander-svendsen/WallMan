@@ -1,3 +1,13 @@
+/*!
+ * virtual joystick
+ *
+ * Inspired by the solution found in:
+ * http://seb.ly/2011/04/multi-touch-game-controller-in-javascripthtml5-for-ipad/
+ * The touch events and the drawing code is taken from it, the rest have I tweaked myself to make it
+ * pc browser friendly and to be able to control your player
+ */
+
+
 $(document).keydown(function(e){
     if (e.keyCode == 37) {
         if (prevDirection != "left"){
@@ -43,7 +53,7 @@ function doubletap() {
 }
 
 var canvas,
-    c, // c is the canvas' context 2D
+    c,
     container,
     touchID = -1,
     radius = 40,
@@ -53,24 +63,21 @@ var canvas,
     vector = new Vector2(0,0);
 
 var mouseX, mouseY,
-// is this running in a touch capable environment?
     touchable = 'createTouch' in document,
-    touches = []; // array of touch vectors
+    touches = [];
 
 
 
 function resetCanvas (e) {
-    // resize the canvas - but remember - this clears the canvas too.
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     canvas.radius = (canvas.width + canvas.height)/100;
-    //make sure we scroll to the top left.
-    window.scrollTo(0,0);
+    window.scrollTo(0,0); //Makes us scroll to the top left
 }
 
 
 function setupController(){
-    setInterval(draw, 1000/35);
+    setInterval(draw, 1000/35);  // Draw interval
     setupCanvas();
 
     if(touchable) {
@@ -88,6 +95,8 @@ function setupController(){
         window.onresize = resetCanvas;
     }
 }
+
+
 function draw() {
     c.clearRect(0,0,canvas.width, canvas.height);
     if(touchable) {
@@ -95,12 +104,6 @@ function draw() {
         {
             var touch = touches[i];
             if (touch.identifier == touchID){
-                //TESTING PURPOSES
-                c.beginPath();
-                c.fillStyle = "white";
-                c.fillText("touch id : "+touch.identifier+" x:"+touch.clientX+" y:"+touch.clientY, touch.clientX+30, touch.clientY-30);
-                //--------------
-
                 c.beginPath();
                 c.strokeStyle = color;
                 c.lineWidth = 6;
@@ -119,12 +122,6 @@ function draw() {
         }
     }
     else {
-
-        //TESTING PURPOSES
-        c.fillStyle	 = "white";
-        c.fillText("mouse : "+mouseX+", "+mouseY, mouseX, mouseY);
-        //----------------
-
         if (touchID > 0){
             c.beginPath();
             c.strokeStyle = color;
@@ -141,9 +138,7 @@ function draw() {
             c.arc(touchPos.x, touchPos.y, 40, 0,Math.PI*2, true);
             c.stroke();
         }
-
     }
-
 }
 
 function onTouchStart(e) {
@@ -162,6 +157,7 @@ function onTouchStart(e) {
 
 }
 
+
 function onTouchMove(e) {
     e.preventDefault(); // Prevent the browser from doing its default thing (scroll, zoom)
 
@@ -178,6 +174,8 @@ function onTouchMove(e) {
     getDirection()
 }
 
+
+//The same as the touch event only for the mouse
 function onTouchEnd(e) {
     e.preventDefault(); // Prevent the browser from doing its default thing (scroll, zoom)
     touches = e.touches;

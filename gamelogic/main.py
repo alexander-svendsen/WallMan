@@ -70,10 +70,8 @@ class WallManMain:
             self.floorSprites.remove(floor_info[2])
             self.blockSprites.add(
                 Wall(floor_info[2].rect.center,
-                     tools.BLOCKCOLORS,
                      floor_info[2].res_size[0],
-                     floor_info[2].res_size[0],
-                     tools.BLOCKWIDTH))
+                     floor_info[2].res_size[0]))
             self.layout[floor_info[1]][floor_info[0]] = gameLayoutConfig.BLOCK
         return []
 

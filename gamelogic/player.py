@@ -111,12 +111,12 @@ class Player():
     def _get_speed(self, speed, direction):
         return [0, -speed, speed, 0, 0][direction], [0, 0, 0, -speed, speed][direction]
 
-    def _move(self, direction, speed):
+    def _move(self, direction):
         self._x_move, self._y_move = self._get_speed(self.speed, direction)
         if self._is_there_wall_in_direction(direction):
             length = self._length_to_next_block_based_on_direction(direction)
-            if abs(length) >= speed:
-                self._x_move, self._y_move = self._get_speed(speed, direction)
+            if abs(length) >= self.speed:
+                self._x_move, self._y_move = self._get_speed(self.speed, direction)
             else:
                 self._x_move, self._y_move = self._get_speed(abs(length), direction)
 
@@ -171,16 +171,15 @@ class Player():
             delta = self._length_to_next_block_based_on_direction(self._current_direction)
             if abs(delta) < self.speed:
                 if self._is_there_wall_in_direction(self._new_direction):
-                    restSpeed = self._get_speed(self.speed - abs(delta), self._current_direction)
-                    self._move(self._current_direction, restSpeed)
+                    self._move(self._current_direction)
                 else:
                     self._x_move, self._y_move = self._get_speed(abs(delta), self._current_direction)
                     self._current_direction = self._new_direction
                     self._new_direction = NONE
             else:
-                self._move(self._current_direction, self.speed)
+                self._move(self._current_direction)
         elif self._current_direction != NONE:
-            self._move(self._current_direction, self.speed)
+            self._move(self._current_direction)
 
     def _move_left_of_screen(self):
         if self._migrate_me_to_another_screen:
