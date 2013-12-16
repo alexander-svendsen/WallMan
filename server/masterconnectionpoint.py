@@ -9,7 +9,7 @@ import time
 import tools
 from collections import defaultdict
 import socketcommunication as communication
-from screenlayout import ScreenLayout
+from screenconfiguration import ScreenConfiguration
 from tools import measure
 
 
@@ -21,7 +21,7 @@ class MasterConnectionPoint(communication.Server):
         communication.Server.__init__(self, ip, port)
         print "Master Connection point established at: {0}:{1}".format(ip, port)
 
-        self._screen_layout = ScreenLayout(screen_config)
+        self._screen_layout = ScreenConfiguration(screen_config)
         self._connected_slaves = {}
         self._players = {}
         self._player_score = defaultdict(lambda: 0)

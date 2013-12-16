@@ -1,5 +1,5 @@
 import pygame
-from game.graphics.graphicspriteobject import GraphicSpriteObject
+from graphicspriteobject import GraphicSpriteObject
 
 WALL_IMAGE = pygame.image.load("game/images/brick.png")
 

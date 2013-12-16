@@ -4,7 +4,7 @@ import json
 import collections
 
 
-class ScreenLayout():
+class ScreenConfiguration():
     """
     Class to select and use an screen connection config. Takes care of figuring out what config is the right one, If the
     host connecting is a valid one and build a default config if such is specified.

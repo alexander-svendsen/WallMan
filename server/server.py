@@ -72,7 +72,7 @@ def main():
     # Set up arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("-ps", "--port_server", help="Server for http client port", type=int, default=35001)
-    parser.add_argument("-pm", "--port_master", help="Master port", type=int, default=65523)
+    parser.add_argument("-pm", "--port_master", help="Master port toward the game instances", type=int, default=65523)
     parser.add_argument("-sc", "--screen_config",
                         help="Pick a screen config of the available files inside the screenconfig folder",
                         type=str, default="default")

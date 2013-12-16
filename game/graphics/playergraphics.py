@@ -3,7 +3,7 @@ import time
 
 import pygame
 
-from game.graphics.graphicspriteobject import GraphicSpriteObject
+from graphicspriteobject import GraphicSpriteObject
 
 
 POKEMON_IMAGE = pygame.image.load("game/images/pokemon.png")

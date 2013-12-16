@@ -8,4 +8,4 @@ cd $BASEDIR
 export PYTHONPATH=$PYTHONPATH:$BASEDIR
 
 #change the python file arguments if you wish to change some configuration
-python gamelogic/main.py
+python game/main.py -r 504 504
