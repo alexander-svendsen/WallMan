@@ -11,4 +11,6 @@ function ctrl_c() {
 BASEDIR=..
 export PYTHONPATH=$PYTHONPATH:$BASEDIR
 cd server # Must be inside this directory to get static to work
-python server.py -sc BigDisplayWall.json
+
+#change the python file arguments if you wish to change some configuration
+python server.py -ps 8080

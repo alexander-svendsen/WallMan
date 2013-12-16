@@ -1,6 +1,6 @@
 from collections import namedtuple
 import pygame
-import maps.config as gameLayoutConfig
+import maps.config as map_config
 
 NONE = 0
 LEFT = 1
@@ -47,17 +47,17 @@ class Player():
                             STATE_MOVE_RIGHT_OUT_OF_SCREEN: self._move_right_of_screen,
                             STATE_MOVE_UP_OUT_OF_SCREEN: self._move_up_of_screen}
 
-        self._x = 0  # The x position in the layout. calculated later
-        self._y = 0  # The y position in the layout. calculated later
+        self._x = 0  # The x position in the map. calculated later
+        self._y = 0  # The y position in the map. calculated later
 
         self._state = STATE_MOVE_FREELY
 
     def increase_player_speed(self, speed):
         self.speed_level += speed
-        if self.speed_level <= self.sprite_object.rect.w:
-            self.speed_level = self.sprite_object.rect.w
-        if self.speed_level <= self.sprite_object.rect.h:
-            self.speed_level = self.sprite_object.rect.h
+        if self.speed_level >= self.sprite_object.rect.w:
+            self.speed_level = self.sprite_object.rect.w - 1
+        if self.speed_level >= self.sprite_object.rect.h:
+            self.speed_level = self.sprite_object.rect.h -1
 
     def update_migration(self, **kwargs):
         self.migrate = {LEFT:   self._migrate if "left" not in kwargs else kwargs["left"],
@@ -65,13 +65,13 @@ class Player():
                         UP:     self._migrate if "up" not in kwargs else kwargs["up"],
                         DOWN:   self._migrate if "down" not in kwargs else kwargs["down"]}
 
-    def update_layout(self, layout):
-        self.layout = layout
-        self.layout_height = len(layout)
-        self.layout_width = len(layout[0])
+    def update_map(self, map_array):
+        self.map_array = map_array
+        self.map_height = len(map_array)
+        self.map_width = len(map_array[0])
         Resolution = namedtuple('Resolution', ['width', 'height'])
-        self._res = Resolution(self.layout_width * self._sprite_object.rect.w,
-                               self.layout_height * self.sprite_object.rect.h)
+        self._res = Resolution(self.map_width * self._sprite_object.rect.w,
+                               self.map_height * self.sprite_object.rect.h)
 
     def update_movement(self, direction):
         self._new_direction = MOVEMENT_CONVERTER_DICT[direction]
@@ -80,11 +80,11 @@ class Player():
             self._new_direction = NONE
 
     def _is_wall(self, y, x):
-        if x >= self.layout_width or x < 0:
+        if x >= self.map_width or x < 0:
             return False
-        if 0 > y or y >= self.layout_height:
+        if 0 > y or y >= self.map_height:
             return False
-        return self.layout[y][x] == gameLayoutConfig.WALL
+        return self.map_array[y][x] == map_config.WALL
 
     def _length_to_next_block(self, blockPos, playerSize, playerCoordinate):
         return blockPos * playerSize - playerCoordinate
@@ -127,13 +127,13 @@ class Player():
             else:
                 self._x_move, self._y_move = self._get_speed(abs(length), direction)
 
-    def _calculate_current_position_in_layout(self):
+    def _calculate_current_position_in_map(self):
         self._x = self._sprite_object.rect.center[0] / self._sprite_object.rect.w
         self._y = self._sprite_object.rect.center[1] / self._sprite_object.rect.h
 
     def update(self, time, floor_sprites):
         self.speed = self.speed_level * time
-        self._calculate_current_position_in_layout()
+        self._calculate_current_position_in_map()
 
         # Don't need to update the state if we are to move out of the screen
         if self._state == STATE_MOVE_FREELY:
@@ -235,8 +235,8 @@ class Player():
                                      current_direction=self.current_direction,
                                      new_direction=self._new_direction,
                                      name=self._name,
-                                     layout_x=self._x,
-                                     layout_y=self._y,
+                                     map_x=self._x,
+                                     map_y=self._y,
                                      color=self._color,
                                      sprite_x=self._sprite_object.x,
                                      sprite_y=self._sprite_object.y,

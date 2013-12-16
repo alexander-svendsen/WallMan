@@ -1,14 +1,16 @@
-import pygame
 import random
-import string
-from graphicspriteobject import GraphicSpriteObject
 import time
 
-POKEMON_IMAGE = pygame.image.load("images/pokemon.png")
+import pygame
+
+from game.graphics.graphicspriteobject import GraphicSpriteObject
+
+
+POKEMON_IMAGE = pygame.image.load("game/images/pokemon.png")
 
 
 class Player(GraphicSpriteObject):
-    def __init__(self, centerPoint, width, height, color=None, sprite_x=None, sprite_y=None):
+    def __init__(self, pos_x, pos_y, width, height, color=None, sprite_x=None, sprite_y=None):
         GraphicSpriteObject.__init__(self, width, height)
         self.color = self._generate_color(color)
 
@@ -29,7 +31,8 @@ class Player(GraphicSpriteObject):
 
         self.image.blit(self.drawImage, (0, 0))
 
-        self.rect.center = centerPoint
+        self.rect.x = pos_x
+        self.rect.y = pos_y
         self.times_flashing = 0
 
     def set_flashing(self, times_flashing):

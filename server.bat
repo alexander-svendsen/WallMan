@@ -3,5 +3,7 @@
 setlocal
 set PYTHONPATH=%cd%;%PYTHONPATH%
 cd server
-python server.py
+
+#change the python file arguments if you wish to change some configuration
+python server.py -ps 8080
 endlocal

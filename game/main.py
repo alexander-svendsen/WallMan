@@ -3,22 +3,20 @@ import os
 import time
 import sys
 import random
+import argparse
 
 import pygame
 from pygame.locals import *
-
-from gamelogic import gamelayout
-import maps.config as GameLayoutConfig
+import maps.config as map_config
 
 from graphics import Wall, Floor
-
 import tools
 from player import Player
 from graphics.playergraphics import Player as player_graphics
 from gameconnection import *
+from maptools import *
 import graphics.powerups
 
-import argparse
 
 RUNNING = 1
 PAUSE = 2
@@ -27,26 +25,34 @@ MEASUREMENT = tools.Measure()
 
 
 class WallManMain:
-    """The Main WallMan Class. Responsible for everything that has anything to do with the game logic"""
+    """
+    The Main WallMan Class. Responsible for everything that has anything to do with the game logic. The game is
+    run from this class
+    """
 
     def __init__(self, res=None):
-        self.game_layout = gamelayout.GameLayout()
+
         self.running = PAUSE
         self.players = dict()
         self.res = res
+
         pygame.init()
         pygame.mouse.set_visible(False)
-        self.map = None
-        self.floor_right = list()
-        self.floor_left = list()
-        self.floor_up = list()
-        self.floor_down = list()
-        self.time_passed_micro_seconds = 0.0
+
+        self.game_map_tools = MapTools()
+        self.map_name = None
 
         self.player_sprites = pygame.sprite.Group()
         self.block_sprites = pygame.sprite.Group()
         self.floor_sprites = pygame.sprite.Group()
         self.power_ups = pygame.sprite.Group()
+
+        self.floor_right = list()
+        self.floor_left = list()
+        self.floor_up = list()
+        self.floor_down = list()
+
+        self.time_passed_micro_seconds = 0.0
 
     def setup(self, connection):
         full_screen = 0
@@ -72,12 +78,13 @@ class WallManMain:
 
     def _change_floor_to_wall(self, floors):
         for floor_info in floors:
-            self.floor_sprites.remove(floor_info[2])
             self.block_sprites.add(
-                Wall(floor_info[2].rect.center,
+                Wall(floor_info[2].rect.x,
+                     floor_info[2].rect.y,
                      floor_info[2].res_size[0],
-                     floor_info[2].res_size[0]))
-            self.layout[floor_info[1]][floor_info[0]] = GameLayoutConfig.WALL
+                     floor_info[2].res_size[1]))
+            self.map_array[floor_info[1]][floor_info[0]] = map_config.WALL
+            self.floor_sprites.remove(floor_info[2])
         return []
 
     def block_paths_in_direction(self, direction):
@@ -90,75 +97,67 @@ class WallManMain:
         elif direction == "up":
             self.floor_down = self._change_floor_to_wall(self.floor_down)
 
-    def redraw_game_layout(self):
+    def redraw_game_map(self):
         for player in self.players.values():
-            player.update_layout(self.layout)
+            player.update_map(self.map_array)
 
         self.block_sprites.draw(self.screen)
 
-    def draw_game_layout(self):
-        if self.map is None:
+    def draw_game_map(self):
+        if self.map_name is None:
             print "Error: Map not set"
             self.hard_quit()
             return
 
-        self.layout = self.game_layout.read_layout_as_dict(self.map)
+        self.map_array = self.game_map_tools.read_map_as_dict(self.map_name)
 
-        self.block_height = int(self.res[1] / len(self.layout))
-        self.block_width = int(self.res[0] / len(self.layout[0]))
+        self.block_height = int(self.res[1] / len(self.map_array))
+        self.block_width = int(self.res[0] / len(self.map_array[0]))
 
-        rest_height = self.res[1] - (self.block_height * len(self.layout))
-        rest_width = self.res[0] - (self.block_width * len(self.layout[0]))
+        rest_height = self.res[1] - (self.block_height * len(self.map_array))
+        rest_width = self.res[0] - (self.block_width * len(self.map_array[0]))
 
-        x_offset = (self.block_width / 2)
-        y_offset = (self.block_height / 2)
-        tmp_block_height = self.block_height
-        tmp_block_width = self.block_width
-
-        for y in xrange(len(self.layout)):
-            for x in xrange(len(self.layout[y])):
-                if y == len(self.layout) - 1:
+        for y in xrange(len(self.map_array)):
+            for x in xrange(len(self.map_array[y])):
+                if y == len(self.map_array) - 1:
                     tmp_block_height = self.block_height + rest_height
-                    y_off = tmp_block_height / 2
                 else:
                     tmp_block_height = self.block_height
-                    y_off = y_offset
 
-                if x == len(self.layout[y]) - 1:
+                if x == len(self.map_array[y]) - 1:
                     tmp_block_width = self.block_width + rest_width
-                    x_off = tmp_block_width / 2
                 else:
                     tmp_block_width = self.block_width
-                    x_off = x_offset
 
-                center_point = [(x * self.block_width) + x_off, (y * self.block_height + y_off)]
-                block_data = self.layout[y][x]
-                if block_data == GameLayoutConfig.FLOOR:
-                    floor = Floor(center_point, tmp_block_width, tmp_block_height)
+                x_pos, y_pos = (x * self.block_width), (y * self.block_height)
+                block_data = self.map_array[y][x]
+                if block_data == map_config.FLOOR:
+                    floor = Floor(x_pos, y_pos, tmp_block_width, tmp_block_height)
                     self.floor_sprites.add(floor)
-                    self._check_corners(x, y, len(self.layout[y]) - 1, len(self.layout) - 1, floor)
-                elif block_data == GameLayoutConfig.WALL:
-                    self.block_sprites.add(Wall(center_point, tmp_block_width, tmp_block_height))
-                elif block_data == GameLayoutConfig.SPEEDUP:
-                    self.floor_sprites.add(Floor(center_point, tmp_block_width, tmp_block_height))
-                    self.power_ups.add(graphics.powerups.PowerUp(center_point, tmp_block_width, tmp_block_height,
-                                                                 "images/speed-icon.png", "SPEED"))
-                    self._check_corners(x, y, len(self.layout[y]) - 1, len(self.layout) - 1, floor)
-                elif block_data == GameLayoutConfig.LOCK:
-                    self.floor_sprites.add(Floor(center_point, tmp_block_width, tmp_block_height))
-                    self.power_ups.add(graphics.powerups.PowerUp(center_point, tmp_block_width, tmp_block_height,
-                                                                      "images/lock-icon.png", "LOCK"))
-                    self._check_corners(x, y, len(self.layout[y]) - 1, len(self.layout) - 1, floor)
-                elif block_data == GameLayoutConfig.NUKE:
-                    self.floor_sprites.add(Floor(center_point, tmp_block_width, tmp_block_height))
-                    self.power_ups.add(graphics.powerups.PowerUp(center_point, tmp_block_width, tmp_block_height,
-                                                                 "images/nuke-icon.png", "NUKE"))
-                    self._check_corners(x, y, len(self.layout[y]) - 1, len(self.layout) - 1, floor)
-                elif block_data == GameLayoutConfig.TRASH:
-                    self.floor_sprites.add(Floor(center_point, tmp_block_width, tmp_block_height))
-                    self.power_ups.add(graphics.powerups.PowerUp(center_point, tmp_block_width, tmp_block_height,
-                                                                 "images/clean-icon.png", "TRASH"))
-                    self._check_corners(x, y, len(self.layout[y]) - 1, len(self.layout) - 1, floor)
+                    self._check_corners(x, y, len(self.map_array[y]) - 1, len(self.map_array) - 1, floor)
+                elif block_data == map_config.WALL:
+                    self.block_sprites.add(Wall(x_pos, y_pos, tmp_block_width, tmp_block_height))
+
+                elif block_data == map_config.SPEEDUP:
+                    self.floor_sprites.add(Floor(x_pos, y_pos, tmp_block_width, tmp_block_height))
+                    self.power_ups.add(graphics.powerups.PowerUp(x_pos, y_pos, tmp_block_width, tmp_block_height,
+                                                                 "game/images/speed-icon.png", "SPEED"))
+                    self._check_corners(x, y, len(self.map_array[y]) - 1, len(self.map_array) - 1, floor)
+                elif block_data == map_config.LOCK:
+                    self.floor_sprites.add(Floor(x_pos, y_pos, tmp_block_width, tmp_block_height))
+                    self.power_ups.add(graphics.powerups.PowerUp(x_pos, y_pos, tmp_block_width, tmp_block_height,
+                                                                 "game/images/lock-icon.png", "LOCK"))
+                    self._check_corners(x, y, len(self.map_array[y]) - 1, len(self.map_array) - 1, floor)
+                elif block_data == map_config.NUKE:
+                    self.floor_sprites.add(Floor(x_pos, y_pos, tmp_block_width, tmp_block_height))
+                    self.power_ups.add(graphics.powerups.PowerUp(x_pos, y_pos, tmp_block_width, tmp_block_height,
+                                                                 "game/images/nuke-icon.png", "NUKE"))
+                    self._check_corners(x, y, len(self.map_array[y]) - 1, len(self.map_array) - 1, floor)
+                elif block_data == map_config.TRASH:
+                    self.floor_sprites.add(Floor(x_pos, y_pos, tmp_block_width, tmp_block_height))
+                    self.power_ups.add(graphics.powerups.PowerUp(x_pos, y_pos, tmp_block_width, tmp_block_height,
+                                                                 "game/images/clean-icon.png", "TRASH"))
+                    self._check_corners(x, y, len(self.map_array[y]) - 1, len(self.map_array) - 1, floor)
 
         self.block_sprites.draw(self.screen)
         self.power_ups.draw(self.screen)
@@ -185,7 +184,8 @@ class WallManMain:
         while random_floor.get_marker() != "None":
             random_floor = random.choice(self.floor_sprites.sprites())
 
-        player = Player(player_graphics(random_floor.rect.center,  self.block_width, self.block_height), name)
+        x_pos, y_pos = random_floor.rect.x, random_floor.rect.y
+        player = Player(player_graphics(x_pos, y_pos, self.block_width, self.block_height), name)
         random_floor.mark(player._color, name)
 
         keys = self.connection.direction_connection_dict.keys()
@@ -193,7 +193,7 @@ class WallManMain:
         for key in keys:
             connDict[key] = self.connection.send_player_in_direction
         player.update_migration(**connDict)
-        player.update_layout(self.layout)
+        player.update_map(self.map_array)
         self.players[name] = player
         self.player_sprites.add(player.sprite_object)
 
@@ -204,16 +204,15 @@ class WallManMain:
         if data['name'] in self.players:
             return "Name taken"
 
-        x_offset = (self.block_width / 2)
-        y_offset = (self.block_height / 2)
-        centerPoint = [(data['x'] * self.block_width) + x_offset, (data['y'] * self.block_height + y_offset)]
+        x_pos, y_pos = (data['x'] * self.block_width), (data['y'] * self.block_height)
 
-        player = Player(player_graphics(centerPoint,
-                                       self.block_width,
-                                       self.block_height,
-                                       data['color'],
-                                       data['sprite_x'],
-                                       data['sprite_y']),
+        player = Player(player_graphics(x_pos,
+                                        y_pos,
+                                        self.block_width,
+                                        self.block_height,
+                                        data['color'],
+                                        data['sprite_x'],
+                                        data['sprite_y']),
                         data['name'])
 
         player.speed_level = data['speed_level']
@@ -236,7 +235,7 @@ class WallManMain:
 
         player.update_movement(data['direction'])
         player.update_movement(["none", "left", "right", "up", "down"][data['newDirection']])
-        player.update_layout(self.layout)
+        player.update_map(self.map_array)
 
         self.players[data['name']] = player
         self.player_sprites.add(player.sprite_object)
@@ -263,7 +262,7 @@ class WallManMain:
         else:
             print "Error: Non-existing player moved", name
 
-    def main(self):
+    def run_the_game(self):
 
         clock = pygame.time.Clock()
 
@@ -371,8 +370,8 @@ def main():
 
     #Setup the main game
     wallman.setup(conn)
-    wallman.draw_game_layout()  # Draw the game layout once, since it should not be updated
-    wallman.main()
+    wallman.draw_game_map()  # Draw the game map once, since it should not be updated
+    wallman.run_the_game()
 
 if __name__ == "__main__":
     try:

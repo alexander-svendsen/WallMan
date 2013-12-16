@@ -82,7 +82,7 @@ class GameConnection():
             print "Lost connection to the:", self.connection_direction_dict[conn]
             for direction in self.connection_direction_dict[conn]:  # Blocks the path in the faulty direction
                 self.the_game.block_paths_in_direction(direction)
-            self.the_game.redraw_game_layout()
+            self.the_game.redraw_game_map()
         except Exception as e:  # To see the rest of the exceptions if any
             print "Error:", type(e), e
             traceback.print_exc(file=sys.stdout)
@@ -97,7 +97,7 @@ class GameConnection():
         if data["cmd"] == "close":
             self.the_game.hard_quit()
         elif data["cmd"] == "setup":
-            self.the_game.map = data["map"]
+            self.the_game.map_name = data["map"]
         else:
             print "Strange setup from master", data
 
@@ -110,8 +110,8 @@ class GameConnection():
             json.dumps({'cmd': 'migrate',
                         'direction': kwargs["current_direction"],
                         'name': kwargs["name"],
-                        'x': kwargs["layout_x"],
-                        'y': kwargs["layout_y"],
+                        'x': kwargs["map_x"],
+                        'y': kwargs["map_y"],
                         'newDirection': kwargs["new_direction"],
                         'color': kwargs["color"],
                         'sprite_x': kwargs["sprite_x"],
@@ -195,7 +195,7 @@ class GameConnection():
                     if direction not in self.direction_connection_dict:
                         self.the_game.block_paths_in_direction(direction)
                 if self.wait_list:
-                    self.the_game.redraw_game_layout()
+                    self.the_game.redraw_game_map()
 
                 self.the_game.start()
                 self._periodic_send_status()
@@ -212,7 +212,7 @@ class GameConnection():
                 for address, direction_list in address_to_direction_dict.iteritems():
                     self._connect_to_direction(address, direction_list)
 
-                self.the_game.redraw_game_layout()
+                self.the_game.redraw_game_map()
                 self.the_game.update_players_migrations()
 
             elif data['cmd'] == 'close':
