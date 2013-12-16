@@ -26,7 +26,7 @@ If you want to run the test clients in the \testclient folder you will also need
     - for windows:
         - run the server.bat file
 
-2. start up game instances (WARNING: you will need to configure the scripts first):
+2. start up game instances (WARNING: you will need to configure the script first):
     - for linux:
         - run the game.sh file
     - for windows:
@@ -77,7 +77,7 @@ If you want to run the test clients in the \testclient folder you will also need
 ## Playing a game session:
 1. Start the server
 2. Add game instances
-3. Make the game instances connect to each other by sending: POST http://localhost:XXXX/setup
+3. Make the game instances connect to each other by sending: GET http://localhost:XXXX/setup
 4. Go to: http://localhost:XXXX/static/start.html, to make a player join the game.
 5. Start the game by sending: GET http://localhost:XXX/start
 6. Play the game.

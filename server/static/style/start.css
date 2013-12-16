@@ -1,11 +1,15 @@
 
 body {
     background-color:#111133;
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+    font-family: FreeMono, monospace;
+
 }
 
 .container{
     width:800px;
-    font-family: courier, monospace;
     color: #fff;
     margin-left:auto;
     margin-right:auto;
@@ -13,7 +17,6 @@ body {
 }
 
 .terminal {
-    font-family: FreeMono, monospace;
     font-size:16px;
     color: #fff;
     width:800px;
@@ -29,8 +32,8 @@ body {
 input[type="text"], textarea {
     -webkit-box-sizing: border-box;
     background-color:#111133;
-    font-family: FreeMono, monospace;
     font-size:16px;
+    font-family: FreeMono, monospace;
     color: #fff;
     box-sizing: border-box;
     width: 80%;
@@ -39,7 +42,6 @@ input[type="text"], textarea {
 }
 
 :focus {
-
     outline:0 none;
 }
 
@@ -65,9 +67,9 @@ p{
     background-color:#111133;
     border:1px solid #03ff59;
     color:#03ff59;
-    font-family: FreeMono, monospace;
     font-weight:bold;
     font-style:normal;
+    font-family: FreeMono, monospace;
     font-size:16px;
     height:30px;
     line-height:20px;

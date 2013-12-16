@@ -117,6 +117,7 @@ class WallManMain:
         rest_height = self.res[1] - (self.block_height * len(self.map_array))
         rest_width = self.res[0] - (self.block_width * len(self.map_array[0]))
 
+        #the two dimensional array has the opposite x,y. because it becomes ugly otherwise, that's why the mix up here
         for y in xrange(len(self.map_array)):
             for x in xrange(len(self.map_array[y])):
                 if y == len(self.map_array) - 1:

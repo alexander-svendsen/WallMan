@@ -26,7 +26,7 @@ def get_status():
     return json.dumps(app.connection_point.get_status())
 
 
-@app.route("/setup", methods=['POST'])
+@app.route("/setup", methods=['GET'])
 def set_setup():
     app.connection_point.send_setup()
     return status(200)
@@ -44,7 +44,7 @@ def move_player():
     return status(200)
 
 
-@app.route("/close", methods=['POST'])
+@app.route("/close", methods=['GET'])
 def close_games():
     app.connection_point.shutdown_clients()
     return status(200)

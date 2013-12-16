@@ -3,7 +3,7 @@ import argparse
 import json
 
 
-def generate_block_layout(min_x, min_y, max_x, max_y, map, default):
+def generate_map(min_x, min_y, max_x, max_y, map_name, default):
     default_name = default
     screen_config_dict = {}
 
@@ -18,7 +18,7 @@ def generate_block_layout(min_x, min_y, max_x, max_y, map, default):
                                                              "right": default_name.format(right, y),
                                                              "up": default_name.format(x, up),
                                                              "down": default_name.format(x, down),
-                                                             "map": map}
+                                                             "map": map_name}
     return screen_config_dict
 
 
@@ -28,7 +28,7 @@ def write_to_file(filename, data):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate a .json file for the layout in a block fashion. "
+    parser = argparse.ArgumentParser(description="Generate a .json file for the map in a block fashion. "
                                                  "Best matched on a distributed display wall")
     parser.add_argument("x_min", help="Start x pos", type=int)
     parser.add_argument("y_min", help="Start y pos", type=int)
@@ -42,6 +42,6 @@ if __name__ == "__main__":
                         help="Which map should be used for all. Uses default if not specified",
                         type=str, default="default")
     args = parser.parse_args()
-    data = generate_block_layout(min_x=args.x_min, min_y=args.y_min,
-                                 max_x=args.x_max, max_y=args.y_max, map=args.map, default=args.default_host_name)
+    data = generate_map(min_x=args.x_min, min_y=args.y_min,
+                                 max_x=args.x_max, max_y=args.y_max, map_name=args.map, default=args.default_host_name)
     write_to_file(args.filename, data)

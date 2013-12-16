@@ -21,7 +21,7 @@ class MasterConnectionPoint(communication.Server):
         communication.Server.__init__(self, ip, port)
         print "Master Connection point established at: {0}:{1}".format(ip, port)
 
-        self._screen_layout = ScreenConfiguration(screen_config)
+        self._screen_configuration = ScreenConfiguration(screen_config)
         self._connected_slaves = {}
         self._players = {}
         self._player_score = defaultdict(lambda: 0)
@@ -98,15 +98,15 @@ class MasterConnectionPoint(communication.Server):
                     self._players[data["name"]] = connection
 
                 elif data['cmd'] == 'setup':
-                    hostname = self._screen_layout.get_id_of_host(data["hostname"])
-                    if self._screen_layout.is_hostname_valid(hostname):
+                    hostname = self._screen_configuration.get_id_of_host(data["hostname"])
+                    if self._screen_configuration.is_hostname_valid(hostname):
                         self._connected_slaves[hostname] = {"conn": connection,
                                                             "addr": address[0],
                                                             "port": data['port'],
                                                             "score": {}}
-                        print self._screen_layout[hostname]
+                        print self._screen_configuration[hostname]
                         connection.send(json.dumps({"cmd": "setup",
-                                                    "map": self._screen_layout.get_map_for_hostname(hostname)}))
+                                                    "map": self._screen_configuration.get_map_for_hostname(hostname)}))
                     else:  # Invalid game connected, so send a close signal since it will not be used
                         print "Invalid host connected"
                         connection.send(json.dumps({"cmd": "close"}))
@@ -142,7 +142,7 @@ class MasterConnectionPoint(communication.Server):
             del self._conn_to_player_dict[self._connected_slaves[hostname]['conn']]
             self._connected_slaves[hostname]['conn'].close()
             del self._connected_slaves[hostname]
-            self._screen_layout.remove(hostname)
+            self._screen_configuration.remove(hostname)
             print "Clients left connected: ", self._connected_slaves
 
     def flash_player(self, raw_data):
@@ -209,10 +209,10 @@ class MasterConnectionPoint(communication.Server):
         Sends the current connection setup to all the clients. Who they should connect to and such
         """
         for key, value in self._connected_slaves.iteritems():
-            print '{0}\n\tDict: {1}\n\tOri : '.format(key, value, self._screen_layout[key])
+            print '{0}\n\tDict: {1}\n\tOri : '.format(key, value, self._screen_configuration[key])
 
             connection_config = dict()
-            for direction, hostname in self._screen_layout[key].iteritems():
+            for direction, hostname in self._screen_configuration[key].iteritems():
                 if hostname not in self._connected_slaves:
                     connection_config[direction] = 'BLOCK'
                     continue

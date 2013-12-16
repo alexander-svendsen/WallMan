@@ -7,3 +7,5 @@ SPEEDUP = 2
 LOCK = 3
 NUKE = 4
 TRASH = 5
+
+AIR = 9
