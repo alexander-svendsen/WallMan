@@ -136,26 +136,31 @@ class WallManMain:
                     floor = Floor(x_pos, y_pos, tmp_block_width, tmp_block_height)
                     self.floor_sprites.add(floor)
                     self._check_corners(x, y, len(self.map_array[y]) - 1, len(self.map_array) - 1, floor)
+
                 elif block_data == map_config.WALL:
                     self.block_sprites.add(Wall(x_pos, y_pos, tmp_block_width, tmp_block_height))
 
                 elif block_data == map_config.SPEEDUP:
-                    self.floor_sprites.add(Floor(x_pos, y_pos, tmp_block_width, tmp_block_height))
+                    floor = Floor(x_pos, y_pos, tmp_block_width, tmp_block_height)
+                    self.floor_sprites.add(floor)
                     self.power_ups.add(graphics.powerups.PowerUp(x_pos, y_pos, tmp_block_width, tmp_block_height,
                                                                  "game/images/speed-icon.png", "SPEED"))
                     self._check_corners(x, y, len(self.map_array[y]) - 1, len(self.map_array) - 1, floor)
                 elif block_data == map_config.LOCK:
-                    self.floor_sprites.add(Floor(x_pos, y_pos, tmp_block_width, tmp_block_height))
+                    floor = Floor(x_pos, y_pos, tmp_block_width, tmp_block_height)
+                    self.floor_sprites.add(floor)
                     self.power_ups.add(graphics.powerups.PowerUp(x_pos, y_pos, tmp_block_width, tmp_block_height,
                                                                  "game/images/lock-icon.png", "LOCK"))
                     self._check_corners(x, y, len(self.map_array[y]) - 1, len(self.map_array) - 1, floor)
                 elif block_data == map_config.NUKE:
-                    self.floor_sprites.add(Floor(x_pos, y_pos, tmp_block_width, tmp_block_height))
+                    floor = Floor(x_pos, y_pos, tmp_block_width, tmp_block_height)
+                    self.floor_sprites.add(floor)
                     self.power_ups.add(graphics.powerups.PowerUp(x_pos, y_pos, tmp_block_width, tmp_block_height,
                                                                  "game/images/nuke-icon.png", "NUKE"))
                     self._check_corners(x, y, len(self.map_array[y]) - 1, len(self.map_array) - 1, floor)
                 elif block_data == map_config.TRASH:
-                    self.floor_sprites.add(Floor(x_pos, y_pos, tmp_block_width, tmp_block_height))
+                    floor = Floor(x_pos, y_pos, tmp_block_width, tmp_block_height)
+                    self.floor_sprites.add(floor)
                     self.power_ups.add(graphics.powerups.PowerUp(x_pos, y_pos, tmp_block_width, tmp_block_height,
                                                                  "game/images/clean-icon.png", "TRASH"))
                     self._check_corners(x, y, len(self.map_array[y]) - 1, len(self.map_array) - 1, floor)
