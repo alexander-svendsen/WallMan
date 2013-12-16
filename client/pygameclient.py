@@ -2,17 +2,17 @@
 import pygame
 from pygame.locals import *
 import sys
-import urllib2
-import urllib
+import requests
+import time
 
-nb = raw_input('Choose a nickname: ')
-url = 'http://129.242.22.192:8080/join'
-req = urllib2.Request(url)
-req.add_data('{"name" : "%s"}' % nb)
-print urllib2.urlopen(req)
+username = raw_input('Choose a nickname: ')
+data = '{"name": "' + username + '"}'
+url = 'http://129.242.22.192:8080/'
+
+r = requests.post(url + 'join', data=data)
 
 pygame.init()
-screen = pygame.display.set_mode((50, 50))
+screen = pygame.display.set_mode((100, 100))
 clock = pygame.time.Clock()
 running = True
 while running:
@@ -23,40 +23,32 @@ while running:
             if event.key == K_ESCAPE:
                 running = False
             if event.key == K_LEFT:
+                start = time.time()
+
                 print "Left"
-                url = 'http://129.242.22.192:8080/move'
-                req = urllib2.Request(url)
-                req.add_data('{"name" : "%s", "direction" : "left"}' % nb)
-                urllib2.urlopen(req)
+                data = '{"name": "' + username + '", "direction" : "left"}'
+                r = requests.post(url + 'move', data=data)
+                end = time.time()
+                print end - start
             if event.key == K_RIGHT:
                 print "Right"
-                url = 'http://129.242.22.192:8080/move'
-                req = urllib2.Request(url)
-                req.add_data('{"name" : "%s", "direction" : "right"}' % nb)
-                urllib2.urlopen(req)
+                data = '{"name": "' + username + '", "direction" : "right"}'
+                r = requests.post(url + 'move', data=data)
             if event.key == K_DOWN:
                 print "Down"
-                url = 'http://129.242.22.192:8080/move'
-                req = urllib2.Request(url)
-                req.add_data('{"name" : "%s", "direction" : "down"}' % nb)
-                urllib2.urlopen(req)
+                data = '{"name": "' + username + '", "direction" : "down"}'
+                r = requests.post(url + 'move', data=data)
             if event.key == K_UP:
                 print "Up"
-                url = 'http://129.242.22.192:8080/move'
-                req = urllib2.Request(url)
-                req.add_data('{"name" : "%s", "direction" : "up"}' % nb)
-                urllib2.urlopen(req)
-
+                data = '{"name": "' + username + '", "direction" : "up"}'
+                r = requests.post(url + 'move', data=data)
             if event.key == K_r:
-                url = 'http://129.242.22.192:8080/join'
-                req = urllib2.Request(url)
-                req.add_data('{"name" : "%s"}' % nb)
-                urllib2.urlopen(req)
+                data = '{"name": "' + username + '"}'
+                r = requests.post(url + 'join', data=data)
             if event.key == SYSWMEVENT:
                 print "Delete"
-                url = 'http://129.242.22.192:8080/start'
-                req = urllib2.Request(url)
-                urllib2.urlopen(req)
+                r = requests.get(url + 'start')
+    clock.tick(60)
 
 
 pygame.quit()

@@ -13,13 +13,13 @@ class Measure():
         self.pid = os.getpid()
         self.process = psutil.Process(self.pid)
 
+        self.write_to_file = False
+
+    def start_measurement(self, interval):
         # creates an empty file at the tmp location
         a = open(FILE + ".csv", "w+")
         a.close()
 
-        self.write_to_file = False
-
-    def start_measurement(self, interval):
         while True:
             cpu = self.measure_cpu()
             mem = self.measure_memory()

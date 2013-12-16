@@ -51,7 +51,7 @@ class MasterConnectionPoint(communication.Server):
         if not self._connected_slaves:  # Error testing
             return
         if data["name"] in self._players:  # Should not rejoin a player
-            return  # review Error support
+            return
 
         game_slave = self._get_random_slave()
         self._players[data["name"]] = game_slave
@@ -156,7 +156,6 @@ class MasterConnectionPoint(communication.Server):
             json_data["cmd"] = "flash"
             self._players[player_name].send(json.dumps(json_data) + '\n')
 
-    # review should be an other solution
     def _fix_player(self, name):
         del self._players[name]
 
@@ -180,7 +179,7 @@ class MasterConnectionPoint(communication.Server):
     def _calculate_score(self):
         for item in self._connected_slaves.itervalues():
             for name, score in item["score"].iteritems():
-                self._player_score[name] += score  # FIXME NOT ATOMIC CAN BE WRONG. FIX
+                self._player_score[name] += score
         return self._player_score
 
     def shutdown_clients(self):

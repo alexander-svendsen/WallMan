@@ -4,6 +4,8 @@ import string
 from graphicspriteobject import GraphicSpriteObject
 import time
 
+POKEMON_IMAGE = pygame.image.load("images/pokemon.png")
+
 
 class Player(GraphicSpriteObject):
     def __init__(self, centerPoint, width, height, color=None, sprite_x=None, sprite_y=None):
@@ -15,9 +17,10 @@ class Player(GraphicSpriteObject):
         self.drawImage = pygame.Surface([width, height])
         self.drawImage.fill(self.color, self.rect)
 
-        self.x = sprite_x if sprite_x else random.randint(0, 24)
-        self.y = sprite_y if sprite_y else random.randint(0, 19)
-        pokemon_image = pygame.image.load("images/pokemon.png")  # review a more efficent way for this ?
+        #since the last row of pokemon's isn't filled totally out, we ignore them
+        self.x = sprite_x if sprite_x else random.randint(0, 23)
+        self.y = sprite_y if sprite_y else random.randint(0, 18)
+        pokemon_image = POKEMON_IMAGE
         pos = pygame.Rect(self.x * 80, self.y * 80, 80, 80)
         pokeImage = pokemon_image.subsurface(pos)
         pokeImage = pygame.transform.scale(pokeImage, (width, height))
@@ -26,7 +29,6 @@ class Player(GraphicSpriteObject):
 
         self.image.blit(self.drawImage, (0, 0))
 
-        # Move the rect into the correct position
         self.rect.center = centerPoint
         self.times_flashing = 0
 

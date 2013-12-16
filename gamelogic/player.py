@@ -22,8 +22,8 @@ class Player():
     def __init__(self, sprite_object, name, speed=1.5):
         self.speed = 0.0
         self.speed_level = (sprite_object.rect.w + sprite_object.rect.h) * speed / 40
-        assert self.speed <= sprite_object.rect.w, "Speed can never be greater then the width of the player"
-        assert self.speed <= sprite_object.rect.h, "Speed can never be greater then the height of the player"
+        assert self.speed_level <= sprite_object.rect.w, "Speed can never be greater then the width of the player"
+        assert self.speed_level <= sprite_object.rect.h, "Speed can never be greater then the height of the player"
 
         self._migrate_me_in_the_same_game = True
         self._migrate_me_to_another_screen = False
@@ -52,13 +52,20 @@ class Player():
 
         self._state = STATE_MOVE_FREELY
 
+    def increase_player_speed(self, speed):
+        self.speed_level += speed
+        if self.speed_level <= self.sprite_object.rect.w:
+            self.speed_level = self.sprite_object.rect.w
+        if self.speed_level <= self.sprite_object.rect.h:
+            self.speed_level = self.sprite_object.rect.h
+
     def update_migration(self, **kwargs):
         self.migrate = {LEFT:   self._migrate if "left" not in kwargs else kwargs["left"],
                         RIGHT:  self._migrate if "right" not in kwargs else kwargs["right"],
                         UP:     self._migrate if "up" not in kwargs else kwargs["up"],
                         DOWN:   self._migrate if "down" not in kwargs else kwargs["down"]}
 
-    def update_layout(self, layout):  #review maye send int res
+    def update_layout(self, layout):
         self.layout = layout
         self.layout_height = len(layout)
         self.layout_width = len(layout[0])
@@ -77,7 +84,7 @@ class Player():
             return False
         if 0 > y or y >= self.layout_height:
             return False
-        return self.layout[y][x] == gameLayoutConfig.BLOCK
+        return self.layout[y][x] == gameLayoutConfig.WALL
 
     def _length_to_next_block(self, blockPos, playerSize, playerCoordinate):
         return blockPos * playerSize - playerCoordinate
@@ -138,7 +145,6 @@ class Player():
         self._sprite_object.rect.move_ip(self._x_move, self._y_move)
 
     def _check_floor_collision(self, sprite_floor):
-        # TODO refactor out collision
         floorCollide = pygame.sprite.spritecollide(self._sprite_object, sprite_floor, False)
         if floorCollide:
             for floor in floorCollide:
@@ -226,7 +232,7 @@ class Player():
         self.migrate[
             self._current_direction](pos_x=x,
                                      pos_y=y,
-                                     current_direction=self.current_direction, #review change it
+                                     current_direction=self.current_direction,
                                      new_direction=self._new_direction,
                                      name=self._name,
                                      layout_x=self._x,

@@ -15,11 +15,6 @@ def start():
     return flask.redirect(flask.url_for('static', filename='start.html'))
 
 
-@app.route("/favicon.ico")
-def favicon():
-    return flask.redirect(flask.url_for('static', filename='favicon.ico'))
-
-
 @app.route("/start", methods=['GET'])
 def start_game():
     app.connection_point.start_game()

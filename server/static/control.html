@@ -8,7 +8,6 @@
 <body onload="init()">
 <script type='text/javascript' src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
 <script type='text/javascript' src="scripts/libs/jquery.cookie.js"></script>
-<script type='text/javascript' src="scripts/libs/Vector2.js"></script>
 <script type='text/javascript' src="scripts/libs/knockout-2.3.0.js"></script>
 <script type='text/javascript' src="scripts/CustomAjaxCalls.js"></script>
 <script type='text/javascript' src="scripts/VirtualJoystick.js"></script>
@@ -18,7 +17,7 @@
 <script>
 
 var username = $.cookie("username");
-var prevDirection = ""
+var prevDirection = "";
 
 function init(){
     //In those cases where there is no username

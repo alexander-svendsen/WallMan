@@ -81,8 +81,8 @@ class GameConnection():
         except socket.error:
             print "Lost connection to the:", self.connection_direction_dict[conn]
             for direction in self.connection_direction_dict[conn]:  # Blocks the path in the faulty direction
-                self.the_game.blockPathsInDirection(direction)
-            self.the_game.redrawGameLayout()
+                self.the_game.block_paths_in_direction(direction)
+            self.the_game.redraw_game_layout()
         except Exception as e:  # To see the rest of the exceptions if any
             print "Error:", type(e), e
             traceback.print_exc(file=sys.stdout)
@@ -95,7 +95,7 @@ class GameConnection():
 
         data = json.loads(rawData)
         if data["cmd"] == "close":
-            self.the_game.hardQuit()
+            self.the_game.hard_quit()
         elif data["cmd"] == "setup":
             self.the_game.map = data["map"]
         else:
@@ -138,7 +138,7 @@ class GameConnection():
         except socket.error:
             # could not connect to direction so should block it
             for direction in direction_list:
-                self.the_game.blockPathsInDirection(direction)
+                self.the_game.block_paths_in_direction(direction)
                 if direction in self.direction_connection_dict:
                     del self.direction_connection_dict[direction]
             if client.connection in self.connection_direction_dict:
@@ -175,7 +175,7 @@ class GameConnection():
             data = json.loads(data_entry)
 
             if data['cmd'] == 'join':
-                self.the_game.newPlayerJoined(data['name'])
+                self.the_game.new_player_joined(data['name'])
 
             elif data['cmd'] == 'setup_migration_direction':
                 for direction in data['direction']:
@@ -186,16 +186,16 @@ class GameConnection():
                 self.the_game.update_players_migrations()
 
             elif data['cmd'] == 'move':
-                self.the_game.movePlayer(data['name'], data['direction'])
+                self.the_game.move_player(data['name'], data['direction'])
 
             elif data['cmd'] == 'start':
                 # Blocks directions that haven't connected
                 for direction in self.wait_list:
                     # In those cases where its quicker to connect then i am to add it
                     if direction not in self.direction_connection_dict:
-                        self.the_game.blockPathsInDirection(direction)
+                        self.the_game.block_paths_in_direction(direction)
                 if self.wait_list:
-                    self.the_game.redrawGameLayout()
+                    self.the_game.redraw_game_layout()
 
                 self.the_game.start()
                 self._periodic_send_status()
@@ -207,12 +207,12 @@ class GameConnection():
                     if address != 'BLOCK':
                         address_to_direction_dict[address[0], address[1]].append(key)
                     else:
-                        self.the_game.blockPathsInDirection(key)
+                        self.the_game.block_paths_in_direction(key)
 
                 for address, direction_list in address_to_direction_dict.iteritems():
                     self._connect_to_direction(address, direction_list)
 
-                self.the_game.redrawGameLayout()
+                self.the_game.redraw_game_layout()
                 self.the_game.update_players_migrations()
 
             elif data['cmd'] == 'close':
@@ -267,4 +267,4 @@ class GameConnection():
         except Exception as e:  # Don't really care here anymore
             pass
 
-        self.the_game.softQuit()
+        self.the_game.soft_quit()
